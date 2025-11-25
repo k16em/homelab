@@ -1,0 +1,10 @@
+ServerAliveInterval	60
+ForwardAgent		yes
+UpdateHostKeys		ask
+
+Include conf.d/*
+
+Host github.com
+	User		git
+	ForwardAgent	no
+

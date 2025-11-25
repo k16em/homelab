@@ -1,31 +1,27 @@
 ---
-# stormsshの依存関係
-- name: 'paramikoをインストール'
-  become: true
-  community.general.pacman:
-    name: python-paramiko
-    state: latest
-
-- name: '~/.ssh/configを削除する'
+- name: '~/.ssh/conf.dディレクトリを掘る'
   ansible.builtin.file:
-    path: '/home/{{ ansible_user }}/.ssh/config'
-    state: absent
+    path: ~/.ssh/conf.d
+    state: "directory"
+    recurse: true
 
-- name: '~/.ssh/configを作成する'
-  community.general.ssh_config:
-    user: 'maintainer'
-    host: '{{ item.name }}'
-    hostname: '{{ item.address }}'
-    forward_agent: true
-    strict_host_key_checking: 'no'
-    state: present
-  with_items: '{{ servers }}'
+- name: '~/ssh/configを置く'
+  ansible.builtin.copy:
+    src: config
+    dest: ~/.ssh/config
 
-- name: '~/.ssh/configにgithub用の情報を追加'
-  community.general.ssh_config:
-    user: 'maintainer'
-    remote_user: 'git'
-    host: 'github.com'
-    hostname: 'github.com'
-    state: present
+- name: '各拠点の接続情報を作成する'
+  ansible.builtin.template:
+    src: site.j2
+    dest: ~/.ssh/conf.d/{{ item.prefix }}
+  with_items: 
+  - { prefix: "tk", hosts: "{{site01}}" }
+  - { prefix: "iw", hosts: "{{site02}}" }
+
+- name: 'tailscaleの接続情報を作成する'
+  ansible.builtin.template:
+    src: site.j2
+    dest: ~/.ssh/conf.d/{{ item.prefix }}
+  with_items: 
+  - { prefix: "ts", hosts: "{{vault_tailscale_hosts}}" }
 

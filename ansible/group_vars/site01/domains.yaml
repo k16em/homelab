@@ -1,5 +1,0 @@
----
-records:
-  - name: proxmox
-    address: "192.168.30.55"
-

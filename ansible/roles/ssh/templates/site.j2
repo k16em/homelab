@@ -1,0 +1,9 @@
+{% for host in item.hosts %}
+Host {{ item.prefix }}-{{ host.name }}
+	User			maintainer
+	HostName		{{ host.address }}
+	ServerAliveInterval	60
+	ForwardAgent		yes
+
+{% endfor %}
+

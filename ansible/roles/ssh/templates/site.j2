@@ -4,6 +4,9 @@ Host {{ item.prefix }}-{{ host.name }}
 	HostName		{{ host.address }}
 	ServerAliveInterval	60
 	ForwardAgent		yes
+{% if item.bastion is defined and item.prefix not in groups %}
+	ProxyJump		{{ item.bastion }}
+{% endif %}
 
 {% endfor %}
 

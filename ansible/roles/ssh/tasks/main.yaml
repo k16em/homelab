@@ -10,18 +10,18 @@
     src: config
     dest: ~/.ssh/config
 
-- name: '各拠点の接続情報を作成する'
-  ansible.builtin.template:
-    src: site.j2
-    dest: ~/.ssh/conf.d/{{ item.prefix }}
-  with_items: 
-  - { prefix: "tk", hosts: "{{site01}}" }
-  - { prefix: "iw", hosts: "{{site02}}" }
-
 - name: 'tailscaleの接続情報を作成する'
   ansible.builtin.template:
     src: site.j2
     dest: ~/.ssh/conf.d/{{ item.prefix }}
   with_items: 
   - { prefix: "ts", hosts: "{{vault_tailscale_hosts}}" }
+
+- name: '各拠点の接続情報を作成する'
+  ansible.builtin.template:
+    src: site.j2
+    dest: ~/.ssh/conf.d/{{ item.prefix }}
+  with_items: 
+  - { prefix: "tk", hosts: "{{site01}}", bastion: "{{vault_facing_bastion}}" }
+  - { prefix: "iw", hosts: "{{site02}}", bastion: "{{vault_facing_bastion}}" }
 

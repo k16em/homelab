@@ -41,10 +41,12 @@ all:
           children:
             kubernetes_proxy:
             kubernetes_worker:
-              192.168.30.92:
+              hosts:
+                192.168.30.92:
             kubernetes_master:
-              192.168.30.90:
-              192.168.30.91:
+              hosts:
+                192.168.30.90:
+                192.168.30.91:
 
         bastion:
           hosts:

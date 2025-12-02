@@ -1,0 +1,58 @@
+#cloud-config
+
+# SYSTEM
+locale: ja_JP.UTF-8
+timezone: Asia/Tokyo
+
+# USER
+user: maintainer
+ssh_authorized_keys:
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH1+DvxUVbKQVrRsRhZEX/aqdox/MU3nC9bqmJBDz+by homelab
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMz2Z8uOw2WCkEQgaQtpDxCNqAPsRFiVCiXQrSzzo+vb
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKZJc89W8z5FzkZpbA4Hl6RXyX5t8nlWingBKMlFPAaw JuiceSSH
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHFKnlIyCgW31Fah9Lu/f0Sn2SYvSN69VkoBqJBSOSV0
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKJfrFtXf4ZZ0Cvc8imYopa8lEB8pL0pozsp72uebybk GPDWM
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDalCgHF6xdItVJ+372THFRFvnHwiLfDnhKHqngQwb/z homelab
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIWhmPjY0gQuN/SuSiZd+un5gLgIeepMTRz6Oe7pEmTL deskmeet-x300
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH6lbSY1sE2SNc3aHonvKqIW+DC3VeT6D4OfFo6Ar16q JuiceSSH
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJGuiuJAh/R4P13e05iv8rKMJx5Pn/KpqoMxG7eD4sQ5 kisaragi
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM4wGS5GSUvjG98Nr0pk6tmNijrkifXyTgRuIpmkkzTc tk-jenkins
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBMwdB00ST3GUUpKORPV1DACqctIlLK0/dZ0kAQESIyW hb-mjr
+
+# PACKAGE
+package_upgrade: true
+packages:
+  - qemu-guest-agent
+  - archlinux-keyring
+  - pacman-contrib
+  - openssh
+  - python
+  - sudo
+  - zsh
+  - zsh-completions
+  - vim
+  - mosh
+  - git
+  - base-devel
+  - rustup
+  - pacman-contrib
+  - python-pip
+  - python-setuptools
+  - rsync
+  - prometheus-node-exporter
+
+runcmd:
+  - ["sed", "-i", "s/^# %sudo ALL=(ALL:ALL) ALL$/%sudo ALL=(ALL:ALL) NOPASSWD: ALL/", "/etc/sudoers"]
+  - ["sed", "-i", "s/^#PermitRootLogin.*$/PermitRootLogin no/", "/etc/ssh/sshd_config"]
+  - ["sed", "-i", "s/^#PasswordAuthentication.*$/PasswordAuthentication no/", "/etc/ssh/sshd_config"]
+  - ["sed", "-i", "s/^#DisableSandbox$/DisableSandbox/", "/etc/pacman.conf"]
+  - ["groupadd", "sudo"]
+  - ["usermod", "-aG", "wheel", "-aG", "sudo", "-s", "/usr/bin/zsh", "maintainer"]
+  - ["touch", "/home/maintainer/.zshrc"]
+  - ["systemctl", "start", "sshd"]
+  - ["systemctl", "enable", "sshd"]
+
+# REBOOT
+power_state:
+  mode: reboot
+

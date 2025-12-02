@@ -47,3 +47,6 @@ dns02:
 grafana02:
 	ansible-playbook -i ./hosts/site02.yaml -i conf ./services/grafana.yaml --vault-password-file ~/ansible/.vault_pass
 
+kubernetes02:
+	ansible-playbook -i ./hosts/site01.yaml -i conf ./services/kubernetes.yaml --vault-password-file ~/ansible/.vault_pass
+

@@ -50,3 +50,6 @@ grafana02:
 kubernetes02:
 	ansible-playbook -i ./hosts/site01.yaml -i conf ./services/kubernetes.yaml --vault-password-file ~/ansible/.vault_pass
 
+private01:
+	ansible-playbook -i ./hosts/site01-private.yaml -i conf ./services/llm.yaml --vault-password-file ~/ansible/.vault_pass
+

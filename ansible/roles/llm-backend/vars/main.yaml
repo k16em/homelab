@@ -1,0 +1,37 @@
+---
+required_packages:
+  - name: vulkan-radeon
+  - name: lib32-vulkan-radeon
+  - name: rocm-hip-sdk
+  - name: rocm-opencl-sdk
+  - name: python
+  - name: huggingface
+  - name: ollama
+  - name: ollama-rocm
+  - name: ollama-vulkan
+  - name: gperftools
+  - name: bc
+  - name: python-pytorch-rocm
+  - name: amd-ucode
+  - name: python-cairo
+  - name: python-opencv
+  - name: python-passlib
+  - name: libxslt
+  - name: python-lxml
+  - name: python-hpack
+  - name: python-hyperframe
+  - name: python-h2
+  - name: cuda
+
+required_aur_packages:
+  - name: zluda
+  - name: "llama.cpp-vulkan"
+  - name: python-primp
+  - name: python-duckduckgo-search
+  - name: python-whisper
+  - name: python310
+  - name: python311
+
+required_models:
+  - name: gpt-oss:20b
+

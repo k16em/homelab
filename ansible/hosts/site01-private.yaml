@@ -1,0 +1,28 @@
+all:
+  hosts:
+  vars:
+    ansible_user: maintainer
+
+  children:
+    site01:
+      children:
+        tk-pv:
+          archlinux:
+          archarm:
+
+        archlinux:
+          children:
+            arch:
+              hosts:
+                192.168.20.17:
+            archarm:
+              hosts:
+
+        llm:
+          hosts:
+            192.168.20.17:
+
+        webui:
+          hosts:
+            192.168.20.17:
+

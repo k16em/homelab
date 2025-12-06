@@ -1,5 +1,6 @@
 ---
 required_packages:
+  - name: clang
   - name: vulkan-radeon
   - name: lib32-vulkan-radeon
   - name: rocm-hip-sdk
@@ -11,7 +12,7 @@ required_packages:
   - name: ollama-vulkan
   - name: gperftools
   - name: bc
-  - name: python-pytorch-rocm
+  - name: python-pytorch-opt-rocm
   - name: amd-ucode
   - name: python-cairo
   - name: python-opencv

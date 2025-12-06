@@ -7,7 +7,6 @@
   with_items: '{{ required_packages }}'
 
 - name: '必要なAURパッケージを追加する'
-  become: true
   kewlfft.aur.aur:
     name: '{{ item.name }}'
     state: present

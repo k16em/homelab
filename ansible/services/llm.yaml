@@ -3,7 +3,8 @@
   roles:
     - upgrade-packages
     - initialize-node
-    - llm
+    - add-worker
+    - llm-backend
 
 - hosts: webui
   roles:

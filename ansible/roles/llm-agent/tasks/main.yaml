@@ -1,0 +1,45 @@
+---
+- name: '必要なAURパッケージを追加する'
+  kewlfft.aur.aur:
+    name: '{{ item.name }}'
+    state: present
+  with_items: '{{ required_aur_packages }}'
+
+- name: 'agent用のユーザを作成する'
+  become: true
+  ansible.builtin.user:
+    name: agent
+    shell: /usr/bin/zsh
+    groups: docker
+    append: yes
+    password: "{{ vault_maintainer_password | password_hash('sha512') }}"
+
+- name: 'config用ディレクトリを掘る'
+  become: true
+  become_user: agent
+  ansible.builtin.file:
+    path: ~/.config/opencode
+    state: "directory"
+    recurse: true
+    owner: agent
+    mode: "0755"
+
+- name: '上書き用ユニットファイルを置く'
+  become: true
+  become_user: agent
+  ansible.builtin.template:
+    src: config.json.j2
+    dest: ~/.config/opencode/config.json
+
+- name: 'デフォルトのAGENTS設定を置く'
+  become: true
+  become_user: agent
+  ansible.builtin.copy:
+    src: AGENTS.md
+    dest: ~/.config/opencode/AGENTS.md
+
+- name: 'モデルをダウンロード'
+  ansible.builtin.shell:
+    cmd: 'OLLAMA_HOST={{ ansible_default_ipv4.address }} ollama pull {{ item.name }}'
+  with_items: '{{ required_models }}'
+

@@ -5,23 +5,24 @@
       "npm": "@ai-sdk/openai-compatible",
       "name": "Ollama (local)",
       "options": {
-        "baseURL": "http://192.168.20.17:11434/v1"
+        "baseURL": "http://{{ ansible_default_ipv4.address }}:11434/v1"
       },
       "models": {
         "gpt-oss:120b": {
-          "name": "gpt-oss:120b",
-          "tools": true
+          "name": "gpt-oss:120b-32k",
+          "tools": true,
+          "num_ctx": 32768
         },
         "gpt-oss:20b": {
-          "name": "gpt-oss:20b",
+          "name": "gpt-oss:20b-32k",
           "tools": true,
-          "num_ctx": 16384
+          "num_ctx": 32768
         }
       }
     }
   },
 
-  "model": "ollama/gpt-oss:20b",
+  "model": "ollama/gpt-oss:120b",
 
   "agent": {
     "build": {

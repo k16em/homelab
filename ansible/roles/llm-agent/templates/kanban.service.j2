@@ -1,0 +1,17 @@
+[Unit]
+Description=Vibe Kanban
+After=network.target
+
+[Service]
+Type=simple
+User=agent
+Group=agent
+WorkingDirectory=/home/agent
+Environment="PORT=28080"
+Environment="HOST={{ ansible_default_ipv4.address }}"
+ExecStart=npx vibe-kanban
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+

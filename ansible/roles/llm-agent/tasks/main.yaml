@@ -43,3 +43,16 @@
     cmd: 'OLLAMA_HOST={{ ansible_default_ipv4.address }} ollama pull {{ item.name }}'
   with_items: '{{ required_models }}'
 
+- name: 'vibe-kanbanのunitファイルを置く'
+  become: true
+  ansible.builtin.template:
+    src: kanban.service.j2
+    dest: /etc/systemd/system/vibe-kanban.service
+
+- name: 'vibe-kanban.serviceを有効化'
+  become: true
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    name: vibe-kanban
+

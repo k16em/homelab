@@ -84,25 +84,55 @@
     name: reverse-proxy
     state: present
 
+- name: 'docker ディレクトリを掘る'
+  become: true
+  become_user: webui
+  ansible.builtin.file:
+    path: ~/docker
+    state: directory
+    recurse: true
+    owner: webui
+    mode: 755
+
+- name: 'docker/nginx ディレクトリを掘る'
+  become: true
+  become_user: webui
+  ansible.builtin.file:
+    path: ~/docker/nginx
+    state: directory
+    recurse: true
+    owner: webui
+    mode: 755
+
+- name: 'docker/nginx/conf.d ディレクトリを掘る'
+  become: true
+  become_user: webui
+  ansible.builtin.file:
+    path: ~/docker/nginx/conf.d
+    state: directory
+    recurse: true
+    owner: webui
+    mode: 755
+
 - name: 'compose.yamlを置く'
   become: true
   become_user: webui
   ansible.builtin.template:
     src: compose.yaml.j2
-    dest: ~/compose.yaml
+    dest: ~/docker/compose.yaml
 
 - name: 'nginx.confを置く'
   become: true
   become_user: webui
   ansible.builtin.template:
     src: nginx.conf.j2
-    dest: ~/nginx.conf
+    dest: ~/docker/nginx/nginx.conf
 
 - name: 'docker compose up -d'
   become: true
   become_user: webui
   community.docker.docker_compose_v2:
-    project_src: ~/
+    project_src: ~/docker
     state: "present"
   register: webui_status
 

@@ -15,6 +15,27 @@ services:
     networks:
       - reverse-proxy
 
+  nginx:
+    image: nginx:latest
+    volumes:
+      - type: bind
+        source: ./nginx.conf
+        target: /etc/nginx/nginx.conf
+        read_only: true
+      - type: bind
+        source: ./conf.d
+        target: /etc/nginx/conf.d
+        read_only: true
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - reverse-proxy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - webui
+
 networks:
   reverse-proxy:
     external: true

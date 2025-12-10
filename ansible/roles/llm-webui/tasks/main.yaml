@@ -91,6 +91,13 @@
     src: compose.yaml.j2
     dest: ~/compose.yaml
 
+- name: 'nginx.confを置く'
+  become: true
+  become_user: webui
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: ~/nginx.conf
+
 - name: 'docker compose up -d'
   become: true
   become_user: webui

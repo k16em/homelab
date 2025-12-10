@@ -3,7 +3,7 @@ services:
     image: ghcr.io/open-webui/open-webui:main
     volumes:
       - type: bind
-        source: ./.open-webui
+        source: ~/.open-webui
         target: /app/backend/data
     environment:
       OLLAMA_BASE_URL: http://{{ ansible_default_ipv4.address }}:11434
@@ -19,11 +19,11 @@ services:
     image: nginx:latest
     volumes:
       - type: bind
-        source: ./docker/nginx/nginx.conf
+        source: ./nginx/nginx.conf
         target: /etc/nginx/nginx.conf
         read_only: true
       - type: bind
-        source: ./docker/nginx/conf.d
+        source: ./nginx/conf.d
         target: /etc/nginx/conf.d
         read_only: true
     ports:

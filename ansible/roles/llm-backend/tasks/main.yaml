@@ -35,7 +35,7 @@
     state: "directory"
     recurse: true
     owner: llm
-    mode: 755
+    mode: '0755'
 
 - name: 'モデル用ディレクトリを掘る'
   become: true
@@ -45,7 +45,7 @@
     state: "directory"
     recurse: true
     owner: llm
-    mode: 755
+    mode: '0755'
 
 - name: 'ollamaの設定を上書きする用のディレクトリを作成する'
   become: true
@@ -54,7 +54,7 @@
     state: "directory"
     recurse: true
     owner: llm
-    mode: 755
+    mode: '0755'
 
 - name: '上書き用ユニットファイルを置く'
   become: true

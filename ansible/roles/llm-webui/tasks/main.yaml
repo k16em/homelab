@@ -29,7 +29,7 @@
     state: "directory"
     recurse: true
     owner: webui
-    mode: 755
+    mode: '0755'
 
 - name: 'systemd用ディレクトリを掘る'
   become: true
@@ -39,7 +39,7 @@
     state: "directory"
     recurse: true
     owner: webui
-    mode: 755
+    mode: '0755'
 
 - name: 'MCPのconfigを置く'
   become: true
@@ -92,7 +92,7 @@
     state: directory
     recurse: true
     owner: webui
-    mode: 755
+    mode: '0755'
 
 - name: 'docker/nginx ディレクトリを掘る'
   become: true
@@ -102,7 +102,7 @@
     state: directory
     recurse: true
     owner: webui
-    mode: 755
+    mode: '0755'
 
 - name: 'docker/nginx/conf.d ディレクトリを掘る'
   become: true
@@ -112,7 +112,7 @@
     state: directory
     recurse: true
     owner: webui
-    mode: 755
+    mode: '0755'
 
 - name: 'compose.yamlを置く'
   become: true

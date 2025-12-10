@@ -78,6 +78,12 @@
     enabled: true
     name: docker
 
+- name: 'reverse-proxy Dockerネットワークを作成する'
+  become: true
+  community.docker.docker_network:
+    name: reverse-proxy
+    state: present
+
 - name: 'compose.yamlを置く'
   become: true
   become_user: webui

@@ -8,7 +8,7 @@ User=agent
 Group=agent
 WorkingDirectory=/home/agent
 Environment="PORT=28080"
-Environment="HOST={{ ansible_default_ipv4.address }}"
+Environment="HOST=0.0.0.0"
 ExecStart=npx vibe-kanban
 Restart=on-failure
 

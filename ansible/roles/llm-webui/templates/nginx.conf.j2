@@ -16,19 +16,6 @@ http {
     access_log  /var/log/nginx/access.log  main;
     sendfile        on;
     keepalive_timeout  65;
-    include /etc/nginx/conf.d/*.conf;
-
-    server {
-        listen 443 ssl;
-        server_name webui.evox2.pv.tk.local.k16em.net;
-        return 301 http://$host$request_uri;
-    }
-
-    server {
-        listen 443 ssl;
-        server_name kanban.evox2.pv.tk.local.k16em.net;
-        return 301 http://$host$request_uri;
-    }
 
     server {
         listen 80;
@@ -55,4 +42,6 @@ http {
             proxy_set_header Connection "";
         }
     }
+
+    include /etc/nginx/conf.d/*.conf;
 }

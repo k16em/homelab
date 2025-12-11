@@ -19,6 +19,18 @@ http {
     include /etc/nginx/conf.d/*.conf;
 
     server {
+        listen 443 ssl;
+        server_name webui.evox2.pv.tk.local.k16em.net;
+        return 301 http://$host$request_uri;
+    }
+
+    server {
+        listen 443 ssl;
+        server_name kanban.evox2.pv.tk.local.k16em.net;
+        return 301 http://$host$request_uri;
+    }
+
+    server {
         listen 80;
         server_name webui.evox2.pv.tk.local.k16em.net;
         location / {

@@ -21,6 +21,12 @@
     append: yes
     password: "{{ vault_maintainer_password | password_hash('sha512') }}"
 
+- name: 'uv用ディレクトリの存在確認'
+  become: true
+  ansible.builtin.stat:
+    path: /home/webui/.open-webui
+  register: open_webui_dir
+
 - name: 'uv用ディレクトリを掘る'
   become: true
   become_user: webui
@@ -29,7 +35,8 @@
     state: "directory"
     recurse: true
     owner: webui
-    mode: 755
+    mode: '0755'
+  when: not open_webui_dir.stat.exists
 
 - name: 'systemd用ディレクトリを掘る'
   become: true
@@ -39,7 +46,7 @@
     state: "directory"
     recurse: true
     owner: webui
-    mode: 755
+    mode: '0755'
 
 - name: 'MCPのconfigを置く'
   become: true
@@ -78,18 +85,28 @@
     enabled: true
     name: docker
 
+- name: 'docker ディレクトリを掘る'
+  become: true
+  become_user: webui
+  ansible.builtin.file:
+    path: ~/docker
+    state: directory
+    recurse: true
+    owner: webui
+    mode: '0755'
+
 - name: 'compose.yamlを置く'
   become: true
   become_user: webui
   ansible.builtin.template:
     src: compose.yaml.j2
-    dest: ~/compose.yaml
+    dest: ~/docker/compose.yaml
 
 - name: 'docker compose up -d'
   become: true
   become_user: webui
   community.docker.docker_compose_v2:
-    project_src: ~/
+    project_src: ~/docker
     state: "present"
   register: webui_status
 

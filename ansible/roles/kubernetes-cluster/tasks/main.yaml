@@ -90,12 +90,41 @@
     src: 99-sysctl.conf
     dest: /etc/sysctl.d/99-sysctl.conf
 
+- name: 'swap-swapfile.swapを無効化'
+  become: true
+  ansible.builtin.systemd:
+    state: stopped
+    enabled: false
+    masked: true
+    name: swap-swapfile.swap
+
+- name: "/etc/containerdを掘る"
+  become: true
+  ansible.builtin.file:
+    path: /etc/containerd
+    state: directory
+    mode: '0755'
+
+- name: "containerdのデフォルト設定を生成する"
+  become: true
+  ansible.builtin.shell:
+    cmd: containerd config default > /etc/containerd/config.toml
+    creates: /etc/containerd/config.toml
+
+- name: "SystemdCgroupを有効化する"
+  become: true
+  ansible.builtin.replace:
+    path: /etc/containerd/config.toml
+    regexp: '(\s+)SystemdCgroup = false'
+    replace: '\1SystemdCgroup = true'
+
 - name: 'containerd.serviceを有効化'
   become: true
   ansible.builtin.systemd:
     state: started
     enabled: true
     name: containerd
+    daemon_reload: true
 
 - name: 'kubelet.serviceを有効化'
   become: true

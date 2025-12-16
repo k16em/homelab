@@ -52,7 +52,15 @@
 - name: 'prometheus-node-exporterを有効化'
   become: true
   ansible.builtin.systemd:
-    state: started
-    enabled: true
+    state: stopped
+    enabled: false
     name: prometheus-node-exporter
+
+- name: "systemd-resolvedと共存する設定"
+  become: true
+  ansible.builtin.file:
+    src: /run/systemd/resolve/stub-resolv.conf
+    dest: /etc/resolv.conf
+    state: link
+    force: true
 

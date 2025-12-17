@@ -1,0 +1,33 @@
+remotecfg {
+	url            = "{{ cfg.remotecfg.url }}"
+	id             = "{{ id }}"
+	poll_frequency = "60s"
+
+	basic_auth {
+		username = "{{ cfg.remotecfg.username }}"
+		password = sys.env("GCLOUD_RW_API_KEY")
+	}
+}
+
+prometheus.remote_write "metrics_service" {
+	endpoint {
+		url = "{{ cfg.prometheus.url }}"
+
+		basic_auth {
+			username = "{{ cfg.prometheus.username }}"
+			password = sys.env("GCLOUD_RW_API_KEY")
+		}
+	}
+}
+
+loki.write "grafana_cloud_loki" {
+	endpoint {
+		url = "{{ cfg.loki.url }}"
+
+		basic_auth {
+			username = "{{ cfg.loki.username }}"
+			password = sys.env("GCLOUD_RW_API_KEY")
+		}
+	}
+}
+

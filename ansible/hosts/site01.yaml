@@ -22,8 +22,6 @@ all:
                 192.168.30.92:
             archarm:
               hosts:
-                192.168.30.20:
-                192.168.30.21:
 
         lxc:
           hosts:
@@ -61,11 +59,9 @@ all:
 
         grafana:
           hosts:
-            192.168.30.20:
 
         jenkins:
           hosts:
-            192.168.30.21:
 
         dns:
           hosts:

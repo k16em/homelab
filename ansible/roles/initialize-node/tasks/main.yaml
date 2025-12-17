@@ -64,3 +64,41 @@
     state: link
     force: true
 
+- name: 'Grafana Alloyを追加する'
+  kewlfft.aur.aur:
+    name: 'grafana-alloy-bin'
+    state: present
+
+- name: 'Alloyの設定を置く'
+  become: true
+  ansible.builtin.template:
+    src: config.alloy.j2
+    dest: /etc/alloy/config.alloy
+  vars:
+    id: "homelab"
+    cfg: "{{ vault_alloy_homelab }}"
+
+- name: 'alloyの設定を上書きする用のディレクトリを作成する'
+  become: true
+  ansible.builtin.file:
+    path: /etc/systemd/system/alloy.service.d
+    state: "directory"
+    recurse: true
+    mode: '0755'
+
+- name: '上書き用ユニットファイルを置く'
+  become: true
+  ansible.builtin.template:
+    src: alloy-override.j2
+    dest: /etc/systemd/system/alloy.service.d/override.conf
+  vars:
+    cfg: "{{ vault_alloy_homelab }}"
+
+- name: 'alloy.serviceを有効化'
+  become: true
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    name: alloy
+    daemon_reload: true
+

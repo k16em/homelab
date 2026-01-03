@@ -53,3 +53,6 @@ kubernetes02:
 private01:
 	ansible-playbook -i ./hosts/site01-private.yaml -i conf ./services/llm.yaml --vault-password-file ~/ansible/.vault_pass
 
+private02:
+	ansible-playbook -i ./hosts/site02-private.yaml -i conf ./services/all.yaml --vault-password-file ~/ansible/.vault_pass
+

@@ -28,11 +28,11 @@ servers:
   - name: tkpve-kube-nd01
     address: "192.168.30.92"
   - name: iwpve-kube-cp01
-    address: "192.168.32.90"
+    address: "192.168.64.90"
   - name: iwpve-kube-nd01
-    address: "192.168.32.91"
+    address: "192.168.64.91"
   - name: iwpve-kube-nd02
-    address: "192.168.32.92"
+    address: "192.168.64.92"
 
 master_servers:
   - name: tkpve-kube-cp01
@@ -40,5 +40,5 @@ master_servers:
   - name: tkpve-kube-cp02
     address: "192.168.30.91"
   - name: iwpve-kube-cp01
-    address: "192.168.32.90"
+    address: "192.168.64.90"
 

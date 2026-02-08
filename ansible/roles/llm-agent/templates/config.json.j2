@@ -17,12 +17,17 @@
           "name": "gpt-oss:20b-32k",
           "tools": true,
           "num_ctx": 32768
+        },
+        "glm-4.7-flash:latest": {
+          "name": "glm-4.7-flash:latest",
+          "tools": true,
+          "num_ctx": 32768
         }
       }
     }
   },
 
-  "model": "ollama/gpt-oss:120b",
+  "model": "ollama/glm-4.7-flash:latest",
 
   "agent": {
     "build": {

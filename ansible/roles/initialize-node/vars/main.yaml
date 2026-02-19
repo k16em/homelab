@@ -13,6 +13,7 @@ base_packages:
   - name: python-setuptools
   - name: rsync
   - name: prometheus-node-exporter
+  - name: libfido2
 
 authorized_keys:
   - key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH1+DvxUVbKQVrRsRhZEX/aqdox/MU3nC9bqmJBDz+by homelab
@@ -26,4 +27,6 @@ authorized_keys:
   - key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJGuiuJAh/R4P13e05iv8rKMJx5Pn/KpqoMxG7eD4sQ5 kisaragi
   - key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM4wGS5GSUvjG98Nr0pk6tmNijrkifXyTgRuIpmkkzTc tk-jenkins
   - key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBMwdB00ST3GUUpKORPV1DACqctIlLK0/dZ0kAQESIyW hb-mjr
+  - key: sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIKz6xBA0tJmdVbRoayRckgtjLFdCh8lwe1IX+MKg910rAAAABHNzaDo= yk5a01
+  - key: sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIORdMJ0PR+XdT/GYpDUMF5ZNLLKjGKMyOzfWpPp9FlWOAAAABHNzaDo= yk5c01
 

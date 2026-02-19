@@ -23,5 +23,6 @@
     dest: ~/.ssh/conf.d/{{ item.prefix }}
   with_items: 
   - { prefix: "tk", hosts: "{{site01}}", bastion: "{{vault_facing_bastion}}" }
+  - { prefix: "tk-pv", hosts: "{{site01p}}", bastion: "{{vault_facing_bastion}}" }
   - { prefix: "iw", hosts: "{{site02}}", bastion: "{{vault_facing_bastion}}" }
 

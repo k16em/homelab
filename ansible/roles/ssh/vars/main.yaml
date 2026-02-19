@@ -1,9 +1,11 @@
 ---
 site01:
-  - name: worker01
-    address: 192.168.30.16
   - name: pihole01
     address: 192.168.30.3
+
+site01p:
+  - name: worker01
+    address: 192.168.20.18
 
 site02:
   - name: pihole01

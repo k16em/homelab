@@ -26,7 +26,7 @@ required_packages:
 
 required_aur_packages:
   - name: zluda
-  - name: "llama.cpp-vulkan"
+  - name: "llama.cpp-hip"
   - name: python-primp
   - name: python-duckduckgo-search
   - name: python-whisper

@@ -10,7 +10,3 @@
   roles:
     - llm-webui
 
-- hosts: agent
-  roles:
-    - llm-agent
-

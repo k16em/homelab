@@ -1,0 +1,7 @@
+---
+- hosts: search
+  roles:
+    #- upgrade-packages
+    #- initialize-node
+    - searxng
+

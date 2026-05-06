@@ -1,0 +1,21 @@
+healthCheckTimeout: 300
+
+models:
+  "glm-4.7-flash-bf16":
+    env:
+      - "HSA_OVERRIDE_GFX_VERSION=11.5.1"
+      - "HSA_ENABLE_SDMA=0"
+      - "ROCBLAS_USE_HIPBLASLT=1"
+    cmd: |
+      /usr/bin/llama-server
+      -m /var/lib/models/GLM-4.7-Flash-BF16-00001-of-00002.gguf
+      --port ${PORT}
+      -ngl 99
+      -c 32768
+      --no-mmap
+      --temp 1.0
+      --top-p 0.95
+      --min-p 0.01
+      --repeat-penalty 1.0
+    ttl: 600
+

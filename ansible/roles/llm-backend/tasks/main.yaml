@@ -18,32 +18,48 @@
     name: llm
     state: present
 
-- name: 'llm用のユーザを作成する'
-  become: true
-  ansible.builtin.user:
-    name: llm
-    shell: /usr/bin/zsh
-    groups: llm,docker
-    append: yes
-    password: "{{ vault_maintainer_password | password_hash('sha512') }}"
-
-- name: 'systemd用ディレクトリを掘る'
-  become: true
-  become_user: llm
-  ansible.builtin.file:
-    path: ~/.config/systemd/user
-    state: "directory"
-    recurse: true
-    owner: llm
-    mode: '0755'
-
 - name: 'モデル用ディレクトリを掘る'
   become: true
-  become_user: llm
   ansible.builtin.file:
-    path: ~/models
+    path: /var/lib/models
+    state: directory
+    owner: root
+    group: llm
+    mode: '2750'
+
+- name: 'llama-swapのサービスユニットファイルを上書きする用のディレクトリを作成する'
+  become: true
+  ansible.builtin.file:
+    path: /etc/systemd/system/llama-swap.service.d/
     state: "directory"
     recurse: true
-    owner: llm
     mode: '0755'
+
+- name: 'llama-swapの上書き用ユニットファイルを置く'
+  become: true
+  ansible.builtin.template:
+    src: llama-swap.override.conf.j2
+    dest: /etc/systemd/system/llama-swap.service.d/override.conf
+
+- name: 'llama-swap.serviceを有効化'
+  become: true
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    name: llama-swap
+
+- name: 'llama-swapの設定用ディレクトリを掘る'
+  become: true
+  ansible.builtin.file:
+    path: /etc/llama-swap/
+    state: directory
+    owner: root
+    mode: '0755'
+
+- name: 'llama-swapの設定ファイルを置く'
+  become: true
+  ansible.builtin.template:
+    src: llama-swap.config.yaml.j2
+    dest: /etc/llama-swap/config.yaml
+    mode: '0644'
 

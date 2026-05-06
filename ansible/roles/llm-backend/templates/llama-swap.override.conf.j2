@@ -1,0 +1,6 @@
+[Service]
+ExecStart=
+ExecStart=/usr/bin/llama-swap -config %E/llama-swap/config.yaml -watch-config -listen {{ ansible_default_ipv4.address }}:12434
+BindReadOnlyPaths=/var/lib/models
+SupplementaryGroups=llm
+

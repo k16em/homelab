@@ -7,9 +7,6 @@ required_packages:
   - name: rocm-opencl-sdk
   - name: python
   - name: huggingface
-  - name: ollama
-  - name: ollama-rocm
-  - name: ollama-vulkan
   - name: gperftools
   - name: bc
   - name: python-pytorch-opt-rocm
@@ -27,12 +24,10 @@ required_packages:
 required_aur_packages:
   - name: zluda
   - name: "llama.cpp-hip"
+  - name: llama-swap
   - name: python-primp
   - name: python-duckduckgo-search
   - name: python-whisper
   - name: python310
   - name: python311
-
-required_models:
-  - name: gpt-oss:20b
 

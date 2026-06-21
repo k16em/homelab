@@ -20,6 +20,9 @@ kubernetes01:
 worker01p:
 	ansible-playbook -i ./hosts/site01-private.yaml -i conf ./services/worker.yaml --vault-password-file ~/ansible/.vault_pass
 
+hermes01p:
+	ansible-playbook -i ./hosts/site01-private.yaml -i conf ./services/hermes.yaml --vault-password-file ~/ansible/.vault_pass
+
 search01p:
 	ansible-playbook -i ./hosts/site01-private.yaml -i conf ./services/search.yaml --vault-password-file ~/ansible/.vault_pass
 

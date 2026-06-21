@@ -1,8 +1,8 @@
 ---
-- hosts: bastion
+- hosts: hermes
   roles:
     - upgrade-packages
     - initialize-node
-    - ssh
-    - tailscale
+    - add-worker
+    - hermes
 

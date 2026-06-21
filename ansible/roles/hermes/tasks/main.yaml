@@ -1,0 +1,38 @@
+---
+- name: '必要なパッケージを追加する'
+  become: true
+  community.general.pacman:
+    name: '{{ item.name }}'
+    state: installed
+  with_items: '{{ required_packages }}'
+
+- name: '必要なAURパッケージを追加する'
+  kewlfft.aur.aur:
+    name: '{{ item.name }}'
+    state: present
+  with_items: '{{ required_aur_packages }}'
+
+- name: 'hermes用のユーザを作成する'
+  become: true
+  ansible.builtin.user:
+    name: hermes
+    shell: /usr/bin/zsh
+    password: "{{ vault_maintainer_password | password_hash('sha512') }}"
+
+- name: 'config用ディレクトリを掘る'
+  become: true
+  become_user: hermes
+  ansible.builtin.file:
+    path: ~/.config/opencode
+    state: "directory"
+    recurse: true
+    owner: hermes
+    mode: "0755"
+
+- name: '上書き用ユニットファイルを置く'
+  become: true
+  become_user: hermes
+  ansible.builtin.template:
+    src: config.json.j2
+    dest: ~/.config/opencode/config.json
+

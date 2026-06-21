@@ -1,0 +1,47 @@
+{- INSERT --
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "llama.cpp": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "llama-swap(tk)",
+      "options": {
+        "baseURL": "http://{{vault_local_llm_ip}}:12434/v1"
+      },
+      "models": {
+        "glm-4.7-flash-bf16": {
+          "name": "glm-4.7-flash-bf16",
+          "tools": true
+        },
+        "Qwen3-Coder-Next-Q4_K_M": {
+          "name": "Qwen3-Coder-Next-Q4_K_M",
+          "tools": true
+        }
+      }
+    }
+  },
+
+  "model": "Qwen3-Coder-Next-Q4_K_M",
+
+  "agent": {
+    "build": {
+      "description": "Default coding mode with only OpenCode tools.",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true,
+        "grep": true,
+        "glob": true,
+        "list": true,
+        "webfetch": true,
+        "patch": true,
+        "todoread": true,
+        "todowrite": true
+      },
+      "prompt": "{file:./AGENTS.md}"
+    }
+  },
+
+  "instructions": ["AGENTS.md"]
+}
+

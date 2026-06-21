@@ -1,0 +1,7 @@
+---
+required_packages:
+  - name: opencode
+
+required_aur_packages:
+  - name: hermes-agent
+

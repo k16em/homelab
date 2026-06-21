@@ -37,6 +37,10 @@
   with_items: '{{ worker_packages }}'
   when: "'worker' in group_names"
 
+- name: 'rustのdefaultをstableに設定'
+  ansible.builtin.shell:
+    cmd: 'rustup default stable'
+
 - name: 'workerに必要なAURパッケージを追加する'
   kewlfft.aur.aur:
     name: '{{ item.name }}'

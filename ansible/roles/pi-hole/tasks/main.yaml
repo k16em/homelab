@@ -14,19 +14,19 @@
   kewlfft.aur.aur:
     name:
       - pi-hole-web
-    state: present
+    state: latest
 
 - name: 'pi-hole-ftlをインストール'
   kewlfft.aur.aur:
     name:
       - pi-hole-ftl
-    state: present
+    state: latest
 
 - name: 'pi-hole-coreをインストール'
   kewlfft.aur.aur:
     name:
       - pi-hole-core
-    state: present
+    state: latest
 
 - name: 'pihole-FTL.serviceを有効化'
   become: true

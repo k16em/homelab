@@ -1,8 +1,0 @@
----
-required_aur_packages:
-  - name: opencode-bin
-
-required_models:
-  - name: gpt-oss:20b
-  - name: gpt-oss:120b
-

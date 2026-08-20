@@ -1,7 +1,16 @@
 ---
 required_packages:
-  - name: opencode
+  - name: ripgrep
+  - name: ffmpeg
+  - name: nss
+  - name: at-spi2-core
+  - name: cups
+  - name: libdrm
+  - name: libxkbcommon
+  - name: mesa
+  - name: pango
+  - name: cairo
+  - name: alsa-lib
 
 required_aur_packages:
-  - name: hermes-agent
-
+  - name: python311

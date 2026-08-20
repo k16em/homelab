@@ -1,26 +1,21 @@
-{- INSERT --
+{
   "$schema": "https://opencode.ai/config.json",
   "provider": {
-    "llama.cpp": {
+    "{{ opencode_provider_id }}": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "llama-swap(tk)",
+      "name": "{{ opencode_provider_name }}",
       "options": {
-        "baseURL": "http://{{vault_local_llm_ip}}:12434/v1"
+        "baseURL": "{{ opencode_base_url }}"
       },
       "models": {
-        "glm-4.7-flash-bf16": {
-          "name": "glm-4.7-flash-bf16",
-          "tools": true
-        },
-        "Qwen3-Coder-Next-Q4_K_M": {
-          "name": "Qwen3-Coder-Next-Q4_K_M",
-          "tools": true
-        }
+{% for model in vault_llama_swap_models | selectattr('opencode', 'defined') %}
+        "{{ model.name }}": {{ {'name': model.name} | combine(model.opencode) | to_json }}{{ "," if not loop.last else "" }}
+{% endfor %}
       }
     }
   },
 
-  "model": "glm-4.7-flash-bf16",
+  "model": "{{ opencode_default_model }}",
 
   "agent": {
     "build": {
@@ -44,4 +39,3 @@
 
   "instructions": ["AGENTS.md"]
 }
-

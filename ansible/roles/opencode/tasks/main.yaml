@@ -1,0 +1,40 @@
+---
+- name: '必要なパッケージを追加する'
+  become: true
+  community.general.pacman:
+    name: '{{ item.name }}'
+    state: installed
+  with_items: '{{ opencode_packages }}'
+
+- name: 'config用ディレクトリを掘る'
+  become: true
+  become_user: '{{ opencode_user }}'
+  ansible.builtin.file:
+    path: ~/.config/opencode
+    state: "directory"
+    owner: '{{ opencode_user }}'
+    mode: "0755"
+
+- name: 'AGENTS設定が無ければ初期値を置く'
+  become: true
+  become_user: '{{ opencode_user }}'
+  ansible.builtin.copy:
+    src: AGENTS.md
+    dest: ~/.config/opencode/AGENTS.md
+    mode: "0644"
+    force: false
+
+- name: 'opencodeの設定ファイルを置く'
+  become: true
+  become_user: '{{ opencode_user }}'
+  ansible.builtin.template:
+    src: config.json.j2
+    dest: ~/.config/opencode/config.json
+    validate: '/usr/bin/python -c "import json, sys; json.load(open(sys.argv[1]))" %s'
+
+- name: '設定ファイルのパーミッションを揃える'
+  become: true
+  become_user: '{{ opencode_user }}'
+  ansible.builtin.file:
+    path: ~/.config/opencode/config.json
+    mode: "0644"

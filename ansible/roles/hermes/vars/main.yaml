@@ -1,5 +1,5 @@
 ---
-hermes_requirements_package:
+required_packages:
   - name: ripgrep
   - name: ffmpeg
   - name: nss
@@ -13,5 +13,5 @@ hermes_requirements_package:
   - name: cairo
   - name: alsa-lib
 
-hermes_requirements_aur_package:
+required_aur_packages:
   - name: python311

@@ -15,8 +15,6 @@
     owner: '{{ opencode_user }}'
     mode: "0755"
 
-# AGENTS.mdはホスト側で育てるものなので、無いときの初期値としてだけ置く。
-# force: false なので既にあれば内容・属性ともに一切触らない。
 - name: 'AGENTS設定が無ければ初期値を置く'
   become: true
   become_user: '{{ opencode_user }}'
@@ -26,9 +24,6 @@
     mode: "0644"
     force: false
 
-# modeは指定しない。validate併用時、copyモジュールは検証前に転送元の一時ファイルを
-# chmodしようとするが、その一時ファイルは接続ユーザ所有なのでbecome_userからは触れず
-# EPERMになる（copy.py: set_mode_if_different(src, mode)）。
 - name: 'opencodeの設定ファイルを置く'
   become: true
   become_user: '{{ opencode_user }}'
@@ -37,7 +32,6 @@
     dest: ~/.config/opencode/config.json
     validate: '/usr/bin/python -c "import json, sys; json.load(open(sys.argv[1]))" %s'
 
-# templateではmodeを指定できないので、パーミッションは別タスクで揃える。
 - name: '設定ファイルのパーミッションを揃える'
   become: true
   become_user: '{{ opencode_user }}'

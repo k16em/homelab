@@ -43,7 +43,3 @@ llama_swap_default_env:
   - 'HSA_OVERRIDE_GFX_VERSION=11.5.1'
   - 'HSA_ENABLE_SDMA=0'
   - 'ROCBLAS_USE_HIPBLASLT=1'
-
-# モデル定義は group_vars/all/vault の vault_llama_swap_models に置く。
-# opencodeにも出したいモデルには opencode: を足すこと（roles/opencode を参照）。
-# ロールの vars は group_vars より優先度が高いため、ここには書かないこと。

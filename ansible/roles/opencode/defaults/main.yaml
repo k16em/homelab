@@ -3,8 +3,6 @@ opencode_packages:
   - name: opencode
   - name: python
 
-# opencodeの設定を置く対象のユーザ。このロールはユーザを作らないので、
-# 呼び出し側のロールが作成済みのユーザ名を渡すこと。
 opencode_user: opencode
 
 opencode_provider_id: llama.cpp

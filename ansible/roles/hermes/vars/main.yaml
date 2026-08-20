@@ -3,7 +3,6 @@ required_packages:
   - name: ripgrep
   - name: ffmpeg
   - name: nss
-  # atkは単体パッケージが無く、at-spi2-coreがprovidesしているだけなので入れない
   - name: at-spi2-core
   - name: cups
   - name: libdrm

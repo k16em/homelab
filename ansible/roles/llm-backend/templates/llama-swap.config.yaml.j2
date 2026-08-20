@@ -1,39 +1,19 @@
-healthCheckTimeout: 300
+healthCheckTimeout: {{ llama_swap_health_check_timeout }}
 
 models:
-  "glm-4.7-flash-bf16":
+{% for model in vault_llama_swap_models %}
+  "{{ model.name }}":
     env:
-      - "HSA_OVERRIDE_GFX_VERSION=11.5.1"
-      - "HSA_ENABLE_SDMA=0"
-      - "ROCBLAS_USE_HIPBLASLT=1"
+{% for env in model.env | default(llama_swap_default_env) %}
+      - "{{ env }}"
+{% endfor %}
     cmd: |
-      /usr/bin/llama-server
-      -m /var/lib/models/GLM-4.7-Flash-BF16-00001-of-00002.gguf
+      {{ llama_swap_bin }}
+      -m {{ llama_swap_models_dir }}/{{ model.file }}
       --port ${PORT}
-      -ngl 99
-      -c 32768
-      --no-mmap
-      --temp 1.0
-      --top-p 0.95
-      --min-p 0.01
-      --repeat-penalty 1.0
-    ttl: 600
+{{ model.args | indent(6, first=True) }}
+    ttl: {{ model.ttl | default(llama_swap_default_ttl) }}
+{% if not loop.last %}
 
-  "Qwen3-Coder-Next-Q4_K_M":
-    env:
-      - "HSA_OVERRIDE_GFX_VERSION=11.5.1"
-      - "HSA_ENABLE_SDMA=0"
-      - "ROCBLAS_USE_HIPBLASLT=1"
-    cmd: |
-      /usr/bin/llama-server
-      -m /var/lib/models/Qwen3-Coder-Next-Q4_K_M.gguf
-      --port ${PORT}
-      -ngl 99
-      -c 32768
-      --no-mmap
-      --temp 1.0
-      --top-p 0.95
-      --min-p 0.01
-      --repeat-penalty 1.0
-    ttl: 600
-
+{% endif %}
+{% endfor %}

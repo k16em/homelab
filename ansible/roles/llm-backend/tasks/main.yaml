@@ -21,7 +21,7 @@
 - name: 'モデル用ディレクトリを掘る'
   become: true
   ansible.builtin.file:
-    path: /var/lib/models
+    path: '{{ llama_swap_models_dir }}'
     state: directory
     owner: root
     group: llm
@@ -46,12 +46,13 @@
   ansible.builtin.systemd:
     state: started
     enabled: true
+    daemon_reload: true
     name: llama-swap
 
 - name: 'llama-swapの設定用ディレクトリを掘る'
   become: true
   ansible.builtin.file:
-    path: /etc/llama-swap/
+    path: '{{ llama_swap_config_dir }}'
     state: directory
     owner: root
     mode: '0755'
@@ -60,6 +61,7 @@
   become: true
   ansible.builtin.template:
     src: llama-swap.config.yaml.j2
-    dest: /etc/llama-swap/config.yaml
+    dest: '{{ llama_swap_config_dir }}/config.yaml'
     mode: '0644'
+    validate: '/usr/bin/python -c "import yaml, sys; yaml.safe_load(open(sys.argv[1]))" %s'
 

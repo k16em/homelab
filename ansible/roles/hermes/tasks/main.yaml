@@ -1,9 +1,16 @@
 ---
+- name: '必要なパッケージを追加する'
+  become: true
+  community.general.pacman:
+    name: '{{ item.name }}'
+    state: installed
+  with_items: '{{ hermes_requirements_package }}'
+
 - name: '必要なAURパッケージを追加する'
   kewlfft.aur.aur:
     name: '{{ item.name }}'
     state: present
-  with_items: '{{ required_aur_packages }}'
+  with_items: '{{ hermes_requirements_aur_package }}'
 
 - name: 'hermes用のユーザを作成する'
   become: true

@@ -1,3 +1,17 @@
 ---
-required_aur_packages:
-  - name: hermes-agent
+hermes_requirements_package:
+  - name: ripgrep
+  - name: ffmpeg
+  - name: nss
+  # atkは単体パッケージが無く、at-spi2-coreがprovidesしているだけなので入れない
+  - name: at-spi2-core
+  - name: cups
+  - name: libdrm
+  - name: libxkbcommon
+  - name: mesa
+  - name: pango
+  - name: cairo
+  - name: alsa-lib
+
+hermes_requirements_aur_package:
+  - name: python311

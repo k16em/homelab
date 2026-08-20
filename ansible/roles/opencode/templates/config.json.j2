@@ -1,0 +1,41 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "{{ opencode_provider_id }}": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "{{ opencode_provider_name }}",
+      "options": {
+        "baseURL": "{{ opencode_base_url }}"
+      },
+      "models": {
+{% for model in vault_llama_swap_models | selectattr('opencode', 'defined') %}
+        "{{ model.name }}": {{ {'name': model.name} | combine(model.opencode) | to_json }}{{ "," if not loop.last else "" }}
+{% endfor %}
+      }
+    }
+  },
+
+  "model": "{{ opencode_default_model }}",
+
+  "agent": {
+    "build": {
+      "description": "Default coding mode with only OpenCode tools.",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true,
+        "grep": true,
+        "glob": true,
+        "list": true,
+        "webfetch": true,
+        "patch": true,
+        "todoread": true,
+        "todowrite": true
+      },
+      "prompt": "{file:./AGENTS.md}"
+    }
+  },
+
+  "instructions": ["AGENTS.md"]
+}

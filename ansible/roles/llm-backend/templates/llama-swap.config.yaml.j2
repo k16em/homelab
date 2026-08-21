@@ -17,3 +17,16 @@ models:
 
 {% endif %}
 {% endfor %}
+{% set persistent_models = vault_llama_swap_models | selectattr('persistent', 'defined') | selectattr('persistent') | list %}
+{% if persistent_models %}
+
+groups:
+  persistent:
+    swap: false
+    exclusive: false
+    persistent: true
+    members:
+{% for model in persistent_models %}
+      - "{{ model.name }}"
+{% endfor %}
+{% endif %}

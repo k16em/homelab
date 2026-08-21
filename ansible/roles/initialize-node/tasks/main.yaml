@@ -49,13 +49,6 @@
     name: root
     password: "{{ vault_root_password | password_hash('sha512') }}"
 
-- name: 'prometheus-node-exporterを無効化'
-  become: true
-  ansible.builtin.systemd:
-    state: stopped
-    enabled: false
-    name: prometheus-node-exporter
-
 - name: "systemd-resolvedと共存する設定"
   become: true
   ansible.builtin.file:

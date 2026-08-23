@@ -1,8 +1,8 @@
 ---
 - hosts: bastion
   roles:
-    - upgrade-packages
     - initialize-node
+    - upgrade-packages
     - ssh
     - tailscale
 

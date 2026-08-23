@@ -1,6 +1,6 @@
 ---
 - hosts: grafana
   roles:
-    - upgrade-packages
     - initialize-node
+    - upgrade-packages
     - grafana

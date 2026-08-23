@@ -1,6 +1,6 @@
 ---
 - hosts: deployer
   roles:
-    - upgrade-packages
     - initialize-node
+    - upgrade-packages
     - deployer

@@ -1,8 +1,8 @@
 ---
 - hosts: llm
   roles:
-    - upgrade-packages
     - initialize-node
+    - upgrade-packages
     - add-worker
     - llm-backend
 

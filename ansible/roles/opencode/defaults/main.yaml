@@ -9,3 +9,4 @@ opencode_provider_id: llama.cpp
 opencode_provider_name: llama-swap(tk)
 opencode_base_url: 'http://{{ vault_local_llm_ip }}:12434/v1'
 opencode_default_model: '{{ opencode_provider_id }}/{{ vault_opencode_default_model }}'
+opencode_small_model: '{{ opencode_provider_id }}/{{ vault_opencode_small_model }}'

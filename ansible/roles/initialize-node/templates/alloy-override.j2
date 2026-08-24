@@ -1,4 +1,4 @@
 [Service]
 Environment=GCLOUD_RW_API_KEY={{ cfg.token }}
-Environment=GCLOUD_FM_COLLECTOR_ID=$(hostname -s)
-
+Environment=GCLOUD_FM_COLLECTOR_ID={{ ansible_hostname }}
+Environment=GCLOUD_OTLP_API_KEY={{ cfg.otlp_token }}

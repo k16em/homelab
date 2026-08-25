@@ -50,6 +50,10 @@ all:
           hosts:
             192.168.20.17:
 
+        llm-proxy:
+          hosts:
+            192.168.20.70:
+
         webui:
           hosts:
             192.168.20.17:

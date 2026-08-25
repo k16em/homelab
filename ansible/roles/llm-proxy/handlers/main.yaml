@@ -1,0 +1,7 @@
+---
+- name: 'llama-otel-proxyを再起動する'
+  become: true
+  ansible.builtin.systemd:
+    name: llama-otel-proxy
+    state: restarted
+    daemon_reload: true

@@ -1,0 +1,54 @@
+---
+- name: '必要なパッケージを追加する'
+  become: true
+  community.general.pacman:
+    name: '{{ item.name }}'
+    state: installed
+  with_items: '{{ required_packages }}'
+
+- name: 'PKGBUILDのclone先ディレクトリを掘る'
+  ansible.builtin.file:
+    path: ~/repos/github.com/k16em
+    state: directory
+    mode: '0755'
+
+- name: 'PKGBUILDをcloneする'
+  ansible.builtin.git:
+    repo: https://github.com/k16em/my-PKGBUILDs.git
+    dest: ~/repos/github.com/k16em/my-PKGBUILDs
+    version: main
+    force: true
+  register: pkgbuilds
+
+- name: 'llama-otel-proxyがインストール済みか確認する'
+  ansible.builtin.command:
+    cmd: 'pacman -Qq llama-otel-proxy-git'
+  register: llamaproxy_installed
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: 'llama-otel-proxyをビルドしてインストールする'
+  ansible.builtin.command:
+    cmd: 'makepkg --syncdeps --install --clean --force --holdver --noconfirm'
+    chdir: ~/repos/github.com/k16em/my-PKGBUILDs/llama-otel-proxy
+  when: pkgbuilds.changed or llamaproxy_installed.rc != 0
+  notify: 'llama-otel-proxyを再起動する'
+
+- name: 'llama-otel-proxyの設定ファイルを置く'
+  become: true
+  ansible.builtin.template:
+    src: config.yaml.j2
+    dest: /etc/llama-otel-proxy/config.yaml
+    owner: root
+    group: root
+    mode: '0600'
+  notify: 'llama-otel-proxyを再起動する'
+
+- name: 'llama-otel-proxy.serviceを有効化'
+  become: true
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    daemon_reload: true
+    name: llama-otel-proxy

@@ -10,3 +10,8 @@
   roles:
     - llm-webui
 
+- hosts: llm-proxy
+  roles:
+    - initialize-node
+    - upgrade-packages
+    - llm-proxy

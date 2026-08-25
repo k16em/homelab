@@ -15,14 +15,13 @@
     owner: '{{ opencode_user }}'
     mode: "0755"
 
-- name: 'AGENTS設定が無ければ初期値を置く'
+- name: 'AGENTS設定を置く'
   become: true
   become_user: '{{ opencode_user }}'
   ansible.builtin.copy:
     src: AGENTS.md
     dest: ~/.config/opencode/AGENTS.md
     mode: "0644"
-    force: false
 
 - name: 'opencodeの設定ファイルを置く'
   become: true

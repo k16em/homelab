@@ -1,0 +1,14 @@
+listen: {{ ansible_default_ipv4.address }}:8081
+upstream: http://{{ vault_local_llm_ip }}:12434
+sample_percent: 100
+model_in_span_name: true
+trust_incoming_trace_context: true
+max_concurrent_requests: 16
+max_concurrent_passthrough_requests: 128
+request_read_timeout: 30s
+session_idle_timeout: 5m
+
+otel:
+  service_name: llamaproxy
+  protocol: grpc
+  endpoint: http://127.0.0.1:4317

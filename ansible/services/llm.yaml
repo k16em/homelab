@@ -3,10 +3,17 @@
   roles:
     - initialize-node
     - upgrade-packages
+
+- hosts: llm-backend
+  roles:
     - add-worker
     - llm-backend
 
 - hosts: webui
   roles:
     - llm-webui
+
+- hosts: llm-proxy
+  roles:
+    - llm-proxy
 

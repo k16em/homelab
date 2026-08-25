@@ -47,8 +47,13 @@ all:
             192.168.20.60:
 
         llm:
-          hosts:
-            192.168.20.17:
+          children:
+            llm-backend:
+              hosts:
+                192.168.20.17:
+            llm-proxy:
+              hosts:
+                192.168.20.70:
 
         webui:
           hosts:

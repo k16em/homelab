@@ -3,6 +3,9 @@
   roles:
     - initialize-node
     - upgrade-packages
+
+- hosts: llm-backend
+  roles:
     - add-worker
     - llm-backend
 
@@ -12,6 +15,5 @@
 
 - hosts: llm-proxy
   roles:
-    - initialize-node
-    - upgrade-packages
     - llm-proxy
+

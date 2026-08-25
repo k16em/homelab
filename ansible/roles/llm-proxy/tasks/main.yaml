@@ -35,14 +35,35 @@
   when: pkgbuilds.changed or llamaproxy_installed.rc != 0
   notify: 'llama-otel-proxyを再起動する'
 
+- name: 'llamaproxyグループを作成する'
+  become: true
+  ansible.builtin.group:
+    name: llamaproxy
+    state: present
+
 - name: 'llama-otel-proxyの設定ファイルを置く'
   become: true
   ansible.builtin.template:
     src: config.yaml.j2
     dest: /etc/llama-otel-proxy/config.yaml
     owner: root
-    group: root
-    mode: '0600'
+    group: llamaproxy
+    mode: '0640'
+  notify: 'llama-otel-proxyを再起動する'
+
+- name: 'llama-otel-proxyのサービスユニットファイルを上書きする用のディレクトリを作成する'
+  become: true
+  ansible.builtin.file:
+    path: /etc/systemd/system/llama-otel-proxy.service.d/
+    state: directory
+    recurse: true
+    mode: '0755'
+
+- name: 'llama-otel-proxyの上書き用ユニットファイルを置く'
+  become: true
+  ansible.builtin.copy:
+    src: override.conf
+    dest: /etc/systemd/system/llama-otel-proxy.service.d/override.conf
   notify: 'llama-otel-proxyを再起動する'
 
 - name: 'llama-otel-proxy.serviceを有効化'

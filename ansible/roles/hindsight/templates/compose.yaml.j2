@@ -10,7 +10,7 @@ services:
       - "9999:9999"
     environment:
       HINDSIGHT_API_LLM_PROVIDER: openai
-      HINDSIGHT_API_LLM_BASE_URL: http://{{ vault_local_llm_ip }}:12434
+      HINDSIGHT_API_LLM_BASE_URL: http://{{ vault_local_llm_ip }}:12434/v1
       HINDSIGHT_API_LLM_API_KEY: dummy
       HINDSIGHT_API_LLM_MODEL: Ornith-1.5-9B-Q8_0
     restart: unless-stopped

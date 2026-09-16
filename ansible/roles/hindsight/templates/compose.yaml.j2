@@ -1,0 +1,21 @@
+services:
+  hindsight:
+    image: ghcr.io/vectorize-io/hindsight:latest
+    volumes:
+      - type: volume
+        source: hindsight-data
+        target: /home/hindsight/.pg0
+    ports:
+      - "8888:8888"
+      - "9999:9999"
+    environment:
+      HINDSIGHT_API_LLM_PROVIDER: openai
+      HINDSIGHT_API_LLM_BASE_URL: http://{{ vault_local_llm_ip }}:12434
+      HINDSIGHT_API_LLM_API_KEY: dummy
+      HINDSIGHT_API_LLM_MODEL: Ornith-1.5-9B-Q8_0
+    restart: unless-stopped
+
+volumes:
+  hindsight-data:
+    name: hindsight-data
+

@@ -26,6 +26,9 @@ hermes01p:
 search01p:
 	ansible-playbook -i ./hosts/site01-private.yaml -i conf ./services/search.yaml --vault-password-file ~/ansible/.vault_pass
 
+memory01p:
+	ansible-playbook -i ./hosts/site01-private.yaml -i conf ./services/memory.yaml --vault-password-file ~/ansible/.vault_pass
+
 all02:
 	ansible-playbook -i ./hosts/site02.yaml -i conf ./services/all.yaml --vault-password-file ~/ansible/.vault_pass
 

@@ -1,0 +1,7 @@
+---
+- hosts: memory
+  roles:
+    - initialize-node
+    - upgrade-packages
+    - hindsight
+

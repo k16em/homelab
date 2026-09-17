@@ -13,6 +13,9 @@ services:
       HINDSIGHT_API_LLM_BASE_URL: http://{{ vault_local_llm_ip }}:12434/v1
       HINDSIGHT_API_LLM_API_KEY: dummy
       HINDSIGHT_API_LLM_MODEL: Ornith-1.5-9B-Q8_0
+      HINDSIGHT_API_LLM_TIMEOUT: 1200
+      HINDSIGHT_API_LLM_MAX_CONCURRENT: 1
+      HINDSIGHT_API_LLM_MAX_RETRIES: 2
     restart: unless-stopped
 
 volumes:

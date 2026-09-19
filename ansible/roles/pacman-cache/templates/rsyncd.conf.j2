@@ -6,6 +6,6 @@ syslog facility = local5
 pid file = /run/rsyncd.pid
 
 [{{ ansible_facts['architecture'] }}]
-    path         = {{ pacman_cache_root }}/{{ ansible_facts['architecture'] }}
+    path         = {{ pacman_cache_root }}
     include      = **
     read only    = true

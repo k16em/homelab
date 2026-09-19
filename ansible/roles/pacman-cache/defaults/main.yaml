@@ -4,6 +4,6 @@ pacman_cache_package_manifest:
     - rsync
   aur: []
 
-pacman_cache_root: /home/sync/pacman
+pacman_cache_root: /var/cache/pacman/pkg
 pacman_cache_roles_path: '{{ role_path }}/..'
 pacman_cache_peer_servers: []

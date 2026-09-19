@@ -76,11 +76,17 @@
 - name: 'キャッシュ用のディレクトリを掘る'
   become: true
   ansible.builtin.file:
-    path: '{{ pacman_cache_root }}/{{ ansible_facts["architecture"] }}'
+    path: '{{ pacman_cache_root }}'
     state: directory
-    owner: sync
-    group: rsync
+    owner: root
+    group: root
     mode: '0755'
+
+- name: '旧キャッシュディレクトリを削除する'
+  become: true
+  ansible.builtin.file:
+    path: /home/sync/pacman
+    state: absent
 
 - name: '対向キャッシュの利用可否を確認する'
   ansible.builtin.command:
@@ -101,7 +107,7 @@
     mode: pull
     src: >-
       rsync://{{ item.item }}/{{ ansible_facts['architecture'] }}/
-    dest: '{{ pacman_cache_root }}/{{ ansible_facts["architecture"] }}/'
+    dest: '{{ pacman_cache_root }}/'
     rsync_opts:
       - --contimeout=3
       - --timeout=10
@@ -134,7 +140,7 @@
   ansible.builtin.command:
     argv: >-
       {{ ['pacman', '--sync', '--downloadonly', '--noconfirm', '--cachedir',
-          pacman_cache_root ~ '/' ~ ansible_facts['architecture']]
+          pacman_cache_root]
          + pacman_cache_repository_packages }}
   environment:
     LC_ALL: C

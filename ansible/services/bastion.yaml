@@ -1,8 +1,8 @@
 ---
 - hosts: bastion
+  serial: 1
   roles:
     - initialize-node
     - upgrade-packages
     - ssh
     - tailscale
-

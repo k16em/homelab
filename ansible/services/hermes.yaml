@@ -1,8 +1,8 @@
 ---
 - hosts: hermes
+  serial: 1
   roles:
     - initialize-node
     - upgrade-packages
     - add-worker
     - hermes
-

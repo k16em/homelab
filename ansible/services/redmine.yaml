@@ -1,5 +1,6 @@
 ---
 - hosts: redmine
+  serial: 1
   roles:
     - initialize-node
     - upgrade-packages

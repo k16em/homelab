@@ -1,7 +1,7 @@
 ---
 - hosts: worker
+  serial: 1
   roles:
     - initialize-node
     - upgrade-packages
     - add-worker
-

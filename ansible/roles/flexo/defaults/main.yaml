@@ -1,0 +1,9 @@
+---
+flexo_package_manifest:
+  repository:
+    - pacman-contrib
+  aur:
+    - flexo
+
+flexo_cache_migration_required: false
+flexo_cache_migration_marker: /var/cache/flexo/.pacman-cache-migrated

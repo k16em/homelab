@@ -3,5 +3,4 @@ upgrade_packages_package_manifest:
   repository:
     - archlinux-keyring
     - pacman-contrib
-    - rsync
   aur: []

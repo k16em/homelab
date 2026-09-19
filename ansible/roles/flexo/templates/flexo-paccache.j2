@@ -1,0 +1,5 @@
+#!/bin/sh
+{% if flexo_cache_migration_required %}
+test -e {{ flexo_cache_migration_marker | quote }} || exit 0
+{% endif %}
+exec /usr/bin/paccache --remove --keep 0

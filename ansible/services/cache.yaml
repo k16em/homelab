@@ -7,5 +7,5 @@
       tags: initialize_node
     - role: upgrade-packages
       tags: upgrade_packages
-    - role: pacman-cache
-      tags: pacman_cache
+    - role: flexo
+      tags: flexo

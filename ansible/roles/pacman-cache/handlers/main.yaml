@@ -1,6 +1,0 @@
----
-- name: 'rsyncdを再起動する'
-  become: true
-  ansible.builtin.systemd:
-    name: rsyncd
-    state: restarted

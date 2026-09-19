@@ -1,0 +1,45 @@
+---
+- name: 'Flexoの依存パッケージをインストールする'
+  become: true
+  community.general.pacman:
+    name: '{{ flexo_package_manifest.repository }}'
+    state: present
+
+- name: 'Flexoをインストールする'
+  kewlfft.aur.aur:
+    name: '{{ flexo_package_manifest.aur }}'
+    state: present
+
+- name: 'Pacman hookディレクトリを作成する'
+  become: true
+  ansible.builtin.file:
+    path: /etc/pacman.d/hooks
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: 'ローカルキャッシュ削除スクリプトを配置する'
+  become: true
+  ansible.builtin.template:
+    src: flexo-paccache.j2
+    dest: /usr/local/bin/flexo-paccache
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: 'ローカルキャッシュ削除hookを配置する'
+  become: true
+  ansible.builtin.copy:
+    src: flexo-paccache.hook
+    dest: /etc/pacman.d/hooks/flexo-paccache.hook
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: 'flexo.serviceを有効化する'
+  become: true
+  ansible.builtin.systemd:
+    name: flexo
+    state: started
+    enabled: true

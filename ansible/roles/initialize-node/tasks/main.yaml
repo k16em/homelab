@@ -1,11 +1,4 @@
 ---
-- name: 'pacmanのmirrorlistを国内にする'
-  become: true
-  ansible.builtin.copy:
-    src: mirrorlist
-    dest: /etc/pacman.d/mirrorlist
-    mode: '0644'
-
 - name: '必要なパッケージを追加する'
   become: true
   community.general.pacman:

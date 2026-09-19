@@ -1,21 +1,4 @@
 ---
-- name: "rsyncを入れる"
-  become: true
-  community.general.pacman:
-    name: '{{ upgrade_packages_package_manifest.repository | select("equalto", "rsync") | first }}'
-    state: latest
-
-- name: "キャッシュを同期する"
-  become: true
-  ansible.posix.synchronize:
-    mode: pull
-    src: 'rsync://{{ pacman_cache_server }}/{{ ansible_facts["architecture"] }}/'
-    dest: /var/cache/pacman/pkg/
-  delegate_to: '{{ inventory_hostname }}'
-  when:
-    - pacman_cache_server is defined
-    - ansible_host | default(inventory_hostname) != pacman_cache_server
-
 - name: "archlinux-keyringを先に更新かける"
   become: true
   community.general.pacman:
@@ -49,3 +32,4 @@
     cmd: paccache --remove --keep 3
   register: paccache
   changed_when: paccache.stdout | length > 0
+  when: "'cache' not in group_names"

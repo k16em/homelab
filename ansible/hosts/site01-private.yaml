@@ -5,8 +5,6 @@ all:
 
   children:
     site01:
-      vars:
-        pacman_cache_server: 192.168.30.61
       children:
         tk_pv:
           children:

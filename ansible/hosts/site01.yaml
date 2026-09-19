@@ -5,10 +5,6 @@ all:
 
   children:
     site01:
-      vars:
-        pacman_cache_server: 192.168.30.61
-        pacman_cache_peer_servers:
-          - 192.168.32.61
       children:
         tk:
           children:
@@ -47,6 +43,7 @@ all:
         cache:
           hosts:
             tk_cache01:
+              flexo_cache_migration_required: true
 
         proxmox:
           hosts:

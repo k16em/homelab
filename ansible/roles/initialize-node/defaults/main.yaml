@@ -12,7 +12,6 @@ initialize_node_package_manifest:
     - pacman-contrib
     - python-pip
     - python-setuptools
-    - rsync
     - prometheus-node-exporter
     - libfido2
   aur:

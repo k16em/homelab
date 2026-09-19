@@ -1,5 +1,0 @@
----
-deployer_package_manifest:
-  repository:
-    - ansible
-  aur: []

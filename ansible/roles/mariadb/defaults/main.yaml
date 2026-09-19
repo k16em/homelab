@@ -1,6 +1,0 @@
----
-mariadb_package_manifest:
-  repository:
-    - mariadb
-    - mariadb-clients
-  aur: []

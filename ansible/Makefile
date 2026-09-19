@@ -14,9 +14,6 @@ bastion01p:
 dns01:
 	ansible-playbook -i ./hosts/site01.yaml -i conf ./services/dns.yaml --vault-password-file ~/ansible/.vault_pass
 
-kubernetes01:
-	ansible-playbook -i ./hosts/site01.yaml -i conf ./services/kubernetes.yaml --vault-password-file ~/ansible/.vault_pass
-
 worker01p:
 	ansible-playbook -i ./hosts/site01-private.yaml -i conf ./services/worker.yaml --vault-password-file ~/ansible/.vault_pass
 
@@ -38,9 +35,6 @@ bastion02:
 dns02:
 	ansible-playbook -i ./hosts/site02.yaml -i conf ./services/dns.yaml --vault-password-file ~/ansible/.vault_pass
 
-kubernetes02:
-	ansible-playbook -i ./hosts/site02.yaml -i conf ./services/kubernetes.yaml --vault-password-file ~/ansible/.vault_pass
-
 all01p:
 	ansible-playbook -i ./hosts/site01-private.yaml -i conf ./services/all.yaml --vault-password-file ~/ansible/.vault_pass
 
@@ -55,4 +49,3 @@ bastion02p:
 
 dns02p:
 	ansible-playbook -i ./hosts/site02-private.yaml -i conf ./services/dns.yaml --vault-password-file ~/ansible/.vault_pass
-

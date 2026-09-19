@@ -1,7 +1,0 @@
----
-- hosts: kubernetes
-  roles:
-    - initialize-node
-    - upgrade-packages
-    - kubernetes-cluster
-

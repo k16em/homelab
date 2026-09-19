@@ -7,20 +7,18 @@ all:
     site01:
       children:
         tk:
-          archlinux:
-          archarm:
-
-        archlinux:
           children:
-            arch:
-              hosts:
-                192.168.30.30:
-                192.168.30.3:
-                192.168.30.90:
-                192.168.30.91:
-                192.168.30.92:
-            archarm:
-              hosts:
+            archlinux:
+              children:
+                arch:
+                  hosts:
+                    192.168.30.30:
+                    192.168.30.3:
+                    192.168.30.90:
+                    192.168.30.91:
+                    192.168.30.92:
+                archarm:
+                  hosts:
 
         lxc:
           hosts:

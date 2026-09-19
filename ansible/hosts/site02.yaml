@@ -7,22 +7,19 @@ all:
     site02:
       children:
         iw:
-          archlinux:
-          archarm:
-
-        archlinux:
           children:
-            arch:
-              hosts:
-                192.168.64.90:
-                192.168.64.91:
-                192.168.64.92:
-            archarm:
-              hosts:
+            archlinux:
+              children:
+                arch:
+                  hosts:
+                    192.168.64.90:
+                    192.168.64.91:
+                    192.168.64.92:
+                archarm:
+                  hosts:
 
         vm:
           hosts:
             192.168.64.90:
             192.168.64.91:
             192.168.64.92:
-

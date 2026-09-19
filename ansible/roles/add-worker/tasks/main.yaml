@@ -17,7 +17,7 @@
     shell: /usr/bin/zsh
     groups: sudo, wheel
     append: yes
-    password: "{{ vault_maintainer_password | password_hash('sha512') }}"
+    password: "{{ vault_maintainer_password | password_hash('sha512', 65534 | random(seed=inventory_hostname ~ ':kei') | string) }}"
   when: "'worker' in group_names"
 
 - name: 'worker用のユーザのauthorized_keysを設定する'
@@ -47,4 +47,3 @@
     state: present
   with_items: '{{ worker_aur_packages }}'
   when: "'worker' in group_names"
-

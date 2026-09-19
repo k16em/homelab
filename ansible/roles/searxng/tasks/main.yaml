@@ -19,7 +19,7 @@
     shell: /usr/bin/zsh
     groups: searxng,docker
     append: yes
-    password: "{{ vault_maintainer_password | password_hash('sha512') }}"
+    password: "{{ vault_maintainer_password | password_hash('sha512', 65534 | random(seed=inventory_hostname ~ ':searxng') | string) }}"
 
 - name: 'docker.serviceを有効化'
   become: true
@@ -73,4 +73,3 @@
 - name: "起動できたか確認する"
   ansible.builtin.debug:
     var: searxng_status.failed
-

@@ -18,7 +18,7 @@
     shell: /usr/bin/zsh
     groups: rsync, sudo
     append: yes
-    password: "{{ vault_maintainer_password | password_hash('sha512') }}"
+    password: "{{ vault_maintainer_password | password_hash('sha512', 65534 | random(seed=inventory_hostname ~ ':sync') | string) }}"
 
 - name: 'rsync用のディレクトリを掘る'
   become: true
@@ -43,4 +43,3 @@
     state: started
     enabled: true
     name: rsyncd
-

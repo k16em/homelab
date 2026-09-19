@@ -39,7 +39,7 @@
     shell: /usr/bin/zsh
     groups: sudo, wheel
     append: yes
-    password: "{{ vault_maintainer_password | password_hash('sha512') }}"
+    password: "{{ vault_maintainer_password | password_hash('sha512', 65534 | random(seed=inventory_hostname ~ ':maintainer') | string) }}"
 
 - name: 'メンテナンス用のユーザのauthorized_keysを設定する'
   become: true
@@ -53,7 +53,7 @@
   become: true
   ansible.builtin.user:
     name: root
-    password: "{{ vault_root_password | password_hash('sha512') }}"
+    password: "{{ vault_root_password | password_hash('sha512', 65534 | random(seed=inventory_hostname ~ ':root') | string) }}"
 
 - name: "systemd-resolvedと共存する設定"
   become: true
@@ -103,4 +103,3 @@
     enabled: true
     name: alloy
     daemon_reload: true
-

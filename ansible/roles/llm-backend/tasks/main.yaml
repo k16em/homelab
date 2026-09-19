@@ -4,13 +4,13 @@
   community.general.pacman:
     name: '{{ item.name }}'
     state: installed
-  with_items: '{{ required_packages }}'
+  with_items: '{{ llm_backend_required_packages }}'
 
 - name: '必要なAURパッケージを追加する'
   kewlfft.aur.aur:
     name: '{{ item.name }}'
     state: present
-  with_items: '{{ required_aur_packages }}'
+  with_items: '{{ llm_backend_required_aur_packages }}'
 
 - name: 'llmグループを作成する'
   become: true
@@ -21,7 +21,7 @@
 - name: 'モデル用ディレクトリを掘る'
   become: true
   ansible.builtin.file:
-    path: '{{ llama_swap_models_dir }}'
+    path: '{{ llm_backend_llama_swap_models_dir }}'
     state: directory
     owner: root
     group: llm
@@ -52,7 +52,7 @@
 - name: 'llama-swapの設定用ディレクトリを掘る'
   become: true
   ansible.builtin.file:
-    path: '{{ llama_swap_config_dir }}'
+    path: '{{ llm_backend_llama_swap_config_dir }}'
     state: directory
     owner: root
     mode: '0755'
@@ -61,7 +61,7 @@
   become: true
   ansible.builtin.template:
     src: llama-swap.config.yaml.j2
-    dest: '{{ llama_swap_config_dir }}/config.yaml'
+    dest: '{{ llm_backend_llama_swap_config_dir }}/config.yaml'
     mode: '0644'
     validate: '/usr/bin/python -c "import yaml, sys; yaml.safe_load(open(sys.argv[1]))" %s'
   diff: false

@@ -1,5 +1,5 @@
 ---
-worker_packages:
+add_worker_packages:
   - name: cmake
   - name: unzip
   - name: ninja
@@ -14,10 +14,10 @@ worker_packages:
   - name: direnv
   - name: github-cli
 
-worker_aur_packages:
+add_worker_aur_packages:
   - name: paru
 
-authorized_keys:
+add_worker_authorized_keys:
   - key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH1+DvxUVbKQVrRsRhZEX/aqdox/MU3nC9bqmJBDz+by homelab
   - key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMz2Z8uOw2WCkEQgaQtpDxCNqAPsRFiVCiXQrSzzo+vb
   - key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKZJc89W8z5FzkZpbA4Hl6RXyX5t8nlWingBKMlFPAaw JuiceSSH

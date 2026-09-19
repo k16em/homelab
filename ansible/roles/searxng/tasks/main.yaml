@@ -4,7 +4,7 @@
   community.general.pacman:
     name: '{{ item.name }}'
     state: installed
-  with_items: '{{ required_packages }}'
+  with_items: '{{ searxng_required_packages }}'
 
 - name: 'searxngグループを作成する'
   become: true

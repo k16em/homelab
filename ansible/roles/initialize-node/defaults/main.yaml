@@ -1,5 +1,5 @@
 ---
-base_packages:
+initialize_node_base_packages:
   - name: sudo
   - name: zsh
   - name: zsh-completions
@@ -15,7 +15,7 @@ base_packages:
   - name: prometheus-node-exporter
   - name: libfido2
 
-authorized_keys:
+initialize_node_authorized_keys:
   - key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH1+DvxUVbKQVrRsRhZEX/aqdox/MU3nC9bqmJBDz+by homelab
   - key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMz2Z8uOw2WCkEQgaQtpDxCNqAPsRFiVCiXQrSzzo+vb
   - key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKZJc89W8z5FzkZpbA4Hl6RXyX5t8nlWingBKMlFPAaw JuiceSSH

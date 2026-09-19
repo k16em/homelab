@@ -1,5 +1,5 @@
 ---
-required_packages:
+llm_backend_required_packages:
   - name: clang
   - name: vulkan-radeon
   - name: lib32-vulkan-radeon
@@ -22,7 +22,7 @@ required_packages:
   - name: cuda
   - name: python-yaml
 
-required_aur_packages:
+llm_backend_required_aur_packages:
   - name: zluda
   - name: "llama.cpp-hip"
   - name: llama-swap
@@ -32,14 +32,14 @@ required_aur_packages:
   - name: python310
   - name: python311
 
-llama_swap_bin: /usr/bin/llama-server
-llama_swap_models_dir: /var/lib/models
-llama_swap_config_dir: /etc/llama-swap
-llama_swap_listen_port: 12434
-llama_swap_health_check_timeout: 300
-llama_swap_default_ttl: 600
+llm_backend_llama_swap_bin: /usr/bin/llama-server
+llm_backend_llama_swap_models_dir: /var/lib/models
+llm_backend_llama_swap_config_dir: /etc/llama-swap
+llm_backend_llama_swap_listen_port: 12434
+llm_backend_llama_swap_health_check_timeout: 300
+llm_backend_llama_swap_default_ttl: 600
 
-llama_swap_default_env:
+llm_backend_llama_swap_default_env:
   - 'HSA_OVERRIDE_GFX_VERSION=11.5.1'
   - 'HSA_ENABLE_SDMA=0'
   - 'ROCBLAS_USE_HIPBLASLT=1'

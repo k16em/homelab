@@ -1,13 +1,13 @@
 ---
-site01:
+ssh_site01_hosts:
   - name: pihole01
     address: 192.168.30.3
 
-site01p:
+ssh_site01_private_hosts:
   - name: worker01
     address: 192.168.20.18
 
-site02:
+ssh_site02_hosts:
   - name: pihole01
     address: 192.168.32.100
 

@@ -1,0 +1,2 @@
+---
+facing_bastion: "{{ vault_facing_bastion }}"

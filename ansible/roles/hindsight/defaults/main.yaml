@@ -1,4 +1,4 @@
-required_packages:
+hindsight_required_packages:
   - name: docker
   - name: docker-compose
   - name: docker-buildx

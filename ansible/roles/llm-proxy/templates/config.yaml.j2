@@ -1,5 +1,5 @@
 listen: {{ ansible_default_ipv4.address }}:8081
-upstream: http://{{ vault_local_llm_ip }}:12434
+upstream: http://{{ local_llm_ip }}:12434
 sample_percent: 100
 model_in_span_name: true
 trust_incoming_trace_context: true

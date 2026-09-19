@@ -11,7 +11,7 @@
   community.general.pacman:
     name: '{{ item.name }}'
     state: present
-  with_items: '{{ base_packages }}'
+  with_items: '{{ initialize_node_base_packages }}'
 
 - name: 'グローバルなzshrcを置く'
   become: true
@@ -41,7 +41,7 @@
     shell: /usr/bin/zsh
     groups: sudo, wheel
     append: yes
-    password: "{{ vault_maintainer_password_hash }}"
+    password: "{{ maintainer_password_hash }}"
 
 - name: 'メンテナンス用のユーザのauthorized_keysを設定する'
   become: true
@@ -49,13 +49,13 @@
     user: maintainer
     state: present
     key: '{{ item.key }}'
-  with_items: '{{ authorized_keys }}'
+  with_items: '{{ initialize_node_authorized_keys }}'
 
 - name: 'rootのパスワードを変更する'
   become: true
   ansible.builtin.user:
     name: root
-    password: "{{ vault_root_password_hash }}"
+    password: "{{ root_password_hash }}"
 
 - name: "systemd-resolvedと共存する設定"
   become: true
@@ -79,7 +79,7 @@
   diff: false
   vars:
     id: "homelab"
-    cfg: "{{ vault_alloy_homelab }}"
+    cfg: "{{ alloy_homelab }}"
   notify: 'alloyを再起動する'
 
 - name: 'alloyの設定を上書きする用のディレクトリを作成する'
@@ -96,7 +96,7 @@
     dest: /etc/systemd/system/alloy.service.d/override.conf
     mode: '0600'
   vars:
-    cfg: "{{ vault_alloy_homelab }}"
+    cfg: "{{ alloy_homelab }}"
   notify: 'alloyを再起動する'
   diff: false
 

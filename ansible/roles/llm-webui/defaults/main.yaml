@@ -1,5 +1,5 @@
 ---
-required_packages:
+llm_webui_required_packages:
   - name: python
   - name: uv
   - name: docker

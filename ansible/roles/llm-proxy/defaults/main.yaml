@@ -1,0 +1,3 @@
+---
+llm_proxy_required_packages:
+  - name: go

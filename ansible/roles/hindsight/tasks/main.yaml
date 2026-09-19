@@ -4,7 +4,7 @@
   community.general.pacman:
     name: '{{ item.name }}'
     state: installed
-  with_items: '{{ required_packages }}'
+  with_items: '{{ hindsight_required_packages }}'
 
 - name: 'hindsightグループを作成する'
   become: true

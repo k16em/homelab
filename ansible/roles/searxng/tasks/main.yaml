@@ -19,7 +19,7 @@
     shell: /usr/bin/zsh
     groups: searxng,docker
     append: yes
-    password: "{{ vault_maintainer_password | password_hash('sha512', 65534 | random(seed=inventory_hostname ~ ':searxng') | string) }}"
+    password_lock: true
 
 - name: 'docker.serviceを有効化'
   become: true

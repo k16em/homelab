@@ -7,3 +7,9 @@ flexo_package_manifest:
 
 flexo_cache_migration_required: false
 flexo_cache_migration_marker: /var/cache/flexo/.pacman-cache-migrated
+flexo_cache_directory: /var/cache/flexo/pkg
+flexo_listen_ip_address: 0.0.0.0
+flexo_port: 7878
+flexo_num_versions_retain: 3
+flexo_allowed_countries:
+  - JP

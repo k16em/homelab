@@ -10,6 +10,16 @@
     name: '{{ flexo_package_manifest.aur }}'
     state: present
 
+- name: 'Flexoの設定を配置する'
+  become: true
+  ansible.builtin.template:
+    src: flexo.toml.j2
+    dest: /etc/flexo/flexo.toml
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Flexoを再起動する
+
 - name: 'Pacman hookディレクトリを作成する'
   become: true
   ansible.builtin.file:

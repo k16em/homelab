@@ -15,18 +15,21 @@
     name:
       - pi-hole-web
     state: latest
+  notify: 'pihole-FTLを再起動する'
 
 - name: 'pi-hole-ftlをインストール'
   kewlfft.aur.aur:
     name:
       - pi-hole-ftl
     state: latest
+  notify: 'pihole-FTLを再起動する'
 
 - name: 'pi-hole-coreをインストール'
   kewlfft.aur.aur:
     name:
       - pi-hole-core
     state: latest
+  notify: 'pihole-FTLを再起動する'
 
 - name: 'pihole-FTL.serviceを有効化'
   become: true
@@ -47,18 +50,6 @@
   ansible.builtin.copy:
     src: pi-hole.conf
     dest: /etc/systemd/resolved.conf.d/pi-hole.conf
-
-- name: 'resolvedを再読み込み'
-  become: true
-  ansible.builtin.systemd:
-    state: restarted
-    daemon_reload: true
-    name: systemd-resolved
-
-- name: 'pihole-FTLを再読み込み'
-  become: true
-  ansible.builtin.systemd:
-    state: restarted
-    daemon_reload: true
-    name: pihole-FTL
-
+  notify:
+    - 'systemd-resolvedを再起動する'
+    - 'pihole-FTLを再起動する'

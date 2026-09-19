@@ -17,13 +17,14 @@
   community.general.pacman:
     name: prometheus
     state: latest
+  notify: 'prometheusを再起動する'
 
 - name: 'prometheusの設定を置く'
   become: true
   ansible.builtin.template:
     src: prometheus.yml.j2
     dest: /etc/prometheus/prometheus.yml
-  register: prometheus
+  notify: 'prometheusを再起動する'
 
 - name: 'prometheusを有効化'
   become: true
@@ -31,13 +32,4 @@
     state: started
     enabled: true
     name: prometheus
-
-- name: 'prometheusを再読み込み'
-  become: true
-  ansible.builtin.systemd:
-    state: restarted
-    daemon_reload: true
-    name: prometheus
-  when: prometheus.changed == true
-
 

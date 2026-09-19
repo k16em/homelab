@@ -1,0 +1,6 @@
+---
+- name: 'prometheusを再起動する'
+  become: true
+  ansible.builtin.systemd:
+    name: prometheus
+    state: restarted

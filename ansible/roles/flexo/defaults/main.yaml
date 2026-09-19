@@ -1,6 +1,8 @@
 ---
 flexo_package_manifest:
   repository:
+    - base-devel
+    - git
     - pacman-contrib
   aur:
     - flexo

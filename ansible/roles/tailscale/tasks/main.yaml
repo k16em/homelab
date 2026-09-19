@@ -1,14 +1,15 @@
 - name: 'tailscaleをインストール'
   become: true
   community.general.pacman:
-    name: tailscale
-    state: latest
+    name: '{{ tailscale_package_manifest.repository }}'
+    state: present
 
 - name: 'sysctlの設定を置く'
   become: true
   ansible.builtin.copy:
     src: 99-tailscale.conf
     dest: /etc/sysctl.d/99-tailscale.conf
+    mode: '0644'
 
 - name: 'tailscaled.serviceを有効化'
   become: true
@@ -16,4 +17,3 @@
     state: started
     enabled: true
     name: tailscaled
-

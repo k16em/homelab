@@ -1,0 +1,5 @@
+---
+llm_proxy_package_manifest:
+  repository:
+    - go
+  aur: []

@@ -9,42 +9,42 @@
   ansible.builtin.copy:
     content: 'LANG=ja_JP.UTF-8'
     dest: /etc/locale.conf
+    mode: '0644'
 
 - name: 'worker用のユーザを作成する'
   become: true
   ansible.builtin.user:
-    name: kei # TODO: 変数化する
+    name: '{{ add_worker_user }}'
     shell: /usr/bin/zsh
     groups: sudo, wheel
     append: yes
-    password: "{{ vault_maintainer_password | password_hash('sha512') }}"
+    password_lock: true
   when: "'worker' in group_names"
 
 - name: 'worker用のユーザのauthorized_keysを設定する'
   become: true
   ansible.posix.authorized_key:
-    user: kei
+    user: '{{ add_worker_user }}'
     state: present
     key: '{{ item.key }}'
-  with_items: '{{ authorized_keys }}'
+  with_items: '{{ add_worker_authorized_keys }}'
   when: "'worker' in group_names"
 
 - name: 'workerに必要なパッケージを追加する'
   become: true
   community.general.pacman:
-    name: '{{ item.name }}'
+    name: '{{ add_worker_package_manifest.repository }}'
     state: installed
-  with_items: '{{ worker_packages }}'
   when: "'worker' in group_names"
 
 - name: 'rustのdefaultをstableに設定'
-  ansible.builtin.shell:
+  ansible.builtin.command:
     cmd: 'rustup default stable'
+  register: rustup_default
+  changed_when: "'unchanged' not in (rustup_default.stdout + rustup_default.stderr)"
 
 - name: 'workerに必要なAURパッケージを追加する'
   kewlfft.aur.aur:
-    name: '{{ item.name }}'
+    name: '{{ add_worker_package_manifest.aur }}'
     state: present
-  with_items: '{{ worker_aur_packages }}'
   when: "'worker' in group_names"
-

@@ -1,6 +1,0 @@
----
-- hosts: jenkins
-  roles:
-    - initialize-node
-    - upgrade-packages
-    - jenkins

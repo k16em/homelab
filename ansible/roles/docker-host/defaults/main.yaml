@@ -1,0 +1,7 @@
+---
+docker_host_package_manifest:
+  repository:
+    - docker
+    - docker-compose
+    - docker-buildx
+  aur: []

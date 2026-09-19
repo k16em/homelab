@@ -2,9 +2,8 @@
 - name: '必要なパッケージを追加する'
   become: true
   community.general.pacman:
-    name: '{{ item.name }}'
+    name: '{{ llm_webui_package_manifest.repository }}'
     state: installed
-  with_items: '{{ required_packages }}'
 
 - name: 'webuiグループを作成する'
   become: true
@@ -19,7 +18,7 @@
     shell: /usr/bin/zsh
     groups: webui,docker
     append: yes
-    password: "{{ vault_maintainer_password | password_hash('sha512') }}"
+    password_lock: true
 
 - name: 'uv用ディレクトリの存在確認'
   become: true
@@ -33,7 +32,6 @@
   ansible.builtin.file:
     path: ~/.open-webui
     state: "directory"
-    recurse: true
     owner: webui
     mode: '0755'
   when: not open_webui_dir.stat.exists
@@ -44,16 +42,8 @@
   ansible.builtin.file:
     path: ~/.config/systemd/user
     state: "directory"
-    recurse: true
     owner: webui
     mode: '0755'
-
-- name: 'docker.serviceを有効化'
-  become: true
-  ansible.builtin.systemd:
-    state: started
-    enabled: true
-    name: docker
 
 - name: 'docker ディレクトリを掘る'
   become: true
@@ -61,7 +51,6 @@
   ansible.builtin.file:
     path: ~/docker
     state: directory
-    recurse: true
     owner: webui
     mode: '0755'
 
@@ -71,6 +60,7 @@
   ansible.builtin.template:
     src: compose.yaml.j2
     dest: ~/docker/compose.yaml
+    mode: '0644'
 
 - name: 'docker compose up -d'
   become: true
@@ -83,4 +73,3 @@
 - name: "起動できたか確認する"
   ansible.builtin.debug:
     var: webui_status.failed
-

@@ -4,31 +4,38 @@ all:
     ansible_user: maintainer
 
   children:
-    site01:
+    site02:
+      vars:
+        pacman_mirror_server: 192.168.32.61
       children:
         archlinux:
           children:
             arch:
               hosts:
-                192.168.32.100:
-                192.168.32.60:
-            archarm:
-              hosts:
-
+                iw_dns01:
+                  ansible_host: 192.168.32.100
+                iw_bastion01:
+                  ansible_host: 192.168.32.60
+                iw_cache01:
+                  ansible_host: 192.168.32.61
         lxc:
           hosts:
-            192.168.32.100:
-            192.168.32.60:
+            iw_dns01:
+            iw_bastion01:
 
         bastion:
           hosts:
-            192.168.32.60:
+            iw_bastion01:
 
         dns:
           hosts:
-            192.168.32.100:
+            iw_dns01:
+
+        cache:
+          hosts:
+            iw_cache01:
 
         proxmox:
           hosts:
-            192.168.32.50:
-
+            iw_proxmox01:
+              ansible_host: 192.168.32.50

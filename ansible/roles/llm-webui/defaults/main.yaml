@@ -1,0 +1,9 @@
+---
+llm_webui_package_manifest:
+  repository:
+    - python
+    - uv
+    - deno
+    - nodejs-lts-jod
+    - npm
+  aur: []

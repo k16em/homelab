@@ -1,22 +1,16 @@
 ---
-- name: 'pacmanのmirrorlistを国内にする'
-  become: true
-  ansible.builtin.copy:
-    src: mirrorlist
-    dest: /etc/pacman.d/mirrorlist
-
 - name: '必要なパッケージを追加する'
   become: true
   community.general.pacman:
-    name: '{{ item.name }}'
-    state: latest
-  with_items: '{{ base_packages }}'
+    name: '{{ initialize_node_package_manifest.repository }}'
+    state: present
 
 - name: 'グローバルなzshrcを置く'
   become: true
   ansible.builtin.copy:
     src: zshrc
     dest: /etc/zsh/zshrc
+    mode: '0644'
 
 - name: 'sudoグループを作成する'
   become: true
@@ -39,7 +33,7 @@
     shell: /usr/bin/zsh
     groups: sudo, wheel
     append: yes
-    password: "{{ vault_maintainer_password | password_hash('sha512') }}"
+    password: "{{ maintainer_password_hash }}"
 
 - name: 'メンテナンス用のユーザのauthorized_keysを設定する'
   become: true
@@ -47,13 +41,13 @@
     user: maintainer
     state: present
     key: '{{ item.key }}'
-  with_items: '{{ authorized_keys }}'
+  with_items: '{{ initialize_node_authorized_keys }}'
 
 - name: 'rootのパスワードを変更する'
   become: true
   ansible.builtin.user:
     name: root
-    password: "{{ vault_root_password | password_hash('sha512') }}"
+    password: "{{ root_password_hash }}"
 
 - name: "systemd-resolvedと共存する設定"
   become: true
@@ -65,7 +59,7 @@
 
 - name: 'Grafana Alloyを追加する'
   kewlfft.aur.aur:
-    name: 'grafana-alloy-bin'
+    name: '{{ initialize_node_package_manifest.aur }}'
     state: present
 
 - name: 'Alloyの設定を置く'
@@ -73,9 +67,11 @@
   ansible.builtin.template:
     src: config.alloy.j2
     dest: /etc/alloy/config.alloy
+    mode: '0644'
+  diff: false
   vars:
     id: "homelab"
-    cfg: "{{ vault_alloy_homelab }}"
+    cfg: "{{ alloy_homelab }}"
   notify: 'alloyを再起動する'
 
 - name: 'alloyの設定を上書きする用のディレクトリを作成する'
@@ -83,7 +79,6 @@
   ansible.builtin.file:
     path: /etc/systemd/system/alloy.service.d
     state: "directory"
-    recurse: true
     mode: '0755'
 
 - name: '上書き用ユニットファイルを置く'
@@ -93,8 +88,9 @@
     dest: /etc/systemd/system/alloy.service.d/override.conf
     mode: '0600'
   vars:
-    cfg: "{{ vault_alloy_homelab }}"
+    cfg: "{{ alloy_homelab }}"
   notify: 'alloyを再起動する'
+  diff: false
 
 - name: 'alloy.serviceを有効化'
   become: true
@@ -103,4 +99,3 @@
     enabled: true
     name: alloy
     daemon_reload: true
-

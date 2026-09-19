@@ -1,23 +1,23 @@
-healthCheckTimeout: {{ llama_swap_health_check_timeout }}
+healthCheckTimeout: {{ llm_backend_llama_swap_health_check_timeout }}
 
 models:
-{% for model in vault_llama_swap_models %}
+{% for model in llama_swap_models %}
   "{{ model.name }}":
     env:
-{% for env in model.env | default(llama_swap_default_env) %}
+{% for env in model.env | default(llm_backend_llama_swap_default_env) %}
       - "{{ env }}"
 {% endfor %}
     cmd: |
-      {{ llama_swap_bin }}
-      -m {{ llama_swap_models_dir }}/{{ model.file }}
+      {{ llm_backend_llama_swap_bin }}
+      -m {{ llm_backend_llama_swap_models_dir }}/{{ model.file }}
       --port ${PORT}
 {{ model.args | indent(6, first=True) }}
-    ttl: {{ model.ttl | default(llama_swap_default_ttl) }}
+    ttl: {{ model.ttl | default(llm_backend_llama_swap_default_ttl) }}
 {% if not loop.last %}
 
 {% endif %}
 {% endfor %}
-{% set persistent_models = vault_llama_swap_models | selectattr('persistent', 'defined') | selectattr('persistent') | list %}
+{% set persistent_models = llama_swap_models | selectattr('persistent', 'defined') | selectattr('persistent') | list %}
 {% if persistent_models %}
 
 groups:

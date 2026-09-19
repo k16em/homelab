@@ -2,15 +2,13 @@
 - name: '必要なパッケージを追加する'
   become: true
   community.general.pacman:
-    name: '{{ item.name }}'
+    name: '{{ llm_backend_package_manifest.repository }}'
     state: installed
-  with_items: '{{ required_packages }}'
 
 - name: '必要なAURパッケージを追加する'
   kewlfft.aur.aur:
-    name: '{{ item.name }}'
+    name: '{{ llm_backend_package_manifest.aur }}'
     state: present
-  with_items: '{{ required_aur_packages }}'
 
 - name: 'llmグループを作成する'
   become: true
@@ -21,7 +19,7 @@
 - name: 'モデル用ディレクトリを掘る'
   become: true
   ansible.builtin.file:
-    path: '{{ llama_swap_models_dir }}'
+    path: '{{ llm_backend_llama_swap_models_dir }}'
     state: directory
     owner: root
     group: llm
@@ -32,7 +30,6 @@
   ansible.builtin.file:
     path: /etc/systemd/system/llama-swap.service.d/
     state: "directory"
-    recurse: true
     mode: '0755'
 
 - name: 'llama-swapの上書き用ユニットファイルを置く'
@@ -40,6 +37,7 @@
   ansible.builtin.template:
     src: llama-swap.override.conf.j2
     dest: /etc/systemd/system/llama-swap.service.d/override.conf
+    mode: '0644'
 
 - name: 'llama-swap.serviceを有効化'
   become: true
@@ -52,7 +50,7 @@
 - name: 'llama-swapの設定用ディレクトリを掘る'
   become: true
   ansible.builtin.file:
-    path: '{{ llama_swap_config_dir }}'
+    path: '{{ llm_backend_llama_swap_config_dir }}'
     state: directory
     owner: root
     mode: '0755'
@@ -61,7 +59,7 @@
   become: true
   ansible.builtin.template:
     src: llama-swap.config.yaml.j2
-    dest: '{{ llama_swap_config_dir }}/config.yaml'
+    dest: '{{ llm_backend_llama_swap_config_dir }}/config.yaml'
     mode: '0644'
     validate: '/usr/bin/python -c "import yaml, sys; yaml.safe_load(open(sys.argv[1]))" %s'
-
+  diff: false

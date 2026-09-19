@@ -5,35 +5,12 @@ all:
 
   children:
     site02:
+      vars:
+        pacman_mirror_server: 192.168.32.61
       children:
         iw:
-          archlinux:
-          archarm:
-
-        archlinux:
           children:
-            arch:
-              hosts:
-                192.168.64.90:
-                192.168.64.91:
-                192.168.64.92:
-            archarm:
-              hosts:
-
-        vm:
-          hosts:
-            192.168.64.90:
-            192.168.64.91:
-            192.168.64.92:
-
-        kubernetes:
-          children:
-            kubernetes_proxy:
-            kubernetes_worker:
-              hosts:
-                192.168.64.91:
-                192.168.64.92:
-            kubernetes_master:
-              hosts:
-                192.168.64.90:
-
+            archlinux:
+              children:
+                arch:
+                  hosts:

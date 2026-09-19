@@ -1,0 +1,17 @@
+---
+flexo_package_manifest:
+  repository:
+    - base-devel
+    - git
+    - pacman-contrib
+  aur:
+    - flexo
+
+flexo_cache_migration_required: false
+flexo_cache_migration_marker: /var/cache/flexo/.pacman-cache-migrated
+flexo_cache_directory: /var/cache/flexo/pkg
+flexo_listen_ip_address: '{{ pacman_mirror_server }}'
+flexo_port: 7878
+flexo_num_versions_retain: 3
+flexo_allowed_countries:
+  - JP

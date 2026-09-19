@@ -1,0 +1,45 @@
+---
+llm_backend_package_manifest:
+  repository:
+    - clang
+    - vulkan-radeon
+    - lib32-vulkan-radeon
+    - rocm-hip-sdk
+    - rocm-opencl-sdk
+    - python
+    - huggingface
+    - gperftools
+    - bc
+    - python-pytorch-opt-rocm
+    - amd-ucode
+    - python-cairo
+    - python-opencv
+    - python-passlib
+    - libxslt
+    - python-lxml
+    - python-hpack
+    - python-hyperframe
+    - python-h2
+    - cuda
+    - python-yaml
+  aur:
+    - zluda
+    - llama.cpp-hip
+    - llama-swap
+    - python-primp
+    - python-duckduckgo-search
+    - python-whisper
+    - python310
+    - python311
+
+llm_backend_llama_swap_bin: /usr/bin/llama-server
+llm_backend_llama_swap_models_dir: /var/lib/models
+llm_backend_llama_swap_config_dir: /etc/llama-swap
+llm_backend_llama_swap_listen_port: 12434
+llm_backend_llama_swap_health_check_timeout: 300
+llm_backend_llama_swap_default_ttl: 600
+
+llm_backend_llama_swap_default_env:
+  - 'HSA_OVERRIDE_GFX_VERSION=11.5.1'
+  - 'HSA_ENABLE_SDMA=0'
+  - 'ROCBLAS_USE_HIPBLASLT=1'

@@ -1,0 +1,13 @@
+---
+- name: 'Dockerパッケージをインストールする'
+  become: true
+  community.general.pacman:
+    name: '{{ docker_host_package_manifest.repository }}'
+    state: present
+
+- name: 'docker.serviceを有効化する'
+  become: true
+  ansible.builtin.systemd:
+    name: docker
+    state: started
+    enabled: true

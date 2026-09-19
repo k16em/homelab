@@ -1,0 +1,12 @@
+---
+- name: 'systemd-resolvedを再起動する'
+  become: true
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    state: restarted
+
+- name: 'pihole-FTLを再起動する'
+  become: true
+  ansible.builtin.systemd:
+    name: pihole-FTL
+    state: restarted

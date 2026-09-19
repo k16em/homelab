@@ -1,38 +1,14 @@
 ---
-- name: "rsyncを入れる"
-  become: true
-  community.general.pacman:
-    name: rsync
-    state: latest
-
-#- name: "キャッシュを同期する(x86_64)"
-#  become: true
-#  ansible.posix.synchronize:
-#    mode: pull
-#    src: rsync://192.168.30.61/x86_64/
-#    dest: /var/cache/pacman/pkg/
-#  delegate_to: "{{ inventory_hostname }}"
-#  when: "'arch' in group_names"
-#
-#- name: "キャッシュを同期する(aarch64)"
-#  become: true
-#  ansible.posix.synchronize:
-#    mode: pull
-#    src: rsync://192.168.30.61/aarch64/
-#    dest: /var/cache/pacman/pkg/
-#  delegate_to: "{{ inventory_hostname }}"
-#  when: "'archarm' in group_names"
-
 - name: "archlinux-keyringを先に更新かける"
   become: true
   community.general.pacman:
-    name: archlinux-keyring
+    name: '{{ upgrade_packages_package_manifest.repository | select("equalto", "archlinux-keyring") | first }}'
     state: latest
 
 - name: "pacman-contribを入れる"
   become: true
   community.general.pacman:
-    name: pacman-contrib
+    name: '{{ upgrade_packages_package_manifest.repository | select("equalto", "pacman-contrib") | first }}'
     state: latest
 
 - name: "pacman -Syyuする"
@@ -47,10 +23,13 @@
   ansible.builtin.reboot:
     msg: "Ansibleでパッケージ更新があったので、再起動します"
   when:
-    - result.changed == true
+    - result.changed
     - "not 'jenkins' in group_names"
 
 - name: "pacmanのキャッシュを消す"
   become: true
-  ansible.builtin.shell: paccache --remove --keep 3
-
+  ansible.builtin.command:
+    cmd: paccache --remove --keep 3
+  register: paccache
+  changed_when: paccache.stdout | length > 0
+  when: "'cache' not in group_names"

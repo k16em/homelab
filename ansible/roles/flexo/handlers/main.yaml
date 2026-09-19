@@ -1,0 +1,6 @@
+---
+- name: Flexoを再起動する
+  become: true
+  ansible.builtin.systemd:
+    name: flexo
+    state: restarted

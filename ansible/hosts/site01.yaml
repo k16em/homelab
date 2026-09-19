@@ -5,48 +5,29 @@ all:
 
   children:
     site01:
+      vars:
+        pacman_mirror_server: 192.168.30.61
       children:
         tk:
-          archlinux:
-          archarm:
-
-        archlinux:
           children:
-            arch:
-              hosts:
-                192.168.30.30:
-                192.168.30.3:
-                192.168.30.90:
-                192.168.30.91:
-                192.168.30.92:
-            archarm:
-              hosts:
-
+            archlinux:
+              children:
+                arch:
+                  hosts:
+                    tk_bastion01:
+                      ansible_host: 192.168.30.30
+                    tk_dns01:
+                      ansible_host: 192.168.30.3
+                    tk_cache01:
+                      ansible_host: 192.168.30.61
         lxc:
           hosts:
-            192.168.30.30:
-            192.168.30.3:
-
-        vm:
-          hosts:
-            192.168.30.90:
-            192.168.30.91:
-            192.168.30.92:
-
-        kubernetes:
-          children:
-            kubernetes_proxy:
-            kubernetes_worker:
-              hosts:
-                192.168.30.92:
-            kubernetes_master:
-              hosts:
-                192.168.30.90:
-                192.168.30.91:
+            tk_bastion01:
+            tk_dns01:
 
         bastion:
           hosts:
-            192.168.30.30:
+            tk_bastion01:
 
         docker:
           hosts:
@@ -59,9 +40,13 @@ all:
 
         dns:
           hosts:
-            192.168.30.3:
+            tk_dns01:
+
+        cache:
+          hosts:
+            tk_cache01:
 
         proxmox:
           hosts:
-            192.168.30.55:
-
+            tk_proxmox01:
+              ansible_host: 192.168.30.55

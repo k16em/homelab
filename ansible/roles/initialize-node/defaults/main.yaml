@@ -1,0 +1,32 @@
+---
+initialize_node_package_manifest:
+  repository:
+    - sudo
+    - zsh
+    - zsh-completions
+    - vim
+    - mosh
+    - git
+    - base-devel
+    - rustup
+    - pacman-contrib
+    - python-pip
+    - python-setuptools
+    - prometheus-node-exporter
+    - libfido2
+  aur:
+    - grafana-alloy-bin
+
+initialize_node_authorized_keys:
+  - key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH1+DvxUVbKQVrRsRhZEX/aqdox/MU3nC9bqmJBDz+by homelab
+  - key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMz2Z8uOw2WCkEQgaQtpDxCNqAPsRFiVCiXQrSzzo+vb
+  - key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKZJc89W8z5FzkZpbA4Hl6RXyX5t8nlWingBKMlFPAaw JuiceSSH
+  - key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHFKnlIyCgW31Fah9Lu/f0Sn2SYvSN69VkoBqJBSOSV0
+  - key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKJfrFtXf4ZZ0Cvc8imYopa8lEB8pL0pozsp72uebybk GPDWM
+  - key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDalCgHF6xdItVJ+372THFRFvnHwiLfDnhKHqngQwb/z homelab
+  - key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIWhmPjY0gQuN/SuSiZd+un5gLgIeepMTRz6Oe7pEmTL deskmeet-x300
+  - key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH6lbSY1sE2SNc3aHonvKqIW+DC3VeT6D4OfFo6Ar16q JuiceSSH
+  - key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJGuiuJAh/R4P13e05iv8rKMJx5Pn/KpqoMxG7eD4sQ5 kisaragi
+  - key: sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIIwQTRjppU1lg4MVEmLLkOe3f8nB8/iw3wsSitimnW1NAAAABHNzaDo= yk5a01
+  - key: sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIPI+wvT7hPz9q1+UqueKhlxv45aFaHCNJCFB3co0e3qhAAAABHNzaDo= yk5c01
+  - key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILvAgOHU6Ct4QYDIXZgXJARFvqDCRROdnKAzdNE74jHY spacewar

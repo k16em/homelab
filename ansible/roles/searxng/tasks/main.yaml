@@ -1,11 +1,4 @@
 ---
-- name: '必要なパッケージを追加する'
-  become: true
-  community.general.pacman:
-    name: '{{ item.name }}'
-    state: installed
-  with_items: '{{ required_packages }}'
-
 - name: 'searxngグループを作成する'
   become: true
   ansible.builtin.group:
@@ -19,14 +12,7 @@
     shell: /usr/bin/zsh
     groups: searxng,docker
     append: yes
-    password: "{{ vault_maintainer_password | password_hash('sha512') }}"
-
-- name: 'docker.serviceを有効化'
-  become: true
-  ansible.builtin.systemd:
-    state: started
-    enabled: true
-    name: docker
+    password_lock: true
 
 - name: 'searxng用ディレクトリの存在確認'
   become: true
@@ -40,7 +26,6 @@
   ansible.builtin.file:
     path: ~/.searxng
     state: "directory"
-    recurse: true
     owner: searxng
     mode: '0755'
   when: not searxng_dir.stat.exists
@@ -51,7 +36,6 @@
   ansible.builtin.file:
     path: ~/docker
     state: directory
-    recurse: true
     owner: searxng
     mode: '0755'
 
@@ -61,6 +45,7 @@
   ansible.builtin.template:
     src: compose.yaml.j2
     dest: ~/docker/compose.yaml
+    mode: '0644'
 
 - name: 'docker compose up -d'
   become: true
@@ -73,4 +58,3 @@
 - name: "起動できたか確認する"
   ansible.builtin.debug:
     var: searxng_status.failed
-

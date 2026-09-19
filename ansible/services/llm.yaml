@@ -1,19 +1,33 @@
 ---
-- hosts: llm
+- name: LLMホストを初期化する
+  hosts: llm
+  serial: 1
   roles:
-    - initialize-node
-    - upgrade-packages
+    - role: pacman-mirror
+      tags: pacman_mirror
+    - role: initialize-node
+      tags: initialize_node
+    - role: upgrade-packages
+      tags: upgrade_packages
 
-- hosts: llm-backend
+- name: LLMバックエンドを構成する
+  hosts: llm_backend
   roles:
-    - add-worker
-    - llm-backend
+    - role: add-worker
+      tags: add_worker
+    - role: llm-backend
+      tags: llm_backend
 
-- hosts: webui
+- name: LLM Web UIを構成する
+  hosts: webui
   roles:
-    - llm-webui
+    - role: docker-host
+      tags: docker_host
+    - role: llm-webui
+      tags: llm_webui
 
-- hosts: llm-proxy
+- name: LLMプロキシを構成する
+  hosts: llm_proxy
   roles:
-    - llm-proxy
-
+    - role: llm-proxy
+      tags: llm_proxy

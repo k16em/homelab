@@ -5,71 +5,75 @@ all:
 
   children:
     site01:
+      vars:
+        pacman_mirror_server: 192.168.30.61
       children:
-        tk-pv:
-          archlinux:
-          archarm:
-
-        archlinux:
+        tk_pv:
           children:
-            arch:
-              hosts:
-                192.168.20.17:
-                192.168.20.18:
-                192.168.20.20:
-                192.168.20.21:
-                192.168.20.60:
-                192.168.20.36:
-                192.168.20.70:
-                192.168.20.71:
-            archarm:
-              hosts:
-
+            archlinux:
+              children:
+                arch:
+                  hosts:
+                    tk_llm01:
+                      ansible_host: 192.168.20.17
+                    tk_worker01:
+                      ansible_host: 192.168.20.18
+                    tk_search01:
+                      ansible_host: 192.168.20.20
+                    tk_lxc01:
+                      ansible_host: 192.168.20.21
+                    tk_bastion01:
+                      ansible_host: 192.168.20.60
+                    tk_hermes01:
+                      ansible_host: 192.168.20.36
+                    tk_llm_proxy01:
+                      ansible_host: 192.168.20.70
+                    tk_memory01:
+                      ansible_host: 192.168.20.71
         lxc:
           hosts:
-            192.168.20.18:
-            192.168.20.20:
-            192.168.20.21:
-            192.168.20.60:
-            192.168.20.36:
-            192.168.20.70:
-            192.168.20.71:
+            tk_worker01:
+            tk_search01:
+            tk_lxc01:
+            tk_bastion01:
+            tk_hermes01:
+            tk_llm_proxy01:
+            tk_memory01:
 
         worker:
           hosts:
-            192.168.20.18:
-            192.168.20.36:
+            tk_worker01:
+            tk_hermes01:
 
         hermes:
           hosts:
-            192.168.20.36:
+            tk_hermes01:
 
         bastion:
           hosts:
-            192.168.20.60:
+            tk_bastion01:
 
         llm:
           children:
-            llm-backend:
+            llm_backend:
               hosts:
-                192.168.20.17:
-            llm-proxy:
+                tk_llm01:
+            llm_proxy:
               hosts:
-                192.168.20.70:
+                tk_llm_proxy01:
 
         webui:
           hosts:
-            192.168.20.17:
+            tk_llm01:
 
         search:
           hosts:
-            192.168.20.20:
+            tk_search01:
 
         agent:
           hosts:
-            192.168.20.17:
+            tk_llm01:
 
         memory:
           hosts:
-            192.168.20.71:
-
+            tk_memory01:

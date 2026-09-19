@@ -12,28 +12,33 @@ all:
               children:
                 arch:
                   hosts:
-                    192.168.30.30:
-                    192.168.30.3:
-                    192.168.30.90:
-                    192.168.30.91:
-                    192.168.30.92:
+                    tk_bastion01:
+                      ansible_host: 192.168.30.30
+                    tk_dns01:
+                      ansible_host: 192.168.30.3
+                    tk_vm01:
+                      ansible_host: 192.168.30.90
+                    tk_vm02:
+                      ansible_host: 192.168.30.91
+                    tk_vm03:
+                      ansible_host: 192.168.30.92
                 archarm:
                   hosts:
 
         lxc:
           hosts:
-            192.168.30.30:
-            192.168.30.3:
+            tk_bastion01:
+            tk_dns01:
 
         vm:
           hosts:
-            192.168.30.90:
-            192.168.30.91:
-            192.168.30.92:
+            tk_vm01:
+            tk_vm02:
+            tk_vm03:
 
         bastion:
           hosts:
-            192.168.30.30:
+            tk_bastion01:
 
         docker:
           hosts:
@@ -46,8 +51,9 @@ all:
 
         dns:
           hosts:
-            192.168.30.3:
+            tk_dns01:
 
         proxmox:
           hosts:
-            192.168.30.55:
+            tk_proxmox01:
+              ansible_host: 192.168.30.55

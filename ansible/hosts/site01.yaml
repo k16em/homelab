@@ -16,12 +16,6 @@ all:
                       ansible_host: 192.168.30.30
                     tk_dns01:
                       ansible_host: 192.168.30.3
-                    tk_vm01:
-                      ansible_host: 192.168.30.90
-                    tk_vm02:
-                      ansible_host: 192.168.30.91
-                    tk_vm03:
-                      ansible_host: 192.168.30.92
                 archarm:
                   hosts:
 
@@ -29,12 +23,6 @@ all:
           hosts:
             tk_bastion01:
             tk_dns01:
-
-        vm:
-          hosts:
-            tk_vm01:
-            tk_vm02:
-            tk_vm03:
 
         bastion:
           hosts:

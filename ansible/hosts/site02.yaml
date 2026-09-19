@@ -12,17 +12,5 @@ all:
               children:
                 arch:
                   hosts:
-                    iw_vm01:
-                      ansible_host: 192.168.64.90
-                    iw_vm02:
-                      ansible_host: 192.168.64.91
-                    iw_vm03:
-                      ansible_host: 192.168.64.92
                 archarm:
                   hosts:
-
-        vm:
-          hosts:
-            iw_vm01:
-            iw_vm02:
-            iw_vm03:

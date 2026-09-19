@@ -6,7 +6,7 @@ all:
   children:
     site02:
       vars:
-        pacman_cache_server: 192.168.64.61
+        pacman_cache_server: 192.168.32.61
       children:
         archlinux:
           children:
@@ -16,6 +16,8 @@ all:
                   ansible_host: 192.168.32.100
                 iw_bastion01:
                   ansible_host: 192.168.32.60
+                iw_cache01:
+                  ansible_host: 192.168.32.61
             archarm:
               hosts:
 
@@ -31,6 +33,10 @@ all:
         dns:
           hosts:
             iw_dns01:
+
+        cache:
+          hosts:
+            iw_cache01:
 
         proxmox:
           hosts:

@@ -32,7 +32,7 @@ all02:
 	ansible-playbook -i ./hosts/site02.yaml ./services/all.yaml --vault-password-file ~/ansible/.vault_pass
 
 cache02:
-	ansible-playbook -i ./hosts/site02.yaml ./services/cache.yaml --vault-password-file ~/ansible/.vault_pass
+	ansible-playbook -i ./hosts/site02-private.yaml ./services/cache.yaml --vault-password-file ~/ansible/.vault_pass
 
 bastion02:
 	ansible-playbook -i ./hosts/site02.yaml ./services/bastion.yaml --vault-password-file ~/ansible/.vault_pass

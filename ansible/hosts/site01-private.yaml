@@ -30,9 +30,6 @@ all:
                       ansible_host: 192.168.20.70
                     tk_memory01:
                       ansible_host: 192.168.20.71
-                archarm:
-                  hosts:
-
         lxc:
           hosts:
             tk_worker01:

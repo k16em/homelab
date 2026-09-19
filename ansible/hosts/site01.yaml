@@ -22,9 +22,6 @@ all:
                       ansible_host: 192.168.30.3
                     tk_cache01:
                       ansible_host: 192.168.30.61
-                archarm:
-                  hosts:
-
         lxc:
           hosts:
             tk_bastion01:

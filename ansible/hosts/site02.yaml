@@ -12,5 +12,3 @@ all:
               children:
                 arch:
                   hosts:
-                archarm:
-                  hosts:

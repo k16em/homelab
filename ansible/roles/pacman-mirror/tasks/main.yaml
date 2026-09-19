@@ -1,0 +1,15 @@
+---
+- name: 'Flexoサーバーが定義されていることを確認する'
+  ansible.builtin.assert:
+    that:
+      - pacman_mirror_server is defined
+      - pacman_mirror_server | length > 0
+
+- name: 'Pacmanのmirrorlistを配置する'
+  become: true
+  ansible.builtin.template:
+    src: mirrorlist.j2
+    dest: /etc/pacman.d/mirrorlist
+    owner: root
+    group: root
+    mode: '0644'

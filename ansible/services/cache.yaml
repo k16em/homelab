@@ -3,9 +3,11 @@
   hosts: cache
   serial: 1
   roles:
+    - role: flexo
+      tags: flexo
+    - role: pacman-mirror
+      tags: pacman_mirror
     - role: initialize-node
       tags: initialize_node
     - role: upgrade-packages
       tags: upgrade_packages
-    - role: flexo
-      tags: flexo

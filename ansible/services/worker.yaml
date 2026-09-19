@@ -3,6 +3,8 @@
   hosts: worker
   serial: 1
   roles:
+    - role: pacman-mirror
+      tags: pacman_mirror
     - role: initialize-node
       tags: initialize_node
     - role: upgrade-packages

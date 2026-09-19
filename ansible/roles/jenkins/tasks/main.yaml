@@ -1,18 +1,12 @@
 - name: 'jenkinsの依存関係をインストール'
   become: true
   community.general.pacman:
-    name: 
-      - fontconfig
-      - freetype2
-      - jre21-openjdk
-      - ansible
-      - python-passlib
+    name: '{{ jenkins_package_manifest.repository }}'
     state: present
 
 - name: 'jenkins-ltsをインストール'
   kewlfft.aur.aur:
-    name:
-      - jenkins-lts
+    name: '{{ jenkins_package_manifest.aur }}'
     state: present
 
 - name: 'jenkinsの実行バージョンを変える'

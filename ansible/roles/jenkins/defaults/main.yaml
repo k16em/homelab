@@ -1,0 +1,10 @@
+---
+jenkins_package_manifest:
+  repository:
+    - fontconfig
+    - freetype2
+    - jre21-openjdk
+    - ansible
+    - python-passlib
+  aur:
+    - jenkins-lts

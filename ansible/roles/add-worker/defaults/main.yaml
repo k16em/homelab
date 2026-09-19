@@ -1,23 +1,23 @@
 ---
 add_worker_user: kei
 
-add_worker_packages:
-  - name: cmake
-  - name: unzip
-  - name: ninja
-  - name: curl
-  - name: tmux
-  - name: eza
-  - name: zoxide
-  - name: fzf
-  - name: thefuck
-  - name: man
-  - name: mise
-  - name: direnv
-  - name: github-cli
-
-add_worker_aur_packages:
-  - name: paru
+add_worker_package_manifest:
+  repository:
+    - cmake
+    - unzip
+    - ninja
+    - curl
+    - tmux
+    - eza
+    - zoxide
+    - fzf
+    - thefuck
+    - man
+    - mise
+    - direnv
+    - github-cli
+  aur:
+    - paru
 
 add_worker_authorized_keys:
   - key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH1+DvxUVbKQVrRsRhZEX/aqdox/MU3nC9bqmJBDz+by homelab

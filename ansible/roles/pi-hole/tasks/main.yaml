@@ -2,32 +2,12 @@
 - name: 'pi-holeの稼動に必要なパッケージをインストール'
   become: true
   community.general.pacman:
-    name: 
-    - php-cgi
-    - openssl
-    - openssl-1.1
-    - patch
-    - mbedtls
+    name: '{{ pi_hole_package_manifest.repository }}'
     state: present
 
-- name: 'pi-hole-webをインストール'
+- name: 'pi-holeをインストール'
   kewlfft.aur.aur:
-    name:
-      - pi-hole-web
-    state: present
-  notify: 'pihole-FTLを再起動する'
-
-- name: 'pi-hole-ftlをインストール'
-  kewlfft.aur.aur:
-    name:
-      - pi-hole-ftl
-    state: present
-  notify: 'pihole-FTLを再起動する'
-
-- name: 'pi-hole-coreをインストール'
-  kewlfft.aur.aur:
-    name:
-      - pi-hole-core
+    name: '{{ pi_hole_package_manifest.aur }}'
     state: present
   notify: 'pihole-FTLを再起動する'
 

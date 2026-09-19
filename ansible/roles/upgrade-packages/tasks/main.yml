@@ -2,37 +2,30 @@
 - name: "rsyncを入れる"
   become: true
   community.general.pacman:
-    name: rsync
+    name: '{{ upgrade_packages_package_manifest.repository | select("equalto", "rsync") | first }}'
     state: latest
 
-#- name: "キャッシュを同期する(x86_64)"
-#  become: true
-#  ansible.posix.synchronize:
-#    mode: pull
-#    src: rsync://192.168.30.61/x86_64/
-#    dest: /var/cache/pacman/pkg/
-#  delegate_to: "{{ inventory_hostname }}"
-#  when: "'arch' in group_names"
-#
-#- name: "キャッシュを同期する(aarch64)"
-#  become: true
-#  ansible.posix.synchronize:
-#    mode: pull
-#    src: rsync://192.168.30.61/aarch64/
-#    dest: /var/cache/pacman/pkg/
-#  delegate_to: "{{ inventory_hostname }}"
-#  when: "'archarm' in group_names"
+- name: "キャッシュを同期する"
+  become: true
+  ansible.posix.synchronize:
+    mode: pull
+    src: 'rsync://{{ pacman_cache_server }}/{{ ansible_architecture }}/'
+    dest: /var/cache/pacman/pkg/
+  delegate_to: '{{ inventory_hostname }}'
+  when:
+    - pacman_cache_server is defined
+    - ansible_host | default(inventory_hostname) != pacman_cache_server
 
 - name: "archlinux-keyringを先に更新かける"
   become: true
   community.general.pacman:
-    name: archlinux-keyring
+    name: '{{ upgrade_packages_package_manifest.repository | select("equalto", "archlinux-keyring") | first }}'
     state: latest
 
 - name: "pacman-contribを入れる"
   become: true
   community.general.pacman:
-    name: pacman-contrib
+    name: '{{ upgrade_packages_package_manifest.repository | select("equalto", "pacman-contrib") | first }}'
     state: latest
 
 - name: "pacman -Syyuする"

@@ -1,0 +1,12 @@
+---
+pi_hole_package_manifest:
+  repository:
+    - php-cgi
+    - openssl
+    - openssl-1.1
+    - patch
+    - mbedtls
+  aur:
+    - pi-hole-web
+    - pi-hole-ftl
+    - pi-hole-core

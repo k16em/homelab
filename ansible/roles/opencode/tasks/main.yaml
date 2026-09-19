@@ -2,9 +2,8 @@
 - name: '必要なパッケージを追加する'
   become: true
   community.general.pacman:
-    name: '{{ item.name }}'
+    name: '{{ opencode_package_manifest.repository }}'
     state: installed
-  with_items: '{{ opencode_packages }}'
 
 - name: 'config用ディレクトリを掘る'
   become: true

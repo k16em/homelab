@@ -9,9 +9,8 @@
 - name: '必要なパッケージを追加する'
   become: true
   community.general.pacman:
-    name: '{{ item.name }}'
+    name: '{{ initialize_node_package_manifest.repository }}'
     state: present
-  with_items: '{{ initialize_node_base_packages }}'
 
 - name: 'グローバルなzshrcを置く'
   become: true
@@ -67,7 +66,7 @@
 
 - name: 'Grafana Alloyを追加する'
   kewlfft.aur.aur:
-    name: 'grafana-alloy-bin'
+    name: '{{ initialize_node_package_manifest.aur }}'
     state: present
 
 - name: 'Alloyの設定を置く'

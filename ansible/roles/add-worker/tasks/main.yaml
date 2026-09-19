@@ -33,9 +33,8 @@
 - name: 'workerに必要なパッケージを追加する'
   become: true
   community.general.pacman:
-    name: '{{ item.name }}'
+    name: '{{ add_worker_package_manifest.repository }}'
     state: installed
-  with_items: '{{ add_worker_packages }}'
   when: "'worker' in group_names"
 
 - name: 'rustのdefaultをstableに設定'
@@ -46,7 +45,6 @@
 
 - name: 'workerに必要なAURパッケージを追加する'
   kewlfft.aur.aur:
-    name: '{{ item.name }}'
+    name: '{{ add_worker_package_manifest.aur }}'
     state: present
-  with_items: '{{ add_worker_aur_packages }}'
   when: "'worker' in group_names"

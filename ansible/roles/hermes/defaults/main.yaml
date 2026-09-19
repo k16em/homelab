@@ -1,16 +1,16 @@
 ---
-hermes_required_packages:
-  - name: ripgrep
-  - name: ffmpeg
-  - name: nss
-  - name: at-spi2-core
-  - name: cups
-  - name: libdrm
-  - name: libxkbcommon
-  - name: mesa
-  - name: pango
-  - name: cairo
-  - name: alsa-lib
-
-hermes_required_aur_packages:
-  - name: python311
+hermes_package_manifest:
+  repository:
+    - ripgrep
+    - ffmpeg
+    - nss
+    - at-spi2-core
+    - cups
+    - libdrm
+    - libxkbcommon
+    - mesa
+    - pango
+    - cairo
+    - alsa-lib
+  aur:
+    - python311

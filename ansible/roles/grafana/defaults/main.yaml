@@ -1,0 +1,6 @@
+---
+grafana_package_manifest:
+  repository:
+    - prometheus
+  aur:
+    - grafana-bin

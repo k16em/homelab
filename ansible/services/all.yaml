@@ -1,6 +1,6 @@
 ---
 - name: Arch Linuxホストを構成する
-  hosts: archlinux
+  hosts: archlinux:!cache
   serial: 1
   roles:
     - role: initialize-node

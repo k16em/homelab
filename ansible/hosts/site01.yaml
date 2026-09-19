@@ -5,6 +5,8 @@ all:
 
   children:
     site01:
+      vars:
+        pacman_cache_server: 192.168.30.61
       children:
         tk:
           children:
@@ -16,6 +18,8 @@ all:
                       ansible_host: 192.168.30.30
                     tk_dns01:
                       ansible_host: 192.168.30.3
+                    tk_cache01:
+                      ansible_host: 192.168.30.61
                 archarm:
                   hosts:
 
@@ -40,6 +44,10 @@ all:
         dns:
           hosts:
             tk_dns01:
+
+        cache:
+          hosts:
+            tk_cache01:
 
         proxmox:
           hosts:

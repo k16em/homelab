@@ -1,4 +1,6 @@
 ---
-mariadb_packages:
-  - name: mariadb
-  - name: mariadb-clients
+mariadb_package_manifest:
+  repository:
+    - mariadb
+    - mariadb-clients
+  aur: []

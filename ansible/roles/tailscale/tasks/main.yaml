@@ -1,7 +1,7 @@
 - name: 'tailscaleをインストール'
   become: true
   community.general.pacman:
-    name: tailscale
+    name: '{{ tailscale_package_manifest.repository }}'
     state: present
 
 - name: 'sysctlの設定を置く'

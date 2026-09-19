@@ -1,9 +1,63 @@
 ---
+- name: 'Role変数ファイルを検索する'
+  ansible.builtin.find:
+    paths: '{{ pacman_cache_roles_path }}'
+    patterns:
+      - main.yaml
+      - main.yml
+    recurse: true
+    file_type: file
+  delegate_to: localhost
+  become: false
+  register: pacman_cache_role_variable_files
+
+- name: 'パッケージmanifestファイルを検出する'
+  ansible.builtin.set_fact:
+    pacman_cache_manifest_files: >-
+      {{ pacman_cache_role_variable_files.files
+         | map(attribute='path')
+         | select('search', '/defaults/main.ya?ml$')
+         | reject('search', '/llm-st/')
+         | sort
+         | list }}
+
+- name: 'パッケージmanifestを初期化する'
+  ansible.builtin.set_fact:
+    pacman_cache_manifests: []
+
+- name: 'パッケージmanifestを読み込む'
+  ansible.builtin.set_fact:
+    pacman_cache_manifests: >-
+      {{ pacman_cache_manifests
+         + ((lookup('ansible.builtin.file', item) | from_yaml | dict2items)
+            | selectattr('key', 'match', '^[a-z0-9_]+_package_manifest$')
+            | map(attribute='value')
+            | list) }}
+  loop: '{{ pacman_cache_manifest_files }}'
+  loop_control:
+    label: '{{ item | dirname | dirname | basename }}'
+
+- name: '公式リポジトリのパッケージを集約する'
+  ansible.builtin.set_fact:
+    pacman_cache_repository_packages: >-
+      {{ pacman_cache_manifests
+         | selectattr('repository', 'defined')
+         | map(attribute='repository')
+         | flatten
+         | unique
+         | sort
+         | list }}
+
+- name: '公式リポジトリのパッケージが定義されていることを確認する'
+  ansible.builtin.assert:
+    that:
+      - pacman_cache_repository_packages | length > 0
+
 - name: 'rsyncを追加する'
   become: true
   community.general.pacman:
-    name: rsync
-    state: installed
+    name: '{{ pacman_cache_package_manifest.repository }}'
+    state: present
 
 - name: 'rsyncグループを作成する'
   become: true
@@ -16,20 +70,37 @@
   ansible.builtin.user:
     name: sync
     shell: /usr/bin/zsh
-    groups: rsync, sudo
+    group: rsync
     append: yes
     password_lock: true
 
-- name: 'rsync用のディレクトリを掘る'
+- name: 'キャッシュ用のディレクトリを掘る'
   become: true
-  become_user: sync
   ansible.builtin.file:
-    path: "/home/sync/pacman/{{ item }}"
-    state: 'directory'
+    path: '{{ pacman_cache_root }}/{{ ansible_architecture }}'
+    state: directory
+    owner: sync
+    group: rsync
     mode: '0755'
-  loop:
-    - aarch64
-    - x86_64
+
+- name: 'Pacmanデータベースを更新する'
+  become: true
+  community.general.pacman:
+    update_cache: true
+
+- name: '公式リポジトリのパッケージをキャッシュする'
+  become: true
+  ansible.builtin.command:
+    argv: >-
+      {{ ['pacman', '--sync', '--downloadonly', '--noconfirm', '--cachedir',
+          pacman_cache_root ~ '/' ~ ansible_architecture]
+         + pacman_cache_repository_packages }}
+  environment:
+    LC_ALL: C
+  register: pacman_cache_download
+  changed_when: >-
+    'downloading' in
+    ((pacman_cache_download.stdout + pacman_cache_download.stderr) | lower)
 
 - name: 'rsyncdの設定を置く'
   become: true
@@ -37,6 +108,7 @@
     src: rsyncd.conf.j2
     dest: /etc/rsyncd.conf
     mode: '0644'
+  notify: 'rsyncdを再起動する'
 
 - name: 'rsyncd.serviceを有効化'
   become: true

@@ -2,15 +2,13 @@
 - name: '必要なパッケージを追加する'
   become: true
   community.general.pacman:
-    name: '{{ item.name }}'
+    name: '{{ llm_backend_package_manifest.repository }}'
     state: installed
-  with_items: '{{ llm_backend_required_packages }}'
 
 - name: '必要なAURパッケージを追加する'
   kewlfft.aur.aur:
-    name: '{{ item.name }}'
+    name: '{{ llm_backend_package_manifest.aur }}'
     state: present
-  with_items: '{{ llm_backend_required_aur_packages }}'
 
 - name: 'llmグループを作成する'
   become: true

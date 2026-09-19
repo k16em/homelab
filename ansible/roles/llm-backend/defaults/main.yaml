@@ -1,36 +1,36 @@
 ---
-llm_backend_required_packages:
-  - name: clang
-  - name: vulkan-radeon
-  - name: lib32-vulkan-radeon
-  - name: rocm-hip-sdk
-  - name: rocm-opencl-sdk
-  - name: python
-  - name: huggingface
-  - name: gperftools
-  - name: bc
-  - name: python-pytorch-opt-rocm
-  - name: amd-ucode
-  - name: python-cairo
-  - name: python-opencv
-  - name: python-passlib
-  - name: libxslt
-  - name: python-lxml
-  - name: python-hpack
-  - name: python-hyperframe
-  - name: python-h2
-  - name: cuda
-  - name: python-yaml
-
-llm_backend_required_aur_packages:
-  - name: zluda
-  - name: "llama.cpp-hip"
-  - name: llama-swap
-  - name: python-primp
-  - name: python-duckduckgo-search
-  - name: python-whisper
-  - name: python310
-  - name: python311
+llm_backend_package_manifest:
+  repository:
+    - clang
+    - vulkan-radeon
+    - lib32-vulkan-radeon
+    - rocm-hip-sdk
+    - rocm-opencl-sdk
+    - python
+    - huggingface
+    - gperftools
+    - bc
+    - python-pytorch-opt-rocm
+    - amd-ucode
+    - python-cairo
+    - python-opencv
+    - python-passlib
+    - libxslt
+    - python-lxml
+    - python-hpack
+    - python-hyperframe
+    - python-h2
+    - cuda
+    - python-yaml
+  aur:
+    - zluda
+    - llama.cpp-hip
+    - llama-swap
+    - python-primp
+    - python-duckduckgo-search
+    - python-whisper
+    - python310
+    - python311
 
 llm_backend_llama_swap_bin: /usr/bin/llama-server
 llm_backend_llama_swap_models_dir: /var/lib/models

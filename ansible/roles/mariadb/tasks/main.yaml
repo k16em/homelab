@@ -2,9 +2,8 @@
 - name: 'mariadb実行に必要なパッケージを追加する'
   become: true
   community.general.pacman:
-    name: '{{ item.name }}'
+    name: '{{ mariadb_package_manifest.repository }}'
     state: installed
-  with_items: '{{ mariadb_packages  }}'
   when: "'mariadb' in group_names"
 
 - name: 'mariadbの文字エンコード設定を置く'

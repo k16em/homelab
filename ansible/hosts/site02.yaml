@@ -5,6 +5,8 @@ all:
 
   children:
     site02:
+      vars:
+        pacman_cache_server: 192.168.64.61
       children:
         iw:
           children:
@@ -12,5 +14,11 @@ all:
               children:
                 arch:
                   hosts:
+                    iw_cache01:
+                      ansible_host: 192.168.64.61
                 archarm:
                   hosts:
+
+        cache:
+          hosts:
+            iw_cache01:

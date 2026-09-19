@@ -1,19 +1,22 @@
 ---
-initialize_node_base_packages:
-  - name: sudo
-  - name: zsh
-  - name: zsh-completions
-  - name: vim
-  - name: mosh
-  - name: git
-  - name: base-devel
-  - name: rustup
-  - name: pacman-contrib
-  - name: python-pip
-  - name: python-setuptools
-  - name: rsync
-  - name: prometheus-node-exporter
-  - name: libfido2
+initialize_node_package_manifest:
+  repository:
+    - sudo
+    - zsh
+    - zsh-completions
+    - vim
+    - mosh
+    - git
+    - base-devel
+    - rustup
+    - pacman-contrib
+    - python-pip
+    - python-setuptools
+    - rsync
+    - prometheus-node-exporter
+    - libfido2
+  aur:
+    - grafana-alloy-bin
 
 initialize_node_authorized_keys:
   - key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH1+DvxUVbKQVrRsRhZEX/aqdox/MU3nC9bqmJBDz+by homelab
@@ -28,4 +31,3 @@ initialize_node_authorized_keys:
   - key: sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIIwQTRjppU1lg4MVEmLLkOe3f8nB8/iw3wsSitimnW1NAAAABHNzaDo= yk5a01
   - key: sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIPI+wvT7hPz9q1+UqueKhlxv45aFaHCNJCFB3co0e3qhAAAABHNzaDo= yk5c01
   - key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILvAgOHU6Ct4QYDIXZgXJARFvqDCRROdnKAzdNE74jHY spacewar
-

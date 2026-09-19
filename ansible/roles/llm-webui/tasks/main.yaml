@@ -2,9 +2,8 @@
 - name: '必要なパッケージを追加する'
   become: true
   community.general.pacman:
-    name: '{{ item.name }}'
+    name: '{{ llm_webui_package_manifest.repository }}'
     state: installed
-  with_items: '{{ llm_webui_required_packages }}'
 
 - name: 'webuiグループを作成する'
   become: true

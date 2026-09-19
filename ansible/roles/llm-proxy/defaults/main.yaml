@@ -1,3 +1,5 @@
 ---
-llm_proxy_required_packages:
-  - name: go
+llm_proxy_package_manifest:
+  repository:
+    - go
+  aur: []

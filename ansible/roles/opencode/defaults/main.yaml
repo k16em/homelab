@@ -1,7 +1,9 @@
 ---
-opencode_packages:
-  - name: opencode
-  - name: python
+opencode_package_manifest:
+  repository:
+    - opencode
+    - python
+  aur: []
 
 opencode_user: opencode
 

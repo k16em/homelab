@@ -1,8 +1,7 @@
 ---
 - name: 'grafanaをインストール'
   kewlfft.aur.aur:
-    name:
-      - grafana-bin
+    name: '{{ grafana_package_manifest.aur }}'
     state: present
 
 - name: 'grafana.serviceを有効化'
@@ -15,7 +14,7 @@
 - name: 'prometheusをインストール'
   become: true
   community.general.pacman:
-    name: prometheus
+    name: '{{ grafana_package_manifest.repository }}'
     state: present
   notify: 'prometheusを再起動する'
 

@@ -2,9 +2,8 @@
 - name: '必要なパッケージを追加する'
   become: true
   community.general.pacman:
-    name: '{{ item.name }}'
+    name: '{{ llm_proxy_package_manifest.repository }}'
     state: installed
-  with_items: '{{ llm_proxy_required_packages }}'
 
 - name: 'PKGBUILDのclone先ディレクトリを掘る'
   ansible.builtin.file:

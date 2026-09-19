@@ -45,7 +45,6 @@ all:
         cache:
           hosts:
             tk_cache01:
-              flexo_cache_migration_required: true
 
         proxmox:
           hosts:

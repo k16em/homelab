@@ -1,8 +1,13 @@
 ---
-- hosts: dns
+- name: DNSサービスを構成する
+  hosts: dns
   serial: 1
   roles:
-    - initialize-node
-    - upgrade-packages
-    - pi-hole
-    - pi-hole-update
+    - role: initialize-node
+      tags: initialize_node
+    - role: upgrade-packages
+      tags: upgrade_packages
+    - role: pi-hole
+      tags: pi_hole
+    - role: pi-hole-update
+      tags: pi_hole_update

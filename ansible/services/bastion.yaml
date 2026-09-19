@@ -1,8 +1,13 @@
 ---
-- hosts: bastion
+- name: 踏み台ホストを構成する
+  hosts: bastion
   serial: 1
   roles:
-    - initialize-node
-    - upgrade-packages
-    - ssh
-    - tailscale
+    - role: initialize-node
+      tags: initialize_node
+    - role: upgrade-packages
+      tags: upgrade_packages
+    - role: ssh
+      tags: ssh
+    - role: tailscale
+      tags: tailscale

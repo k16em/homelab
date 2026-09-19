@@ -1,7 +1,11 @@
 ---
-- hosts: jenkins
+- name: Jenkinsサービスを構成する
+  hosts: jenkins
   serial: 1
   roles:
-    - initialize-node
-    - upgrade-packages
-    - jenkins
+    - role: initialize-node
+      tags: initialize_node
+    - role: upgrade-packages
+      tags: upgrade_packages
+    - role: jenkins
+      tags: jenkins

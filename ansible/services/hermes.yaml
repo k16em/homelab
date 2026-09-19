@@ -1,8 +1,13 @@
 ---
-- hosts: hermes
+- name: Hermesホストを構成する
+  hosts: hermes
   serial: 1
   roles:
-    - initialize-node
-    - upgrade-packages
-    - add-worker
-    - hermes
+    - role: initialize-node
+      tags: initialize_node
+    - role: upgrade-packages
+      tags: upgrade_packages
+    - role: add-worker
+      tags: add_worker
+    - role: hermes
+      tags: hermes

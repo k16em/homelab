@@ -1,7 +1,11 @@
 ---
-- hosts: redmine
+- name: Redmineサービスを構成する
+  hosts: redmine
   serial: 1
   roles:
-    - initialize-node
-    - upgrade-packages
-    - mariadb
+    - role: initialize-node
+      tags: initialize_node
+    - role: upgrade-packages
+      tags: upgrade_packages
+    - role: mariadb
+      tags: mariadb

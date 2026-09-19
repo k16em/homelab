@@ -1,7 +1,11 @@
 ---
-- hosts: grafana
+- name: 監視サービスを構成する
+  hosts: grafana
   serial: 1
   roles:
-    - initialize-node
-    - upgrade-packages
-    - grafana
+    - role: initialize-node
+      tags: initialize_node
+    - role: upgrade-packages
+      tags: upgrade_packages
+    - role: grafana
+      tags: grafana

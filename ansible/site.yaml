@@ -1,0 +1,14 @@
+---
+- import_playbook: services/all.yaml
+- import_playbook: services/bastion.yaml
+- import_playbook: services/cache.yaml
+- import_playbook: services/deployer.yaml
+- import_playbook: services/dns.yaml
+- import_playbook: services/grafana.yaml
+- import_playbook: services/hermes.yaml
+- import_playbook: services/jenkins.yaml
+- import_playbook: services/llm.yaml
+- import_playbook: services/memory.yaml
+- import_playbook: services/redmine.yaml
+- import_playbook: services/search.yaml
+- import_playbook: services/worker.yaml

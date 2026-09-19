@@ -1,7 +1,11 @@
 ---
-- hosts: memory
+- name: Memoryサービスを構成する
+  hosts: memory
   serial: 1
   roles:
-    - initialize-node
-    - upgrade-packages
-    - hindsight
+    - role: initialize-node
+      tags: initialize_node
+    - role: upgrade-packages
+      tags: upgrade_packages
+    - role: hindsight
+      tags: hindsight

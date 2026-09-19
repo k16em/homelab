@@ -47,10 +47,12 @@
   ansible.builtin.reboot:
     msg: "Ansibleでパッケージ更新があったので、再起動します"
   when:
-    - result.changed == true
+    - result.changed
     - "not 'jenkins' in group_names"
 
 - name: "pacmanのキャッシュを消す"
   become: true
-  ansible.builtin.shell: paccache --remove --keep 3
-
+  ansible.builtin.command:
+    cmd: paccache --remove --keep 3
+  register: paccache
+  changed_when: paccache.stdout | length > 0

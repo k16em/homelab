@@ -10,4 +10,4 @@
   become: true
   community.general.pacman:
     name: ansible
-    state: latest
+    state: present

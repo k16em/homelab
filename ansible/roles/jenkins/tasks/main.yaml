@@ -7,7 +7,7 @@
       - jre21-openjdk
       - ansible
       - python-passlib
-    state: latest
+    state: present
 
 - name: 'jenkins-ltsをインストール'
   kewlfft.aur.aur:
@@ -35,4 +35,3 @@
     state: started
     enabled: true
     name: jenkins
-

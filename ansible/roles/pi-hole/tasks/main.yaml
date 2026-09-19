@@ -8,27 +8,27 @@
     - openssl-1.1
     - patch
     - mbedtls
-    state: latest
+    state: present
 
 - name: 'pi-hole-webをインストール'
   kewlfft.aur.aur:
     name:
       - pi-hole-web
-    state: latest
+    state: present
   notify: 'pihole-FTLを再起動する'
 
 - name: 'pi-hole-ftlをインストール'
   kewlfft.aur.aur:
     name:
       - pi-hole-ftl
-    state: latest
+    state: present
   notify: 'pihole-FTLを再起動する'
 
 - name: 'pi-hole-coreをインストール'
   kewlfft.aur.aur:
     name:
       - pi-hole-core
-    state: latest
+    state: present
   notify: 'pihole-FTLを再起動する'
 
 - name: 'pihole-FTL.serviceを有効化'

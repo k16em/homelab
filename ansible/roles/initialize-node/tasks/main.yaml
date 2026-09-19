@@ -9,7 +9,7 @@
   become: true
   community.general.pacman:
     name: '{{ item.name }}'
-    state: latest
+    state: present
   with_items: '{{ base_packages }}'
 
 - name: 'グローバルなzshrcを置く'

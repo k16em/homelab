@@ -2,7 +2,7 @@
   become: true
   community.general.pacman:
     name: tailscale
-    state: latest
+    state: present
 
 - name: 'sysctlの設定を置く'
   become: true
@@ -16,4 +16,3 @@
     state: started
     enabled: true
     name: tailscaled
-

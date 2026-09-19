@@ -16,7 +16,7 @@
   become: true
   community.general.pacman:
     name: prometheus
-    state: latest
+    state: present
   notify: 'prometheusを再起動する'
 
 - name: 'prometheusの設定を置く'
@@ -32,4 +32,3 @@
     state: started
     enabled: true
     name: prometheus
-

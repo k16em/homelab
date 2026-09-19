@@ -38,8 +38,10 @@
   when: "'worker' in group_names"
 
 - name: 'rustのdefaultをstableに設定'
-  ansible.builtin.shell:
+  ansible.builtin.command:
     cmd: 'rustup default stable'
+  register: rustup_default
+  changed_when: "'unchanged' not in (rustup_default.stdout + rustup_default.stderr)"
 
 - name: 'workerに必要なAURパッケージを追加する'
   kewlfft.aur.aur:

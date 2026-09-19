@@ -25,13 +25,14 @@
     cmd: 'pacman -Qq llama-otel-proxy-git'
   register: llamaproxy_installed
   changed_when: false
-  failed_when: false
+  failed_when: llamaproxy_installed.rc not in [0, 1]
   check_mode: false
 
 - name: 'llama-otel-proxyをビルドしてインストールする'
   ansible.builtin.command:
     cmd: 'makepkg --syncdeps --install --clean --force --holdver --noconfirm'
     chdir: ~/repos/github.com/k16em/my-PKGBUILDs/llama-otel-proxy
+  changed_when: true
   when: pkgbuilds.changed or llamaproxy_installed.rc != 0
   notify: 'llama-otel-proxyを再起動する'
 

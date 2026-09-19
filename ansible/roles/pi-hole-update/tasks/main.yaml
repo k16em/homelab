@@ -1,5 +1,5 @@
 - name: 'adlistを更新'
   become: true
-  ansible.builtin.shell:
+  ansible.builtin.command:
     cmd: 'pihole -g'
-
+  changed_when: true

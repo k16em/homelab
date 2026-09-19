@@ -71,7 +71,6 @@
     name: sync
     shell: /usr/bin/zsh
     group: rsync
-    append: yes
     password_lock: true
 
 - name: 'キャッシュ用のディレクトリを掘る'

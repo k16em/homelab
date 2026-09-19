@@ -76,11 +76,22 @@
 - name: 'キャッシュ用のディレクトリを掘る'
   become: true
   ansible.builtin.file:
-    path: '{{ pacman_cache_root }}/{{ ansible_architecture }}'
+    path: '{{ pacman_cache_root }}/{{ ansible_facts["architecture"] }}'
     state: directory
     owner: sync
     group: rsync
     mode: '0755'
+
+- name: 'multilibリポジトリを有効化する'
+  become: true
+  community.general.ini_file:
+    path: /etc/pacman.conf
+    section: multilib
+    option: Include
+    value: /etc/pacman.d/mirrorlist
+    no_extra_spaces: true
+    mode: '0644'
+  when: ansible_facts['architecture'] == 'x86_64'
 
 - name: 'Pacmanデータベースを更新する'
   become: true
@@ -92,7 +103,7 @@
   ansible.builtin.command:
     argv: >-
       {{ ['pacman', '--sync', '--downloadonly', '--noconfirm', '--cachedir',
-          pacman_cache_root ~ '/' ~ ansible_architecture]
+          pacman_cache_root ~ '/' ~ ansible_facts['architecture']]
          + pacman_cache_repository_packages }}
   environment:
     LC_ALL: C

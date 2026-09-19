@@ -9,7 +9,7 @@
   become: true
   ansible.posix.synchronize:
     mode: pull
-    src: 'rsync://{{ pacman_cache_server }}/{{ ansible_architecture }}/'
+    src: 'rsync://{{ pacman_cache_server }}/{{ ansible_facts["architecture"] }}/'
     dest: /var/cache/pacman/pkg/
   delegate_to: '{{ inventory_hostname }}'
   when:

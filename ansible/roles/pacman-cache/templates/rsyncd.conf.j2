@@ -5,7 +5,7 @@ max connections = 4
 syslog facility = local5
 pid file = /run/rsyncd.pid
 
-[{{ ansible_architecture }}]
-    path         = {{ pacman_cache_root }}/{{ ansible_architecture }}
+[{{ ansible_facts['architecture'] }}]
+    path         = {{ pacman_cache_root }}/{{ ansible_facts['architecture'] }}
     include      = **
     read only    = true

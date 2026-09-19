@@ -54,3 +54,10 @@
   notify:
     - 'systemd-resolvedを再起動する'
     - 'pihole-FTLを再起動する'
+
+- name: 'adlistを更新'
+  become: true
+  ansible.builtin.command:
+    cmd: 'pihole -g'
+  changed_when: true
+  tags: pi_hole_update

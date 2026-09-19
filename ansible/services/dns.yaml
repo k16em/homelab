@@ -9,5 +9,3 @@
       tags: upgrade_packages
     - role: pi-hole
       tags: pi_hole
-    - role: pi-hole-update
-      tags: pi_hole_update

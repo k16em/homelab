@@ -19,6 +19,8 @@
 - name: LLM Web UIを構成する
   hosts: webui
   roles:
+    - role: docker-host
+      tags: docker_host
     - role: llm-webui
       tags: llm_webui
 

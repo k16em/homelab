@@ -46,13 +46,6 @@
     owner: webui
     mode: '0755'
 
-- name: 'docker.serviceを有効化'
-  become: true
-  ansible.builtin.systemd:
-    state: started
-    enabled: true
-    name: docker
-
 - name: 'docker ディレクトリを掘る'
   become: true
   become_user: webui

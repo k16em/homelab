@@ -1,0 +1,5 @@
+---
+docker_host_packages:
+  - docker
+  - docker-compose
+  - docker-buildx

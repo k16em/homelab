@@ -7,5 +7,7 @@
       tags: initialize_node
     - role: upgrade-packages
       tags: upgrade_packages
+    - role: docker-host
+      tags: docker_host
     - role: searxng
       tags: searxng

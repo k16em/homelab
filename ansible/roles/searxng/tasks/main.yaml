@@ -1,11 +1,4 @@
 ---
-- name: '必要なパッケージを追加する'
-  become: true
-  community.general.pacman:
-    name: '{{ item.name }}'
-    state: installed
-  with_items: '{{ searxng_required_packages }}'
-
 - name: 'searxngグループを作成する'
   become: true
   ansible.builtin.group:
@@ -20,13 +13,6 @@
     groups: searxng,docker
     append: yes
     password_lock: true
-
-- name: 'docker.serviceを有効化'
-  become: true
-  ansible.builtin.systemd:
-    state: started
-    enabled: true
-    name: docker
 
 - name: 'searxng用ディレクトリの存在確認'
   become: true

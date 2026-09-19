@@ -82,6 +82,37 @@
     group: rsync
     mode: '0755'
 
+- name: '対向キャッシュの利用可否を確認する'
+  ansible.builtin.command:
+    argv:
+      - rsync
+      - --list-only
+      - --contimeout=3
+      - --timeout=10
+      - 'rsync://{{ item }}/{{ ansible_facts["architecture"] }}/'
+  loop: '{{ pacman_cache_peer_servers }}'
+  register: pacman_cache_peer_checks
+  changed_when: false
+  failed_when: false
+
+- name: '対向キャッシュからパッケージを同期する'
+  become: true
+  ansible.posix.synchronize:
+    mode: pull
+    src: >-
+      rsync://{{ item.item }}/{{ ansible_facts['architecture'] }}/
+    dest: '{{ pacman_cache_root }}/{{ ansible_facts["architecture"] }}/'
+    rsync_opts:
+      - --contimeout=3
+      - --timeout=10
+  delegate_to: '{{ inventory_hostname }}'
+  loop: '{{ pacman_cache_peer_checks.results }}'
+  loop_control:
+    label: '{{ item.item }}'
+  when: item.rc | default(1) == 0
+  register: pacman_cache_peer_sync
+  failed_when: false
+
 - name: 'multilibリポジトリを有効化する'
   become: true
   community.general.ini_file:

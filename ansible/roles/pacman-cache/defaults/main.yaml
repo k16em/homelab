@@ -6,3 +6,4 @@ pacman_cache_package_manifest:
 
 pacman_cache_root: /home/sync/pacman
 pacman_cache_roles_path: '{{ role_path }}/..'
+pacman_cache_peer_servers: []

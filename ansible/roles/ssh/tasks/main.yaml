@@ -3,17 +3,20 @@
   ansible.builtin.file:
     path: ~/.ssh/conf.d
     state: "directory"
-    recurse: true
+    mode: '0700'
 
 - name: '~/ssh/configを置く'
   ansible.builtin.copy:
     src: config
     dest: ~/.ssh/config
+    mode: '0600'
 
 - name: 'tailscaleの接続情報を作成する'
   ansible.builtin.template:
     src: site.j2
     dest: ~/.ssh/conf.d/{{ item.prefix }}
+    mode: '0600'
+  diff: false
   with_items: 
   - { prefix: "ts", hosts: "{{vault_tailscale_hosts}}" }
 
@@ -21,8 +24,9 @@
   ansible.builtin.template:
     src: site.j2
     dest: ~/.ssh/conf.d/{{ item.prefix }}
+    mode: '0600'
+  diff: false
   with_items: 
   - { prefix: "tk", hosts: "{{site01}}", bastion: "{{vault_facing_bastion}}" }
   - { prefix: "tk-pv", hosts: "{{site01p}}", bastion: "{{vault_facing_bastion}}" }
   - { prefix: "iw", hosts: "{{site02}}", bastion: "{{vault_facing_bastion}}" }
-

@@ -9,6 +9,7 @@
   ansible.builtin.copy:
     content: 'LANG=ja_JP.UTF-8'
     dest: /etc/locale.conf
+    mode: '0644'
 
 - name: 'worker用のユーザを作成する'
   become: true

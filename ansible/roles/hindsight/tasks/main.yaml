@@ -40,7 +40,6 @@
   ansible.builtin.file:
     path: ~/.hindsight
     state: "directory"
-    recurse: true
     owner: hindsight
     mode: '0755'
   when: not hindsight_dir.stat.exists
@@ -51,7 +50,6 @@
   ansible.builtin.file:
     path: ~/docker
     state: directory
-    recurse: true
     owner: hindsight
     mode: '0755'
 
@@ -61,6 +59,8 @@
   ansible.builtin.template:
     src: compose.yaml.j2
     dest: ~/docker/compose.yaml
+    mode: '0644'
+  diff: false
 
 - name: 'docker compose up -d'
   become: true

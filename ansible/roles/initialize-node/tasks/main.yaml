@@ -4,6 +4,7 @@
   ansible.builtin.copy:
     src: mirrorlist
     dest: /etc/pacman.d/mirrorlist
+    mode: '0644'
 
 - name: '必要なパッケージを追加する'
   become: true
@@ -17,6 +18,7 @@
   ansible.builtin.copy:
     src: zshrc
     dest: /etc/zsh/zshrc
+    mode: '0644'
 
 - name: 'sudoグループを作成する'
   become: true
@@ -73,6 +75,8 @@
   ansible.builtin.template:
     src: config.alloy.j2
     dest: /etc/alloy/config.alloy
+    mode: '0644'
+  diff: false
   vars:
     id: "homelab"
     cfg: "{{ vault_alloy_homelab }}"
@@ -83,7 +87,6 @@
   ansible.builtin.file:
     path: /etc/systemd/system/alloy.service.d
     state: "directory"
-    recurse: true
     mode: '0755'
 
 - name: '上書き用ユニットファイルを置く'
@@ -95,6 +98,7 @@
   vars:
     cfg: "{{ vault_alloy_homelab }}"
   notify: 'alloyを再起動する'
+  diff: false
 
 - name: 'alloy.serviceを有効化'
   become: true

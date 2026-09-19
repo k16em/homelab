@@ -12,6 +12,7 @@
   ansible.builtin.copy:
     src: encoding.cnf
     dest: /etc/my.cnf.d/encoding.cnf
+    mode: '0644'
   when: "'mariadb' in group_names"
 
 - name: 'mariadbのログ設定を置く'
@@ -19,6 +20,7 @@
   ansible.builtin.copy:
     src: logging.cnf
     dest: /etc/my.cnf.d/logging.cnf
+    mode: '0644'
   when: "'mariadb' in group_names"
 
 #- name: 'mariadb.serviceを有効化'

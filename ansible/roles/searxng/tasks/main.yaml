@@ -40,7 +40,6 @@
   ansible.builtin.file:
     path: ~/.searxng
     state: "directory"
-    recurse: true
     owner: searxng
     mode: '0755'
   when: not searxng_dir.stat.exists
@@ -51,7 +50,6 @@
   ansible.builtin.file:
     path: ~/docker
     state: directory
-    recurse: true
     owner: searxng
     mode: '0755'
 
@@ -61,6 +59,7 @@
   ansible.builtin.template:
     src: compose.yaml.j2
     dest: ~/docker/compose.yaml
+    mode: '0644'
 
 - name: 'docker compose up -d'
   become: true

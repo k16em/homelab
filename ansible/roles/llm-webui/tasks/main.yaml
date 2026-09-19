@@ -33,7 +33,6 @@
   ansible.builtin.file:
     path: ~/.open-webui
     state: "directory"
-    recurse: true
     owner: webui
     mode: '0755'
   when: not open_webui_dir.stat.exists
@@ -44,7 +43,6 @@
   ansible.builtin.file:
     path: ~/.config/systemd/user
     state: "directory"
-    recurse: true
     owner: webui
     mode: '0755'
 
@@ -61,7 +59,6 @@
   ansible.builtin.file:
     path: ~/docker
     state: directory
-    recurse: true
     owner: webui
     mode: '0755'
 
@@ -71,6 +68,7 @@
   ansible.builtin.template:
     src: compose.yaml.j2
     dest: ~/docker/compose.yaml
+    mode: '0644'
 
 - name: 'docker compose up -d'
   become: true

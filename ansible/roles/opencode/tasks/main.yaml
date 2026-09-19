@@ -29,11 +29,6 @@
   ansible.builtin.template:
     src: config.json.j2
     dest: ~/.config/opencode/config.json
-    validate: '/usr/bin/python -c "import json, sys; json.load(open(sys.argv[1]))" %s'
-
-- name: '設定ファイルのパーミッションを揃える'
-  become: true
-  become_user: '{{ opencode_user }}'
-  ansible.builtin.file:
-    path: ~/.config/opencode/config.json
     mode: "0644"
+    validate: '/usr/bin/python -c "import json, sys; json.load(open(sys.argv[1]))" %s'
+  diff: false

@@ -50,6 +50,7 @@
     owner: root
     group: llamaproxy
     mode: '0640'
+  diff: false
   notify: 'llama-otel-proxyを再起動する'
 
 - name: 'llama-otel-proxyのサービスユニットファイルを上書きする用のディレクトリを作成する'
@@ -57,7 +58,6 @@
   ansible.builtin.file:
     path: /etc/systemd/system/llama-otel-proxy.service.d/
     state: directory
-    recurse: true
     mode: '0755'
 
 - name: 'llama-otel-proxyの上書き用ユニットファイルを置く'
@@ -65,6 +65,7 @@
   ansible.builtin.copy:
     src: override.conf
     dest: /etc/systemd/system/llama-otel-proxy.service.d/override.conf
+    mode: '0644'
   notify: 'llama-otel-proxyを再起動する'
 
 - name: 'llama-otel-proxy.serviceを有効化'

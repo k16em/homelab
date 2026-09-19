@@ -43,13 +43,14 @@
   ansible.builtin.file:
     path: /etc/systemd/resolved.conf.d
     state: "directory"
-    recurse: true
+    mode: '0755'
 
 - name: 'resolvedの設定を置く'
   become: true
   ansible.builtin.copy:
     src: pi-hole.conf
     dest: /etc/systemd/resolved.conf.d/pi-hole.conf
+    mode: '0644'
   notify:
     - 'systemd-resolvedを再起動する'
     - 'pihole-FTLを再起動する'

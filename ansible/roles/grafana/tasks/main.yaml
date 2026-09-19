@@ -24,6 +24,7 @@
   ansible.builtin.template:
     src: prometheus.yml.j2
     dest: /etc/prometheus/prometheus.yml
+    mode: '0644'
   notify: 'prometheusを再起動する'
 
 - name: 'prometheusを有効化'

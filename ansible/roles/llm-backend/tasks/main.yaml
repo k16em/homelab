@@ -32,7 +32,6 @@
   ansible.builtin.file:
     path: /etc/systemd/system/llama-swap.service.d/
     state: "directory"
-    recurse: true
     mode: '0755'
 
 - name: 'llama-swapの上書き用ユニットファイルを置く'
@@ -40,6 +39,7 @@
   ansible.builtin.template:
     src: llama-swap.override.conf.j2
     dest: /etc/systemd/system/llama-swap.service.d/override.conf
+    mode: '0644'
 
 - name: 'llama-swap.serviceを有効化'
   become: true
@@ -64,4 +64,4 @@
     dest: '{{ llama_swap_config_dir }}/config.yaml'
     mode: '0644'
     validate: '/usr/bin/python -c "import yaml, sys; yaml.safe_load(open(sys.argv[1]))" %s'
-
+  diff: false

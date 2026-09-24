@@ -5,8 +5,6 @@
   roles:
     - role: pacman-mirror
       tags: pacman_mirror
-    - role: upgrade-packages
-      tags: upgrade_packages
     - role: initialize-node
       tags: initialize_node
     - role: sshd

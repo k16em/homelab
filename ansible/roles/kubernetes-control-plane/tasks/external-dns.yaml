@@ -1,0 +1,70 @@
+---
+- name: 'Pi-holeのパスワードが定義されていることを確認する'
+  ansible.builtin.assert:
+    that:
+      - kubernetes_control_plane_pihole_password | default('') | length > 0
+    fail_msg: 'pihole_password(vault_pihole_password)が定義されていない'
+    quiet: true
+  no_log: true
+
+- name: 'ExternalDNSのnamespaceを作成する'
+  become: true
+  become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
+  ansible.builtin.command:
+    cmd: kubectl apply --filename -
+    stdin: |
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: external-dns
+  register: kubernetes_control_plane_external_dns_namespace
+  changed_when: kubernetes_control_plane_external_dns_namespace.stdout is not search(' unchanged$')
+
+- name: 'Pi-holeのパスワードを取得する'
+  become: true
+  become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
+  ansible.builtin.command:
+    cmd: kubectl --namespace external-dns get secret pihole-password --ignore-not-found --output jsonpath={.data.password}
+  register: kubernetes_control_plane_pihole_secret
+  changed_when: false
+  check_mode: false
+  no_log: true
+
+- name: 'Pi-holeのパスワードをSecretに置く'
+  become: true
+  become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
+  ansible.builtin.command:
+    cmd: kubectl apply --server-side --force-conflicts --filename -
+    stdin: |
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: pihole-password
+        namespace: external-dns
+      type: Opaque
+      data:
+        password: {{ kubernetes_control_plane_pihole_password | b64encode }}
+  register: kubernetes_control_plane_pihole_secret_apply
+  when: kubernetes_control_plane_pihole_secret.stdout != kubernetes_control_plane_pihole_password | b64encode
+  no_log: true
+
+- name: 'ExternalDNSをインストールまたは更新する'
+  ansible.builtin.include_tasks:
+    file: helm-release.yaml
+  vars:
+    kubernetes_control_plane_helm_release: external-dns
+    kubernetes_control_plane_helm_namespace: external-dns
+    kubernetes_control_plane_helm_chart: '{{ kubernetes_control_plane_external_dns_chart }}'
+    kubernetes_control_plane_helm_chart_name: external-dns
+    kubernetes_control_plane_helm_chart_repo: '{{ kubernetes_control_plane_external_dns_chart_repo }}'
+    kubernetes_control_plane_helm_chart_version: '{{ kubernetes_control_plane_external_dns_chart_version }}'
+    kubernetes_control_plane_helm_values: '{{ kubernetes_control_plane_external_dns_values }}'
+
+- name: '変更したパスワードでExternalDNSを再起動する'
+  become: true
+  become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
+  ansible.builtin.command:
+    cmd: kubectl --namespace external-dns rollout restart deployment/external-dns
+  when:
+    - kubernetes_control_plane_pihole_secret_apply is changed
+    - kubernetes_control_plane_helm_upgrade is not changed

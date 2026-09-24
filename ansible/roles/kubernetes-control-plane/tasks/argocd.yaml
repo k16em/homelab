@@ -27,4 +27,4 @@
     that:
       - kubernetes_control_plane_argocd_lb_ip.stdout == kubernetes_control_plane_argocd_ip
     fail_msg: 'Argo CDのIPが{{ kubernetes_control_plane_argocd_ip }}ではなく{{ kubernetes_control_plane_argocd_lb_ip.stdout }}になっている'
-    success_msg: 'Argo CD: https://{{ kubernetes_control_plane_argocd_lb_ip.stdout }}'
+    success_msg: 'Argo CD: https://{{ kubernetes_control_plane_argocd_hostname }} ({{ kubernetes_control_plane_argocd_lb_ip.stdout }})'

@@ -12,10 +12,15 @@ kubernetes_control_plane_lb_networks:
     start: 192.168.20.200
     stop: 192.168.20.220
     interface: eth1
+    dns: pv
   - name: public
     start: 192.168.30.200
     stop: 192.168.30.220
     interface: eth0
+    dns: pb
+
+kubernetes_control_plane_dns_domain: tk.local.k16em.net
+kubernetes_control_plane_dns_zones: "{{ kubernetes_control_plane_lb_networks | map(attribute='dns') | map('regex_replace', '$', '.' ~ kubernetes_control_plane_dns_domain) | list }}"
 
 kubernetes_control_plane_cilium_version: 1.20.2
 kubernetes_control_plane_cilium_values:
@@ -31,10 +36,33 @@ kubernetes_control_plane_cilium_values:
     qps: 20
     burst: 40
 
+kubernetes_control_plane_pihole_server: http://192.168.30.3
+kubernetes_control_plane_pihole_password: '{{ pihole_password }}'
+kubernetes_control_plane_external_dns_chart: external-dns
+kubernetes_control_plane_external_dns_chart_repo: https://kubernetes-sigs.github.io/external-dns/
+kubernetes_control_plane_external_dns_chart_version: 1.22.0
+kubernetes_control_plane_external_dns_values:
+  provider:
+    name: pihole
+  sources:
+    - service
+  policy: upsert-only
+  registry: noop
+  domainFilters: '{{ kubernetes_control_plane_dns_zones }}'
+  env:
+    - name: EXTERNAL_DNS_PIHOLE_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: pihole-password
+          key: password
+  extraArgs:
+    pihole-server: '{{ kubernetes_control_plane_pihole_server }}'
+
 kubernetes_control_plane_argocd_chart: oci://ghcr.io/argoproj/argo-helm/argo-cd
 kubernetes_control_plane_argocd_chart_version: 10.9.2
 kubernetes_control_plane_argocd_network: private
 kubernetes_control_plane_argocd_ip: 192.168.20.200
+kubernetes_control_plane_argocd_hostname: "argocd.{{ (kubernetes_control_plane_lb_networks | selectattr('name', 'equalto', kubernetes_control_plane_argocd_network) | first).dns }}.{{ kubernetes_control_plane_dns_domain }}"
 kubernetes_control_plane_argocd_values:
   server:
     service:
@@ -42,3 +70,4 @@ kubernetes_control_plane_argocd_values:
       labels: "{{ {kubernetes_control_plane_lb_network_label: kubernetes_control_plane_argocd_network} }}"
       annotations:
         lbipam.cilium.io/ips: '{{ kubernetes_control_plane_argocd_ip }}'
+        external-dns.alpha.kubernetes.io/hostname: '{{ kubernetes_control_plane_argocd_hostname }}'

@@ -37,6 +37,16 @@
         - kubernetes_control_plane
         - kubernetes_worker
 
+    - name: 'ExternalDNSを構成する'
+      ansible.builtin.include_role:
+        name: kubernetes-control-plane
+        tasks_from: external-dns
+        apply:
+          tags:
+            - external_dns
+      tags:
+        - external_dns
+
     - name: 'Argo CDを構成する'
       ansible.builtin.include_role:
         name: kubernetes-control-plane

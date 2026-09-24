@@ -22,3 +22,19 @@
         argv: '{{ kubernetes_worker_join_command.stdout | split }}'
         creates: /etc/kubernetes/kubelet.conf
       no_log: true
+
+- name: 'workerのロールのラベルを付ける'
+  become: true
+  ansible.builtin.command:
+    argv:
+      - kubectl
+      - --kubeconfig
+      - /etc/kubernetes/admin.conf
+      - label
+      - node
+      - '{{ kubernetes_worker_node_name }}'
+      - '{{ kubernetes_worker_node_role_label }}='
+      - --overwrite
+  delegate_to: '{{ kubernetes_worker_control_plane_host }}'
+  register: kubernetes_worker_node_label
+  changed_when: "'not labeled' not in kubernetes_worker_node_label.stdout"

@@ -26,12 +26,12 @@ settings:
     url: false
 
 service:
-  type: LoadBalancer
+  network: ""
+  loadBalancerIP: ""
+  hostname: ""
   ports:
     - name: http
       port: 80
-    - name: https
-      port: 443
   labels: {}
   annotations: {}
 

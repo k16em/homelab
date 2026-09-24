@@ -15,7 +15,6 @@ locals {
     tkpve-pihole01     = { vmid = 101, cores = 2, memory = 1024, disk_size = "16G", network = "public", ipv4_address = "192.168.30.3/24", hwaddr = "BC:24:11:38:DE:E9", tags = "tk" }
     tkpve-bastion01p   = { vmid = 102, cores = 1, memory = 2048, disk_size = "16G", network = "private", ipv4_address = "192.168.20.60/24", hwaddr = "BC:24:11:CE:A9:40", tags = "pv;tailscale;tk" }
     tkpve-cache01      = { vmid = 200, cores = 2, memory = 4096, disk_size = "128G", network = "public", ipv4_address = "192.168.30.61/24", hwaddr = "BC:24:11:26:C8:09", tags = "tk" }
-    tkpve-search01p    = { vmid = 600, cores = 2, memory = 1024, disk_size = "16G", network = "private", ipv4_address = "192.168.20.20/24", hwaddr = "BC:24:11:60:A5:06", tags = "llm;pv;tk" }
     tkpve-chat01p      = { vmid = 601, cores = 2, memory = 2048, disk_size = "16G", network = "private", ipv4_address = "192.168.20.21/24", hwaddr = "BC:24:11:6D:48:5A", tags = "llm;pv;tk" }
     tkpve-otel-proxy01 = { vmid = 602, cores = 2, memory = 1028, disk_size = "16G", network = "private", ipv4_address = "192.168.20.70/24", hwaddr = "BC:24:11:23:BB:0D", tags = "llm;pv;tk" }
     tkpve-memory01     = { vmid = 603, cores = 2, memory = 2048, disk_size = "16G", network = "private", ipv4_address = "192.168.20.71/24", hwaddr = "BC:24:11:21:64:3D", tags = "llm;pv;tk" }

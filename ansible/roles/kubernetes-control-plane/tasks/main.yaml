@@ -125,34 +125,96 @@
     group: '{{ kubernetes_control_plane_kubeconfig_user }}'
     mode: '0600'
 
-- name: 'Ciliumのリリースの状態を取得する'
+- name: 'Kubernetesに適用するファイルを置くディレクトリを作成する'
+  become: true
+  ansible.builtin.file:
+    path: '{{ kubernetes_control_plane_manifest_directory }}'
+    state: directory
+    owner: '{{ kubernetes_control_plane_kubeconfig_user }}'
+    group: '{{ kubernetes_control_plane_kubeconfig_user }}'
+    mode: '0755'
+
+- name: 'CiliumのHelm valuesを置く'
+  become: true
+  ansible.builtin.template:
+    src: helm-values.yaml.j2
+    dest: '{{ kubernetes_control_plane_manifest_directory }}/cilium-values.yaml'
+    owner: '{{ kubernetes_control_plane_kubeconfig_user }}'
+    group: '{{ kubernetes_control_plane_kubeconfig_user }}'
+    mode: '0644'
+  vars:
+    values: '{{ kubernetes_control_plane_cilium_values }}'
+
+- name: 'Ciliumのリリースを取得する'
   become: true
   become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
   ansible.builtin.command:
-    cmd: helm status cilium --namespace kube-system --output json
-  register: kubernetes_control_plane_cilium_status
+    cmd: helm list --namespace kube-system --filter '^cilium$' --output json
+  register: kubernetes_control_plane_cilium_release
   changed_when: false
-  failed_when: false
   check_mode: false
 
 - name: 'Ciliumのリリースが正常か未インストールであることを確認する'
   ansible.builtin.assert:
     that:
-      - >-
-        (kubernetes_control_plane_cilium_status.rc == 0 and (kubernetes_control_plane_cilium_status.stdout | from_json).info.status == 'deployed')
-        or (kubernetes_control_plane_cilium_status.rc != 0 and 'release: not found' in kubernetes_control_plane_cilium_status.stderr)
+      - releases | length == 0 or releases[0].status == 'deployed'
     fail_msg: >-
       Ciliumのリリースがdeployedではない。状態を確認し、必要ならhelm uninstallしてから再実行する:
-      {{ (kubernetes_control_plane_cilium_status.stdout | from_json).info.status
-      if kubernetes_control_plane_cilium_status.rc == 0 else kubernetes_control_plane_cilium_status.stderr }}
+      {{ releases }}
     quiet: true
+  vars:
+    releases: '{{ kubernetes_control_plane_cilium_release.stdout | from_json }}'
 
 - name: 'Ciliumをインストールする'
   become: true
   become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
   ansible.builtin.command:
-    argv: "{{ ['cilium-cli', 'install', '--version', kubernetes_control_plane_cilium_version] + (kubernetes_control_plane_cilium_options | map('regex_replace', '^', '--set=') | list) }}"
-  when: kubernetes_control_plane_cilium_status.rc != 0
+    argv:
+      - cilium-cli
+      - install
+      - --version
+      - '{{ kubernetes_control_plane_cilium_version }}'
+      - --values
+      - '{{ kubernetes_control_plane_manifest_directory }}/cilium-values.yaml'
+  when: kubernetes_control_plane_cilium_release.stdout | from_json | length == 0
+
+- name: 'CiliumのHelm valuesを取得する'
+  become: true
+  become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
+  ansible.builtin.command:
+    cmd: helm get values cilium --namespace kube-system --output json
+  register: kubernetes_control_plane_cilium_current_values
+  changed_when: false
+  check_mode: false
+  when: kubernetes_control_plane_cilium_release.stdout | from_json | length > 0
+
+- name: 'Ciliumを更新する'
+  become: true
+  become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
+  ansible.builtin.command:
+    argv:
+      - cilium-cli
+      - upgrade
+      - --version
+      - '{{ kubernetes_control_plane_cilium_version }}'
+      - --values
+      - '{{ kubernetes_control_plane_manifest_directory }}/cilium-values.yaml'
+  register: kubernetes_control_plane_cilium_upgrade
+  when:
+    - kubernetes_control_plane_cilium_current_values is not skipped
+    - >-
+      release.chart != 'cilium-' ~ kubernetes_control_plane_cilium_version
+      or current | combine(kubernetes_control_plane_cilium_values, recursive=true) != current
+  vars:
+    release: '{{ (kubernetes_control_plane_cilium_release.stdout | from_json)[0] }}'
+    current: '{{ kubernetes_control_plane_cilium_current_values.stdout | from_json }}'
+
+- name: '更新した設定でCiliumを再起動する'
+  become: true
+  become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
+  ansible.builtin.command:
+    cmd: kubectl --namespace kube-system rollout restart daemonset/cilium deployment/cilium-operator
+  when: kubernetes_control_plane_cilium_upgrade is changed
 
 - name: 'Ciliumが動くまで待つ'
   become: true
@@ -161,3 +223,66 @@
     cmd: cilium-cli status --wait --wait-duration 10m
   changed_when: false
   check_mode: false
+
+- name: 'kube-proxyが残っているか確認する'
+  become: true
+  become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
+  ansible.builtin.command:
+    cmd: kubectl --namespace kube-system get daemonset kube-proxy --ignore-not-found --output name
+  register: kubernetes_control_plane_kube_proxy
+  changed_when: false
+  check_mode: false
+
+- name: 'kube-proxyを削除する'
+  become: true
+  become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
+  ansible.builtin.command:
+    cmd: kubectl --namespace kube-system delete daemonset/kube-proxy configmap/kube-proxy --ignore-not-found
+  when: kubernetes_control_plane_kube_proxy.stdout | length > 0
+
+- name: 'kube-proxyが作ったiptablesのルールを消す'
+  become: true
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      iptables-save | grep -v KUBE | iptables-restore
+      ip6tables-save | grep -v KUBE | ip6tables-restore
+    executable: /bin/bash
+  delegate_to: '{{ item }}'
+  loop: "{{ groups['kubernetes'] }}"
+  when: kubernetes_control_plane_kube_proxy.stdout | length > 0
+
+- name: 'Ciliumのkube-proxy置き換えの状態を取得する'
+  become: true
+  become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
+  ansible.builtin.command:
+    cmd: kubectl --namespace kube-system exec daemonset/cilium -- cilium-dbg status
+  register: kubernetes_control_plane_cilium_dbg_status
+  changed_when: false
+  check_mode: false
+
+- name: 'Ciliumがkube-proxyを置き換えていることを確認する'
+  ansible.builtin.assert:
+    that:
+      - kube_proxy_replacement is match('True')
+    fail_msg: 'KubeProxyReplacementが有効になっていない: {{ kube_proxy_replacement }}'
+    quiet: true
+  vars:
+    kube_proxy_replacement: "{{ kubernetes_control_plane_cilium_dbg_status.stdout_lines | select('match', '^KubeProxyReplacement:') | first | default('') | regex_replace('^KubeProxyReplacement:\\s*', '') }}"
+
+- name: 'LoadBalancerのIPプールとL2 announcementのマニフェストを置く'
+  become: true
+  ansible.builtin.template:
+    src: lb-networks.yaml.j2
+    dest: '{{ kubernetes_control_plane_manifest_directory }}/lb-networks.yaml'
+    owner: '{{ kubernetes_control_plane_kubeconfig_user }}'
+    group: '{{ kubernetes_control_plane_kubeconfig_user }}'
+    mode: '0644'
+
+- name: 'LoadBalancerのIPプールとL2 announcementを適用する'
+  become: true
+  become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
+  ansible.builtin.command:
+    cmd: kubectl apply --filename {{ kubernetes_control_plane_manifest_directory }}/lb-networks.yaml
+  register: kubernetes_control_plane_lb_networks_apply
+  changed_when: kubernetes_control_plane_lb_networks_apply.stdout_lines | reject('search', ' unchanged$') | list | length > 0

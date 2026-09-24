@@ -18,8 +18,6 @@ all:
                       ansible_host: 192.168.20.17
                     tk_worker01:
                       ansible_host: 192.168.20.18
-                    tk_search01:
-                      ansible_host: 192.168.20.20
                     tk_lxc01:
                       ansible_host: 192.168.20.21
                     tk_bastion01:
@@ -41,7 +39,6 @@ all:
         lxc:
           hosts:
             tk_worker01:
-            tk_search01:
             tk_lxc01:
             tk_bastion01:
             tk_hermes01:
@@ -73,10 +70,6 @@ all:
         webui:
           hosts:
             tk_llm01:
-
-        search:
-          hosts:
-            tk_search01:
 
         agent:
           hosts:

@@ -42,7 +42,7 @@ resource "proxmox_cloud_init_disk" "ci" {
       {
         name                = "maintainer"
         groups              = ["wheel", "sudo"]
-        shell               = "/usr/bin/zsh"
+        shell               = "/bin/bash"
         sudo                = "ALL=(ALL:ALL) NOPASSWD: ALL"
         lock_passwd         = true
         ssh_authorized_keys = local.ssh_public_keys
@@ -54,9 +54,15 @@ resource "proxmox_cloud_init_disk" "ci" {
         permissions = "0644"
         content     = "PermitRootLogin no\nPasswordAuthentication no\n"
       },
+      {
+        path        = "/etc/pacman.d/mirrorlist"
+        permissions = "0644"
+        content     = "Server = http://${var.pacman_mirror_server}:${var.pacman_mirror_port}/$repo/os/$arch\n"
+      },
     ]
     runcmd = [
       ["sed", "-i", "s/^#DisableSandbox$/DisableSandbox/", "/etc/pacman.conf"],
+      "pacman -Syu --needed --noconfirm zsh zsh-completions && usermod --shell /usr/bin/zsh maintainer",
       ["systemctl", "enable", "--now", "sshd"],
     ]
     power_state = {

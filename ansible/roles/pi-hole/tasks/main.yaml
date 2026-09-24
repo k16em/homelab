@@ -11,6 +11,47 @@
     state: present
   notify: 'pihole-FTLを再起動する'
 
+- name: 'pihole-FTLが実行できるか確認'
+  ansible.builtin.command:
+    cmd: 'pihole-FTL --version'
+  register: pi_hole_ftl_version
+  changed_when: false
+  failed_when: false
+
+- name: 'pihole-FTLを再ビルド'
+  when: pi_hole_ftl_version.rc != 0
+  block:
+    - name: 'ビルド用の一時ディレクトリを作成'
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: pi-hole-ftl
+      register: pi_hole_ftl_build_dir
+
+    - name: 'pi-hole-ftlのPKGBUILDを取得'
+      ansible.builtin.unarchive:
+        src: 'https://aur.archlinux.org/cgit/aur.git/snapshot/pi-hole-ftl.tar.gz'
+        dest: '{{ pi_hole_ftl_build_dir.path }}'
+        remote_src: true
+
+    - name: 'pi-hole-ftlをビルドして入れ直す'
+      ansible.builtin.command:
+        cmd: 'makepkg --syncdeps --install --noconfirm --force'
+        chdir: '{{ pi_hole_ftl_build_dir.path }}/pi-hole-ftl'
+      changed_when: true
+      notify: 'pihole-FTLを再起動する'
+
+    - name: '再ビルド後にpihole-FTLが実行できるか確認'
+      ansible.builtin.command:
+        cmd: 'pihole-FTL --version'
+      changed_when: false
+
+  always:
+    - name: 'ビルド用の一時ディレクトリを削除'
+      ansible.builtin.file:
+        path: '{{ pi_hole_ftl_build_dir.path }}'
+        state: absent
+      when: pi_hole_ftl_build_dir.path is defined
+
 - name: 'pihole-FTL.serviceを有効化'
   become: true
   ansible.builtin.systemd:

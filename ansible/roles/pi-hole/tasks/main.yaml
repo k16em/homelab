@@ -76,6 +76,24 @@
     - 'systemd-resolvedを再起動する'
     - 'pihole-FTLを再起動する'
 
+- name: 'dnsmasqの追加設定を取得'
+  ansible.builtin.command:
+    cmd: 'pihole-FTL --config misc.dnsmasq_lines'
+  register: pi_hole_dnsmasq_lines_current
+  changed_when: false
+
+- name: 'dnsmasqの追加設定を置く'
+  become: true
+  ansible.builtin.command:
+    argv:
+      - pihole-FTL
+      - --config
+      - misc.dnsmasq_lines
+      - '{{ pi_hole_dnsmasq_lines | to_json }}'
+  when: pi_hole_dnsmasq_lines_current.stdout != ('[ ' ~ pi_hole_dnsmasq_lines | join(', ') ~ ' ]' if pi_hole_dnsmasq_lines else '[]')
+  changed_when: true
+  notify: 'pihole-FTLを再起動する'
+
 - name: 'adlistを更新'
   become: true
   ansible.builtin.command:

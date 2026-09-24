@@ -30,6 +30,14 @@ all:
                       ansible_host: 192.168.20.70
                     tk_memory01:
                       ansible_host: 192.168.20.71
+                    tk_k8s_cp01:
+                      ansible_host: 192.168.20.41
+                    tk_k8s_wk01:
+                      ansible_host: 192.168.20.81
+                    tk_k8s_wk02:
+                      ansible_host: 192.168.20.82
+                    tk_k8s_wk03:
+                      ansible_host: 192.168.20.83
         lxc:
           hosts:
             tk_worker01:
@@ -77,3 +85,10 @@ all:
         memory:
           hosts:
             tk_memory01:
+
+        kubernetes:
+          hosts:
+            tk_k8s_cp01:
+            tk_k8s_wk01:
+            tk_k8s_wk02:
+            tk_k8s_wk03:

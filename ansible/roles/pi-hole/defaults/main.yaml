@@ -10,3 +10,6 @@ pi_hole_package_manifest:
     - pi-hole-web
     - pi-hole-ftl
     - pi-hole-core
+
+pi_hole_dnsmasq_lines:
+  - local=/local.k16em.net/

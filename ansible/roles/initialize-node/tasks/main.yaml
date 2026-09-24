@@ -1,4 +1,10 @@
 ---
+- name: "archlinux-keyringを先に更新かける"
+  become: true
+  community.general.pacman:
+    name: '{{ initialize_node_package_manifest.repository | select("equalto", "archlinux-keyring") | first }}'
+    state: latest
+
 - name: '必要なパッケージを追加する'
   become: true
   community.general.pacman:

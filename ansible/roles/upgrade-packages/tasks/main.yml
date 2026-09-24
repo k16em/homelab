@@ -4,12 +4,7 @@
   community.general.pacman:
     name: '{{ upgrade_packages_package_manifest.repository | select("equalto", "archlinux-keyring") | first }}'
     state: latest
-
-- name: "pacman-contribを入れる"
-  become: true
-  community.general.pacman:
-    name: '{{ upgrade_packages_package_manifest.repository | select("equalto", "pacman-contrib") | first }}'
-    state: latest
+    update_cache: true
 
 - name: "pacman -Syyuする"
   become: true
@@ -25,6 +20,12 @@
   when:
     - result.changed
     - "not 'jenkins' in group_names"
+
+- name: "pacman-contribを入れる"
+  become: true
+  community.general.pacman:
+    name: '{{ upgrade_packages_package_manifest.repository | select("equalto", "pacman-contrib") | first }}'
+    state: latest
 
 - name: "pacmanのキャッシュを消す"
   become: true

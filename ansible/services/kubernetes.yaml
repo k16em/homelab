@@ -9,3 +9,5 @@
       tags: initialize_node
     - role: sshd
       tags: sshd
+    - role: kubernetes-node
+      tags: kubernetes_node

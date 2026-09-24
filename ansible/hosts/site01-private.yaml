@@ -87,8 +87,12 @@ all:
             tk_memory01:
 
         kubernetes:
-          hosts:
-            tk_k8s_cp01:
-            tk_k8s_wk01:
-            tk_k8s_wk02:
-            tk_k8s_wk03:
+          children:
+            kubernetes_control_plane:
+              hosts:
+                tk_k8s_cp01:
+            kubernetes_worker:
+              hosts:
+                tk_k8s_wk01:
+                tk_k8s_wk02:
+                tk_k8s_wk03:

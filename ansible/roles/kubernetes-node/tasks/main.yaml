@@ -1,0 +1,146 @@
+---
+- name: 'kubernetesに必要なパッケージを追加する'
+  become: true
+  community.general.pacman:
+    name: '{{ kubernetes_node_package_manifest.repository }}'
+    state: present
+
+- name: 'control planeに必要なパッケージを追加する'
+  become: true
+  community.general.pacman:
+    name: '{{ kubernetes_node_package_manifest.control_plane }}'
+    state: present
+  when: "'kubernetes_control_plane' in group_names"
+
+- name: '/etc/hostsにkubernetesノードを追記する'
+  become: true
+  ansible.builtin.blockinfile:
+    path: /etc/hosts
+    marker: '# {mark} ANSIBLE MANAGED kubernetes-node'
+    block: "{{ lookup('ansible.builtin.template', 'hosts.j2') }}"
+
+- name: '起動時に読み込むカーネルモジュールを設定する'
+  become: true
+  ansible.builtin.template:
+    src: modules-load.conf.j2
+    dest: /etc/modules-load.d/kubernetes.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: 'カーネルモジュールを読み込む'
+  become: true
+  community.general.modprobe:
+    name: '{{ item }}'
+    state: present
+  loop: '{{ kubernetes_node_kernel_modules }}'
+
+- name: 'sysctlの設定を置く'
+  become: true
+  ansible.builtin.template:
+    src: sysctl.conf.j2
+    dest: /etc/sysctl.d/99-kubernetes.conf
+    owner: root
+    group: root
+    mode: '0644'
+  register: kubernetes_node_sysctl_file
+
+- name: 'sysctlの設定を反映する'
+  become: true
+  ansible.builtin.command:
+    cmd: sysctl --load /etc/sysctl.d/99-kubernetes.conf
+  when: kubernetes_node_sysctl_file.changed
+
+- name: 'swapのユニットを取得する'
+  become: true
+  ansible.builtin.command:
+    cmd: systemctl list-units --type=swap --all --plain --no-legend
+  register: kubernetes_node_swap_units
+  changed_when: false
+  check_mode: false
+
+- name: 'swapのユニットを無効化する'
+  become: true
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: stopped
+    masked: true
+  loop: "{{ kubernetes_node_swap_units.stdout_lines | map('split') | map('first') | list }}"
+
+- name: '有効なswapを取得する'
+  become: true
+  ansible.builtin.command:
+    cmd: swapon --show --noheadings
+  register: kubernetes_node_active_swap
+  changed_when: false
+  check_mode: false
+
+- name: 'swapが無効になっていることを確認する'
+  ansible.builtin.assert:
+    that:
+      - kubernetes_node_active_swap.stdout_lines | length == 0
+    fail_msg: 'swapが残っている: {{ kubernetes_node_active_swap.stdout_lines }}'
+    quiet: true
+
+- name: '/etc/containerdを作成する'
+  become: true
+  ansible.builtin.file:
+    path: /etc/containerd
+    state: directory
+    mode: '0755'
+
+- name: 'containerdのデフォルト設定を生成する'
+  become: true
+  ansible.builtin.shell:
+    cmd: containerd config default > /etc/containerd/config.toml
+    creates: /etc/containerd/config.toml
+  notify: 'containerdを再起動する'
+
+- name: 'SystemdCgroupを有効化する'
+  become: true
+  ansible.builtin.replace:
+    path: /etc/containerd/config.toml
+    regexp: '^(\s+)SystemdCgroup = false$'
+    replace: '\1SystemdCgroup = true'
+  notify: 'containerdを再起動する'
+
+- name: 'containerdの設定でSystemdCgroupを取得する'
+  become: true
+  ansible.builtin.command:
+    cmd: grep --extended-regexp '^\s+SystemdCgroup = ' /etc/containerd/config.toml
+  register: kubernetes_node_systemd_cgroup
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: 'SystemdCgroupが有効になっていることを確認する'
+  ansible.builtin.assert:
+    that:
+      - kubernetes_node_systemd_cgroup.stdout_lines | length > 0
+      - kubernetes_node_systemd_cgroup.stdout_lines | map('trim') | unique == ['SystemdCgroup = true']
+    fail_msg: 'SystemdCgroupがtrueになっていない: {{ kubernetes_node_systemd_cgroup.stdout_lines }}'
+    quiet: true
+  when: not ansible_check_mode
+
+- name: 'kubeletが使うノードのアドレスを設定する'
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/kubernetes/kubelet.env
+    regexp: '^KUBELET_ARGS='
+    line: 'KUBELET_ARGS=--node-ip={{ kubernetes_node_ip }}'
+  notify: 'kubeletが動いていれば再起動する'
+
+- name: 'containerd.serviceを有効化'
+  become: true
+  ansible.builtin.systemd:
+    name: containerd
+    state: started
+    enabled: true
+    daemon_reload: true
+
+- name: 'kubelet.serviceを有効化'
+  become: true
+  ansible.builtin.systemd:
+    name: kubelet
+    enabled: true
+    daemon_reload: true

@@ -1,0 +1,3 @@
+{% for host in groups['kubernetes'] %}
+{{ hostvars[host].ansible_host }} {{ host | regex_replace('^tk_', '') | replace('_', '-') }}
+{% endfor %}

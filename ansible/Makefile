@@ -22,9 +22,6 @@ worker01p:
 hermes01p:
 	ansible-playbook -i ./hosts/site01-private.yaml ./services/hermes.yaml --vault-password-file ~/ansible/.vault_pass
 
-search01p:
-	ansible-playbook -i ./hosts/site01-private.yaml ./services/search.yaml --vault-password-file ~/ansible/.vault_pass
-
 memory01p:
 	ansible-playbook -i ./hosts/site01-private.yaml ./services/memory.yaml --vault-password-file ~/ansible/.vault_pass
 

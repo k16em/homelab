@@ -70,4 +70,4 @@ kubernetes_control_plane_argocd_values:
       labels: "{{ {kubernetes_control_plane_lb_network_label: kubernetes_control_plane_argocd_network} }}"
       annotations:
         lbipam.cilium.io/ips: '{{ kubernetes_control_plane_argocd_ip }}'
-        external-dns.alpha.kubernetes.io/hostname: '{{ kubernetes_control_plane_argocd_hostname }}'
+        external-dns.kubernetes.io/hostname: '{{ kubernetes_control_plane_argocd_hostname }}'

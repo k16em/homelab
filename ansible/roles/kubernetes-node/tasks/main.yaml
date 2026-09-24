@@ -122,6 +122,52 @@
     quiet: true
   when: not ansible_check_mode
 
+- name: 'レジストリのhosts.tomlを読み込むようにする'
+  become: true
+  ansible.builtin.replace:
+    path: /etc/containerd/config.toml
+    regexp: "^(\\s+)config_path = ''$"
+    replace: "\\1config_path = '/etc/containerd/certs.d'"
+  notify: 'containerdを再起動する'
+
+- name: 'containerdの設定でレジストリのconfig_pathを取得する'
+  become: true
+  ansible.builtin.command:
+    cmd: grep --extended-regexp '^\s+config_path = ' /etc/containerd/config.toml
+  register: kubernetes_node_registry_config_path
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: 'レジストリのconfig_pathが設定されていることを確認する'
+  ansible.builtin.assert:
+    that:
+      - kubernetes_node_registry_config_path.stdout_lines | length > 0
+      - kubernetes_node_registry_config_path.stdout_lines | map('trim') | unique == ["config_path = '/etc/containerd/certs.d'"]
+    fail_msg: 'config_pathが/etc/containerd/certs.dになっていない: {{ kubernetes_node_registry_config_path.stdout_lines }}'
+    quiet: true
+  when: not ansible_check_mode
+
+- name: 'レジストリごとの設定ディレクトリを作成する'
+  become: true
+  ansible.builtin.file:
+    path: '/etc/containerd/certs.d/{{ item }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  loop: '{{ kubernetes_node_registry_mirror_namespaces }}'
+
+- name: 'レジストリのミラーを設定する'
+  become: true
+  ansible.builtin.template:
+    src: hosts.toml.j2
+    dest: '/etc/containerd/certs.d/{{ item }}/hosts.toml'
+    owner: root
+    group: root
+    mode: '0644'
+  loop: '{{ kubernetes_node_registry_mirror_namespaces }}'
+
 - name: 'kubeletが使うノードのアドレスを設定する'
   become: true
   ansible.builtin.lineinfile:

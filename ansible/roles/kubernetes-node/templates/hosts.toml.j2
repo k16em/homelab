@@ -1,0 +1,3 @@
+[host."{{ kubernetes_node_registry_mirror }}/v2/{{ item }}"]
+  capabilities = ["pull", "resolve"]
+  override_path = true

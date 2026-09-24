@@ -1,0 +1,9 @@
+---
+sshd_options:
+  PermitRootLogin: 'no'
+  PasswordAuthentication: 'no'
+
+sshd_listen_addresses:
+  - '{{ ansible_host }}'
+
+sshd_port: 22

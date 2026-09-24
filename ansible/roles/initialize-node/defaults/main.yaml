@@ -1,6 +1,7 @@
 ---
 initialize_node_package_manifest:
   repository:
+    - archlinux-keyring
     - sudo
     - zsh
     - zsh-completions

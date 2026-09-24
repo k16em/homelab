@@ -1,0 +1,58 @@
+---
+- name: Kubernetesホストを構成する
+  hosts: kubernetes
+  serial: 1
+  roles:
+    - role: pacman-mirror
+      tags: pacman_mirror
+    - role: initialize-node
+      tags: initialize_node
+    - role: sshd
+      tags: sshd
+    - role: kubernetes-node
+      tags: kubernetes_node
+
+- name: Kubernetesのcontrol planeを構築する
+  hosts: kubernetes_control_plane
+  roles:
+    - role: kubernetes-control-plane
+      tags: kubernetes_control_plane
+
+- name: Kubernetesのworkerをクラスタに参加させる
+  hosts: kubernetes_worker
+  serial: 1
+  roles:
+    - role: kubernetes-worker
+      tags: kubernetes_worker
+
+- name: Kubernetesのサービスを構成する
+  hosts: kubernetes_control_plane
+  tasks:
+    - name: '全ノードがReadyになるまで待つ'
+      ansible.builtin.command:
+        cmd: kubectl wait --for=condition=Ready nodes --all --timeout=10m
+      changed_when: false
+      check_mode: false
+      tags:
+        - kubernetes_control_plane
+        - kubernetes_worker
+
+    - name: 'ExternalDNSを構成する'
+      ansible.builtin.include_role:
+        name: kubernetes-control-plane
+        tasks_from: external-dns
+        apply:
+          tags:
+            - external_dns
+      tags:
+        - external_dns
+
+    - name: 'Argo CDを構成する'
+      ansible.builtin.include_role:
+        name: kubernetes-control-plane
+        tasks_from: argocd
+        apply:
+          tags:
+            - argocd
+      tags:
+        - argocd

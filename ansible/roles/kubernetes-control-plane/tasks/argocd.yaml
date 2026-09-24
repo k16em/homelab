@@ -1,0 +1,30 @@
+---
+- name: 'Argo CDをインストールまたは更新する'
+  ansible.builtin.include_tasks:
+    file: helm-release.yaml
+  vars:
+    kubernetes_control_plane_helm_release: argocd
+    kubernetes_control_plane_helm_namespace: argocd
+    kubernetes_control_plane_helm_chart: '{{ kubernetes_control_plane_argocd_chart }}'
+    kubernetes_control_plane_helm_chart_name: argo-cd
+    kubernetes_control_plane_helm_chart_version: '{{ kubernetes_control_plane_argocd_chart_version }}'
+    kubernetes_control_plane_helm_values: '{{ kubernetes_control_plane_argocd_values }}'
+
+- name: 'Argo CDのサービスにIPが割り当てられるまで待つ'
+  become: true
+  become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
+  ansible.builtin.command:
+    cmd: kubectl --namespace argocd get service argocd-server --output jsonpath={.status.loadBalancer.ingress[0].ip}
+  register: kubernetes_control_plane_argocd_lb_ip
+  until: kubernetes_control_plane_argocd_lb_ip.stdout | length > 0
+  retries: 30
+  delay: 5
+  changed_when: false
+  check_mode: false
+
+- name: 'Argo CDに指定したIPが割り当てられていることを確認する'
+  ansible.builtin.assert:
+    that:
+      - kubernetes_control_plane_argocd_lb_ip.stdout == kubernetes_control_plane_argocd_ip
+    fail_msg: 'Argo CDのIPが{{ kubernetes_control_plane_argocd_ip }}ではなく{{ kubernetes_control_plane_argocd_lb_ip.stdout }}になっている'
+    success_msg: 'Argo CD: https://{{ kubernetes_control_plane_argocd_hostname }} ({{ kubernetes_control_plane_argocd_lb_ip.stdout }})'

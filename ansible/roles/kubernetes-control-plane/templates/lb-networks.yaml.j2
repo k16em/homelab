@@ -1,0 +1,26 @@
+{% for network in kubernetes_control_plane_lb_networks %}
+---
+apiVersion: cilium.io/v2
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: {{ network.name }}
+spec:
+  blocks:
+    - start: {{ network.start }}
+      stop: {{ network.stop }}
+  serviceSelector:
+    matchLabels:
+      {{ kubernetes_control_plane_lb_network_label }}: {{ network.name }}
+---
+apiVersion: cilium.io/v2alpha1
+kind: CiliumL2AnnouncementPolicy
+metadata:
+  name: {{ network.name }}
+spec:
+  serviceSelector:
+    matchLabels:
+      {{ kubernetes_control_plane_lb_network_label }}: {{ network.name }}
+  interfaces:
+    - ^{{ network.interface }}$
+  loadBalancerIPs: true
+{% endfor %}

@@ -1,0 +1,6 @@
+---
+- name: 'zotを再起動する'
+  become: true
+  community.docker.docker_compose_v2:
+    project_src: '{{ zot_project_directory }}'
+    state: restarted

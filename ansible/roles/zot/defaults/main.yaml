@@ -1,0 +1,16 @@
+---
+zot_image: ghcr.io/project-zot/zot:v2.1.21
+zot_project_directory: /etc/zot
+zot_data_directory: /var/lib/zot
+zot_listen_ip_address: '{{ pacman_mirror_server }}'
+zot_port: 5000
+zot_keep_pulled_within: 2160h
+zot_sync_registries:
+  - destination: docker.io
+    url: https://registry-1.docker.io
+  - destination: quay.io
+    url: https://quay.io
+  - destination: registry.k8s.io
+    url: https://registry.k8s.io
+  - destination: ghcr.io
+    url: https://ghcr.io

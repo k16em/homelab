@@ -67,3 +67,13 @@ variable "cloud_init_storage" {
   type    = string
   default = "local"
 }
+
+variable "pacman_mirror_server" {
+  type = string
+}
+
+variable "pacman_mirror_port" {
+  type     = number
+  default  = 7878
+  nullable = false
+}

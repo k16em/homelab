@@ -1,0 +1,4 @@
+---
+kubernetes_worker_control_plane_host: "{{ groups['kubernetes_control_plane'] | first }}"
+kubernetes_worker_node_name: '{{ ansible_hostname }}'
+kubernetes_worker_node_role_label: node-role.kubernetes.io/worker

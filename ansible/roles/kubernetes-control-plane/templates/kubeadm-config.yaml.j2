@@ -1,0 +1,22 @@
+---
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: InitConfiguration
+localAPIEndpoint:
+  advertiseAddress: {{ kubernetes_control_plane_advertise_address }}
+  bindPort: {{ kubernetes_control_plane_port }}
+nodeRegistration:
+  criSocket: unix:///run/containerd/containerd.sock
+skipPhases:
+  - addon/kube-proxy
+---
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: ClusterConfiguration
+kubernetesVersion: {{ kubernetes_control_plane_kubeadm_version.stdout }}
+controlPlaneEndpoint: {{ kubernetes_control_plane_advertise_address }}:{{ kubernetes_control_plane_port }}
+networking:
+  podSubnet: {{ kubernetes_control_plane_pod_subnet }}
+  serviceSubnet: {{ kubernetes_control_plane_service_subnet }}
+---
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+cgroupDriver: systemd

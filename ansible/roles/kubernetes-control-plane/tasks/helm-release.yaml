@@ -1,0 +1,79 @@
+---
+- name: '{{ kubernetes_control_plane_helm_release }}のHelm valuesを置く'
+  become: true
+  ansible.builtin.template:
+    src: helm-values.yaml.j2
+    dest: '{{ kubernetes_control_plane_manifest_directory }}/{{ kubernetes_control_plane_helm_release }}-values.yaml'
+    owner: '{{ kubernetes_control_plane_kubeconfig_user }}'
+    group: '{{ kubernetes_control_plane_kubeconfig_user }}'
+    mode: '0644'
+  vars:
+    values: '{{ kubernetes_control_plane_helm_values }}'
+
+- name: '{{ kubernetes_control_plane_helm_release }}のリリースを取得する'
+  become: true
+  become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
+  ansible.builtin.command:
+    argv:
+      - helm
+      - list
+      - --namespace
+      - '{{ kubernetes_control_plane_helm_namespace }}'
+      - --filter
+      - '^{{ kubernetes_control_plane_helm_release }}$'
+      - --output
+      - json
+  register: kubernetes_control_plane_helm_list
+  changed_when: false
+  check_mode: false
+
+- name: '{{ kubernetes_control_plane_helm_release }}のリリースが正常か未インストールであることを確認する'
+  ansible.builtin.assert:
+    that:
+      - releases | length == 0 or releases[0].status == 'deployed'
+    fail_msg: >-
+      {{ kubernetes_control_plane_helm_release }}のリリースがdeployedではない。
+      状態を確認し、必要ならhelm uninstallしてから再実行する: {{ releases }}
+    quiet: true
+  vars:
+    releases: '{{ kubernetes_control_plane_helm_list.stdout | from_json }}'
+
+- name: '{{ kubernetes_control_plane_helm_release }}のHelm valuesを取得する'
+  become: true
+  become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
+  ansible.builtin.command:
+    argv:
+      - helm
+      - get
+      - values
+      - '{{ kubernetes_control_plane_helm_release }}'
+      - --namespace
+      - '{{ kubernetes_control_plane_helm_namespace }}'
+      - --output
+      - json
+  register: kubernetes_control_plane_helm_current_values
+  changed_when: false
+  check_mode: false
+  when: kubernetes_control_plane_helm_list.stdout | from_json | length > 0
+
+- name: '{{ kubernetes_control_plane_helm_release }}をインストールまたは更新する'
+  become: true
+  become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
+  ansible.builtin.command:
+    argv: >-
+      {{
+        ['helm', 'upgrade', kubernetes_control_plane_helm_release, kubernetes_control_plane_helm_chart, '--install',
+         '--version', kubernetes_control_plane_helm_chart_version,
+         '--namespace', kubernetes_control_plane_helm_namespace, '--create-namespace',
+         '--values', kubernetes_control_plane_manifest_directory ~ '/' ~ kubernetes_control_plane_helm_release ~ '-values.yaml',
+         '--wait', '--timeout', '10m']
+        + (['--repo', kubernetes_control_plane_helm_chart_repo] if kubernetes_control_plane_helm_chart_repo | default('') | length > 0 else [])
+      }}
+  register: kubernetes_control_plane_helm_upgrade
+  when: >-
+    kubernetes_control_plane_helm_current_values is skipped
+    or release.chart != kubernetes_control_plane_helm_chart_name ~ '-' ~ kubernetes_control_plane_helm_chart_version
+    or current | combine(kubernetes_control_plane_helm_values, recursive=true) != current
+  vars:
+    release: '{{ (kubernetes_control_plane_helm_list.stdout | from_json)[0] }}'
+    current: '{{ kubernetes_control_plane_helm_current_values.stdout | from_json }}'

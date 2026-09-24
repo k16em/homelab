@@ -1,0 +1,36 @@
+---
+kubernetes_node_package_manifest:
+  repository:
+    - containerd
+    - crictl
+    - kubeadm
+    - kubelet
+    - kubectl
+    - cni-plugins
+    - socat
+    - ethtool
+    - iptables
+    - conntrack-tools
+  control_plane:
+    - helm
+    - kustomize
+    - argocd
+    - cilium-cli
+
+kubernetes_node_kernel_modules:
+  - overlay
+  - br_netfilter
+
+kubernetes_node_sysctl:
+  net.ipv4.ip_forward: 1
+  net.bridge.bridge-nf-call-iptables: 1
+  net.bridge.bridge-nf-call-ip6tables: 1
+
+kubernetes_node_ip: '{{ ansible_host }}'
+
+kubernetes_node_registry_mirror: 'http://{{ pacman_mirror_server }}:5000'
+kubernetes_node_registry_mirror_namespaces:
+  - docker.io
+  - quay.io
+  - registry.k8s.io
+  - ghcr.io

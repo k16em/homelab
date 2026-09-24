@@ -1,0 +1,14 @@
+services:
+  zot:
+    image: {{ zot_image }}
+    volumes:
+      - type: bind
+        source: {{ zot_project_directory }}/config.json
+        target: /etc/zot/config.json
+        read_only: true
+      - type: bind
+        source: {{ zot_data_directory }}
+        target: /var/lib/zot
+    ports:
+      - "{{ zot_listen_ip_address }}:{{ zot_port }}:5000"
+    restart: always

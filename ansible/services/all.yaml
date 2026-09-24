@@ -1,6 +1,6 @@
 ---
 - name: Arch Linuxホストを構成する
-  hosts: archlinux:!cache
+  hosts: archlinux:!cache:!kubernetes
   serial: 1
   roles:
     - role: pacman-mirror

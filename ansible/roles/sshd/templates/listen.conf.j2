@@ -1,0 +1,3 @@
+{% for address in sshd_listen_addresses %}
+ListenAddress {{ address }}:{{ sshd_port }}
+{% endfor %}

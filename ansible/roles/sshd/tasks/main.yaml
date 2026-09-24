@@ -1,0 +1,113 @@
+---
+- name: 'SSHを受け付けるアドレスが定義されていることを確認する'
+  ansible.builtin.assert:
+    that:
+      - sshd_listen_addresses | length > 0
+
+- name: 'opensshを追加する'
+  become: true
+  community.general.pacman:
+    name: openssh
+    state: present
+
+- name: 'sshdの上書き用ユニットファイルを置くディレクトリを作成する'
+  become: true
+  ansible.builtin.file:
+    path: /etc/systemd/system/sshd.service.d
+    state: directory
+    mode: '0755'
+
+- name: 'sshdの上書き用ユニットファイルを置く'
+  become: true
+  ansible.builtin.copy:
+    src: override.conf
+    dest: /etc/systemd/system/sshd.service.d/override.conf
+    mode: '0644'
+  notify: 'sshdを再起動する'
+
+- name: 'sshd_config.dの設定を読み込むようにする'
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    line: 'Include /etc/ssh/sshd_config.d/*.conf'
+    insertbefore: BOF
+    validate: '/usr/bin/sshd -t -f %s'
+  notify: 'sshdを再起動する'
+
+- name: 'sshdのハードニング設定を置く'
+  become: true
+  ansible.builtin.template:
+    src: hardening.conf.j2
+    dest: /etc/ssh/sshd_config.d/10-hardening.conf
+    owner: root
+    group: root
+    mode: '0644'
+    validate: '/usr/bin/sshd -t -f %s'
+  notify: 'sshdを再起動する'
+
+- name: 'SSHを受け付けるアドレスを設定する'
+  become: true
+  ansible.builtin.template:
+    src: listen.conf.j2
+    dest: /etc/ssh/sshd_config.d/20-listen.conf
+    owner: root
+    group: root
+    mode: '0644'
+    validate: '/usr/bin/sshd -t -f %s'
+  notify: 'sshdを再起動する'
+
+- name: 'sshd.serviceを有効化'
+  become: true
+  ansible.builtin.systemd:
+    name: sshd
+    state: started
+    enabled: true
+    daemon_reload: true
+
+- name: '変更した設定をsshdに反映する'
+  ansible.builtin.meta: flush_handlers
+
+- name: 'sshdの実効設定を取得する'
+  become: true
+  ansible.builtin.command:
+    cmd: /usr/bin/sshd -T
+  register: sshd_effective_config
+  changed_when: false
+  check_mode: false
+
+- name: 'sshdの実効設定が期待どおりか確認する'
+  ansible.builtin.assert:
+    that:
+      - (item.key ~ ' ' ~ item.value) | lower in sshd_effective_config.stdout_lines | map('lower')
+    fail_msg: "{{ item.key }}が{{ item.value }}ではなく{{ sshd_effective_config.stdout_lines | select('match', '(?i)^' ~ item.key ~ ' ') | list }}になっている"
+    quiet: true
+  loop: '{{ sshd_options | dict2items }}'
+
+- name: 'sshdの実効設定のListenAddressが期待どおりか確認する'
+  ansible.builtin.assert:
+    that:
+      - actual == expected
+    fail_msg: 'ListenAddressが{{ expected }}ではなく{{ actual }}になっている'
+    quiet: true
+  vars:
+    actual: "{{ sshd_effective_config.stdout_lines | select('match', '(?i)^listenaddress ') | map('regex_replace', '(?i)^listenaddress ', '') | sort }}"
+    expected: "{{ sshd_listen_addresses | map('regex_replace', '$', ':' ~ sshd_port) | sort }}"
+
+- name: 'sshdが待ち受けているアドレスを取得する'
+  become: true
+  ansible.builtin.command:
+    cmd: "/usr/bin/ss --no-header --tcp --listening --numeric --processes 'sport = :{{ sshd_port }}'"
+  register: sshd_listening_sockets
+  changed_when: false
+  check_mode: false
+
+- name: 'sshdが期待したアドレスだけで待ち受けているか確認する'
+  ansible.builtin.assert:
+    that:
+      - sshd_listening_sockets.stdout_lines | reject('search', '"sshd') | list | length == 0
+      - actual == expected
+    fail_msg: 'ポート{{ sshd_port }}で{{ expected }}以外を待ち受けている: {{ sshd_listening_sockets.stdout_lines }}'
+    quiet: true
+  vars:
+    actual: "{{ sshd_listening_sockets.stdout_lines | map('split') | map(attribute='3') | sort }}"
+    expected: "{{ sshd_listen_addresses | map('regex_replace', '$', ':' ~ sshd_port) | sort }}"

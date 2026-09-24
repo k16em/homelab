@@ -1,0 +1,57 @@
+---
+- name: 'zotの設定を置くディレクトリを作成する'
+  become: true
+  ansible.builtin.file:
+    path: '{{ zot_project_directory }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: 'zotのデータを置くディレクトリを作成する'
+  become: true
+  ansible.builtin.file:
+    path: '{{ zot_data_directory }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+
+- name: 'zotの設定を置く'
+  become: true
+  ansible.builtin.template:
+    src: zot.json.j2
+    dest: '{{ zot_project_directory }}/config.json'
+    owner: root
+    group: root
+    mode: '0644'
+    validate: 'docker run --rm --pull missing --volume %s:/etc/zot/config.json:ro {{ zot_image }} verify /etc/zot/config.json'
+  notify: 'zotを再起動する'
+
+- name: 'compose.yamlを置く'
+  become: true
+  ansible.builtin.template:
+    src: compose.yaml.j2
+    dest: '{{ zot_project_directory }}/compose.yaml'
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: 'zotを起動する'
+  become: true
+  community.docker.docker_compose_v2:
+    project_src: '{{ zot_project_directory }}'
+    state: present
+
+- name: '変更した設定をzotに反映する'
+  ansible.builtin.meta: flush_handlers
+
+- name: 'zotが応答するか確認する'
+  ansible.builtin.uri:
+    url: 'http://{{ zot_listen_ip_address }}:{{ zot_port }}/v2/'
+    status_code: 200
+  register: zot_health
+  until: zot_health.status == 200
+  retries: 12
+  delay: 5
+  check_mode: false

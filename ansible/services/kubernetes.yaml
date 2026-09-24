@@ -25,7 +25,7 @@
     - role: kubernetes-worker
       tags: kubernetes_worker
 
-- name: Kubernetesのノードが揃うまで待つ
+- name: Kubernetesのサービスを構成する
   hosts: kubernetes_control_plane
   tasks:
     - name: '全ノードがReadyになるまで待つ'
@@ -37,3 +37,12 @@
         - kubernetes_control_plane
         - kubernetes_worker
 
+    - name: 'Argo CDを構成する'
+      ansible.builtin.include_role:
+        name: kubernetes-control-plane
+        tasks_from: argocd
+        apply:
+          tags:
+            - argocd
+      tags:
+        - argocd

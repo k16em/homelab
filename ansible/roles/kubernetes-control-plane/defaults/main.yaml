@@ -30,3 +30,15 @@ kubernetes_control_plane_cilium_values:
   k8sClientRateLimit:
     qps: 20
     burst: 40
+
+kubernetes_control_plane_argocd_chart: oci://ghcr.io/argoproj/argo-helm/argo-cd
+kubernetes_control_plane_argocd_chart_version: 10.9.2
+kubernetes_control_plane_argocd_network: private
+kubernetes_control_plane_argocd_ip: 192.168.20.200
+kubernetes_control_plane_argocd_values:
+  server:
+    service:
+      type: LoadBalancer
+      labels: "{{ {kubernetes_control_plane_lb_network_label: kubernetes_control_plane_argocd_network} }}"
+      annotations:
+        lbipam.cilium.io/ips: '{{ kubernetes_control_plane_argocd_ip }}'

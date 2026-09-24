@@ -11,3 +11,29 @@
       tags: sshd
     - role: kubernetes-node
       tags: kubernetes_node
+
+- name: Kubernetesのcontrol planeを構築する
+  hosts: kubernetes_control_plane
+  roles:
+    - role: kubernetes-control-plane
+      tags: kubernetes_control_plane
+
+- name: Kubernetesのworkerをクラスタに参加させる
+  hosts: kubernetes_worker
+  serial: 1
+  roles:
+    - role: kubernetes-worker
+      tags: kubernetes_worker
+
+- name: Kubernetesのノードが揃うまで待つ
+  hosts: kubernetes_control_plane
+  tasks:
+    - name: '全ノードがReadyになるまで待つ'
+      ansible.builtin.command:
+        cmd: kubectl wait --for=condition=Ready nodes --all --timeout=10m
+      changed_when: false
+      check_mode: false
+      tags:
+        - kubernetes_control_plane
+        - kubernetes_worker
+

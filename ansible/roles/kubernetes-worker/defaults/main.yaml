@@ -1,0 +1,2 @@
+---
+kubernetes_worker_control_plane_host: "{{ groups['kubernetes_control_plane'] | first }}"

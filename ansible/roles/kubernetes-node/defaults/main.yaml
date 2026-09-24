@@ -15,6 +15,7 @@ kubernetes_node_package_manifest:
     - helm
     - kustomize
     - argocd
+    - cilium-cli
 
 kubernetes_node_kernel_modules:
   - overlay

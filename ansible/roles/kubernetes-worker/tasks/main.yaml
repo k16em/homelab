@@ -1,0 +1,24 @@
+---
+- name: 'クラスタに参加済みか確認する'
+  become: true
+  ansible.builtin.stat:
+    path: /etc/kubernetes/kubelet.conf
+  register: kubernetes_worker_kubelet_conf
+
+- name: 'クラスタに参加する'
+  when: not kubernetes_worker_kubelet_conf.stat.exists
+  block:
+    - name: 'control planeでjoinコマンドを発行する'
+      become: true
+      ansible.builtin.command:
+        cmd: kubeadm token create --print-join-command --ttl 10m
+      delegate_to: '{{ kubernetes_worker_control_plane_host }}'
+      register: kubernetes_worker_join_command
+      no_log: true
+
+    - name: 'kubeadm joinを実行する'
+      become: true
+      ansible.builtin.command:
+        argv: '{{ kubernetes_worker_join_command.stdout | split }}'
+        creates: /etc/kubernetes/kubelet.conf
+      no_log: true

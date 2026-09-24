@@ -1,0 +1,44 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/searxng/searxng
+  tag: ""
+  pullPolicy: IfNotPresent
+
+secretKey:
+  existingSecret: ""
+  existingSecretKey: secret-key
+  value: ""
+
+settings:
+  use_default_settings: true
+  general:
+    instance_name: SearXNG
+  search:
+    formats:
+      - html
+      - json
+  server:
+    limiter: false
+    image_proxy: false
+    method: POST
+  valkey:
+    url: false
+
+service:
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 80
+    - name: https
+      port: 443
+  labels: {}
+  annotations: {}
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

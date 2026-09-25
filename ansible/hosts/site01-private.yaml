@@ -36,6 +36,8 @@ all:
                       ansible_host: 192.168.20.82
                     tk_k8s_wk03:
                       ansible_host: 192.168.20.83
+                    tk_k8s_nfs01:
+                      ansible_host: 192.168.20.51
         lxc:
           hosts:
             tk_worker01:
@@ -89,3 +91,7 @@ all:
                 tk_k8s_wk01:
                 tk_k8s_wk02:
                 tk_k8s_wk03:
+
+        kubernetes_nfs:
+          hosts:
+            tk_k8s_nfs01:

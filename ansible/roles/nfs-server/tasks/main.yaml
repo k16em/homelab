@@ -1,0 +1,74 @@
+---
+- name: 'エクスポート先のクライアントが定義されていることを確認する'
+  ansible.builtin.assert:
+    that:
+      - nfs_server_export_clients | length > 0
+    fail_msg: 'NFSをマウントするクライアントが定義されていない'
+    quiet: true
+
+- name: 'nfs-utilsを追加する'
+  become: true
+  community.general.pacman:
+    name: nfs-utils
+    state: present
+
+- name: 'エクスポートするディレクトリを作成する'
+  become: true
+  ansible.builtin.file:
+    path: '{{ nfs_server_export_directory }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: '/etc/exports.dを作成する'
+  become: true
+  ansible.builtin.file:
+    path: /etc/exports.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: 'exportsの設定を置く'
+  become: true
+  ansible.builtin.template:
+    src: kubernetes.exports.j2
+    dest: /etc/exports.d/kubernetes.exports
+    owner: root
+    group: root
+    mode: '0644'
+  notify: 'exportsを再読み込みする'
+
+- name: 'nfs-server.serviceを有効化'
+  become: true
+  ansible.builtin.systemd:
+    name: nfs-server
+    state: started
+    enabled: true
+    daemon_reload: true
+
+- name: '変更したexportsを反映する'
+  ansible.builtin.meta: flush_handlers
+
+- name: '有効なexportsを取得する'
+  become: true
+  ansible.builtin.command:
+    cmd: exportfs -s
+  register: nfs_server_active_exports
+  changed_when: false
+  check_mode: false
+  when: not ansible_check_mode
+
+- name: 'exportsが期待どおりか確認する'
+  ansible.builtin.assert:
+    that:
+      - actual == expected
+    fail_msg: '{{ nfs_server_export_directory }}のエクスポート先が{{ expected }}ではなく{{ actual }}になっている'
+    quiet: true
+  vars:
+    actual: >-
+      {{ nfs_server_active_exports.stdout_lines | map('split') | selectattr('0', 'equalto', nfs_server_export_directory)
+         | map(attribute='1') | map('regex_replace', '\(.*$', '') | sort }}
+    expected: '{{ nfs_server_export_clients | sort }}'
+  when: nfs_server_active_exports is not skipped

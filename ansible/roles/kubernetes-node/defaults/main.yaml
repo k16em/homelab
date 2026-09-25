@@ -11,6 +11,7 @@ kubernetes_node_package_manifest:
     - ethtool
     - iptables
     - conntrack-tools
+    - nfs-utils
   control_plane:
     - helm
     - kustomize

@@ -1,4 +1,17 @@
 ---
+- name: KubernetesのNFSサーバーを構成する
+  hosts: kubernetes_nfs
+  serial: 1
+  roles:
+    - role: pacman-mirror
+      tags: pacman_mirror
+    - role: initialize-node
+      tags: initialize_node
+    - role: sshd
+      tags: sshd
+    - role: nfs-server
+      tags: nfs_server
+
 - name: Kubernetesホストを構成する
   hosts: kubernetes
   serial: 1

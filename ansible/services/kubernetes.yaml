@@ -1,4 +1,17 @@
 ---
+- name: KubernetesのNFSサーバーを構成する
+  hosts: kubernetes_nfs
+  serial: 1
+  roles:
+    - role: pacman-mirror
+      tags: pacman_mirror
+    - role: initialize-node
+      tags: initialize_node
+    - role: sshd
+      tags: sshd
+    - role: nfs-server
+      tags: nfs_server
+
 - name: Kubernetesホストを構成する
   hosts: kubernetes
   serial: 1
@@ -36,6 +49,16 @@
       tags:
         - kubernetes_control_plane
         - kubernetes_worker
+
+    - name: 'NFSのCSIドライバーを構成する'
+      ansible.builtin.include_role:
+        name: kubernetes-control-plane
+        tasks_from: csi-driver-nfs
+        apply:
+          tags:
+            - csi_driver_nfs
+      tags:
+        - csi_driver_nfs
 
     - name: 'ExternalDNSを構成する'
       ansible.builtin.include_role:

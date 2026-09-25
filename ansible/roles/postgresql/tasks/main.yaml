@@ -1,0 +1,128 @@
+---
+- name: 'postgresqlに接続するクライアントが定義されていることを確認する'
+  ansible.builtin.assert:
+    that:
+      - postgresql_clients | length > 0
+    fail_msg: 'postgresqlに接続するクライアントが定義されていない'
+    quiet: true
+
+- name: 'postgresqlに必要なパッケージを追加する'
+  become: true
+  community.general.pacman:
+    name: '{{ postgresql_package_manifest.repository }}'
+    state: present
+
+- name: 'データベースクラスタを初期化する'
+  become: true
+  become_user: postgres
+  ansible.builtin.command:
+    argv:
+      - initdb
+      - --pgdata
+      - '{{ postgresql_data_directory }}'
+      - --locale
+      - C.UTF-8
+      - --encoding
+      - UTF8
+      - --auth-local
+      - peer
+      - --auth-host
+      - scram-sha-256
+    creates: '{{ postgresql_data_directory }}/PG_VERSION'
+
+- name: 'conf.dを読み込むようにする'
+  become: true
+  ansible.builtin.lineinfile:
+    path: '{{ postgresql_data_directory }}/postgresql.conf'
+    regexp: '^#?include_dir\s*='
+    line: "include_dir = 'conf.d'"
+  notify: 'postgresqlを再起動する'
+
+- name: 'conf.dを作成する'
+  become: true
+  ansible.builtin.file:
+    path: '{{ postgresql_data_directory }}/conf.d'
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: '0700'
+
+- name: 'postgresqlの設定を置く'
+  become: true
+  ansible.builtin.template:
+    src: homelab.conf.j2
+    dest: '{{ postgresql_data_directory }}/conf.d/homelab.conf'
+    owner: postgres
+    group: postgres
+    mode: '0600'
+  notify: 'postgresqlを再起動する'
+
+- name: 'pg_hba.confを置く'
+  become: true
+  ansible.builtin.template:
+    src: pg_hba.conf.j2
+    dest: '{{ postgresql_data_directory }}/pg_hba.conf'
+    owner: postgres
+    group: postgres
+    mode: '0600'
+  notify: 'postgresqlの設定を再読み込みする'
+
+- name: 'postgresql.serviceを有効化'
+  become: true
+  ansible.builtin.systemd:
+    name: postgresql
+    state: started
+    enabled: true
+    daemon_reload: true
+
+- name: '変更した設定をpostgresqlに反映する'
+  ansible.builtin.meta: flush_handlers
+
+- name: 'ユーザを作成する'
+  become: true
+  become_user: postgres
+  community.postgresql.postgresql_user:
+    name: '{{ item.owner }}'
+    password: '{{ item.password }}'
+  loop: '{{ postgresql_databases }}'
+  loop_control:
+    label: '{{ item.owner }}'
+  no_log: true
+
+- name: 'データベースを作成する'
+  become: true
+  become_user: postgres
+  community.postgresql.postgresql_db:
+    name: '{{ item.name }}'
+    owner: '{{ item.owner }}'
+    encoding: UTF8
+  loop: '{{ postgresql_databases }}'
+  loop_control:
+    label: '{{ item.name }}'
+
+- name: '拡張を有効化する'
+  become: true
+  become_user: postgres
+  community.postgresql.postgresql_ext:
+    name: '{{ item.1 }}'
+    login_db: '{{ item.0.name }}'
+  loop: "{{ postgresql_databases | subelements('extensions', skip_missing=true) }}"
+  loop_control:
+    label: '{{ item.0.name }}: {{ item.1 }}'
+
+- name: 'postgresqlが待ち受けているアドレスを取得する'
+  become: true
+  ansible.builtin.command:
+    cmd: "/usr/bin/ss --no-header --tcp --listening --numeric 'sport = :{{ postgresql_port }}'"
+  register: postgresql_listening_sockets
+  changed_when: false
+  check_mode: false
+  when: not ansible_check_mode
+
+- name: 'postgresqlがクライアントから届くアドレスで待ち受けているか確認する'
+  ansible.builtin.assert:
+    that:
+      - (ansible_host ~ ':' ~ postgresql_port) in postgresql_listening_sockets.stdout_lines | map('split') | map(attribute='3')
+    fail_msg: '{{ ansible_host }}:{{ postgresql_port }}で待ち受けていない: {{ postgresql_listening_sockets.stdout_lines }}'
+    quiet: true
+  when: postgresql_listening_sockets is not skipped

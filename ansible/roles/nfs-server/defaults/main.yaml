@@ -1,0 +1,4 @@
+---
+nfs_server_export_directory: /srv/nfs/kubernetes
+nfs_server_export_clients: "{{ groups['kubernetes'] | map('extract', hostvars, 'ansible_host') | list }}"
+nfs_server_export_options: rw,sync,no_subtree_check,no_root_squash

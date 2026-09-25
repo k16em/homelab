@@ -71,3 +71,26 @@ kubernetes_control_plane_argocd_values:
       annotations:
         lbipam.cilium.io/ips: '{{ kubernetes_control_plane_argocd_ip }}'
         external-dns.kubernetes.io/hostname: '{{ kubernetes_control_plane_argocd_hostname }}'
+
+kubernetes_control_plane_nfs_server: "{{ hostvars[groups['kubernetes_nfs'] | first].ansible_host }}"
+kubernetes_control_plane_nfs_share: /srv/nfs/kubernetes
+kubernetes_control_plane_nfs_storage_class: nfs-csi
+kubernetes_control_plane_csi_driver_nfs_chart: csi-driver-nfs
+kubernetes_control_plane_csi_driver_nfs_chart_repo: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
+kubernetes_control_plane_csi_driver_nfs_chart_version: 4.13.4
+kubernetes_control_plane_csi_driver_nfs_values:
+  controller:
+    enableSnapshotter: false
+  storageClass:
+    create: true
+    name: '{{ kubernetes_control_plane_nfs_storage_class }}'
+    annotations:
+      storageclass.kubernetes.io/is-default-class: 'true'
+    parameters:
+      server: '{{ kubernetes_control_plane_nfs_server }}'
+      share: '{{ kubernetes_control_plane_nfs_share }}'
+      onDelete: archive
+    reclaimPolicy: Delete
+    volumeBindingMode: Immediate
+    mountOptions:
+      - nfsvers=4.1

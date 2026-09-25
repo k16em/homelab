@@ -6,6 +6,11 @@ variable "hostname" {
   type = string
 }
 
+variable "name" {
+  type    = string
+  default = null
+}
+
 variable "cpu" {
   type     = number
   default  = 2
@@ -59,8 +64,9 @@ variable "vm_storage" {
 }
 
 variable "disk_size" {
-  type    = string
-  default = "32G"
+  type     = string
+  default  = "32G"
+  nullable = false
 }
 
 variable "cloud_init_storage" {
@@ -76,4 +82,9 @@ variable "pacman_mirror_port" {
   type     = number
   default  = 7878
   nullable = false
+}
+
+variable "tags" {
+  type    = string
+  default = null
 }

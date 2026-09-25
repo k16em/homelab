@@ -1,0 +1,41 @@
+---
+- name: 'NFSサーバーが定義されていることを確認する'
+  ansible.builtin.assert:
+    that:
+      - groups['kubernetes_nfs'] | default([]) | length > 0
+    fail_msg: 'kubernetes_nfsグループにNFSサーバーが定義されていない'
+    quiet: true
+
+- name: 'csi-driver-nfsをインストールまたは更新する'
+  ansible.builtin.include_tasks:
+    file: helm-release.yaml
+  vars:
+    kubernetes_control_plane_helm_release: csi-driver-nfs
+    kubernetes_control_plane_helm_namespace: kube-system
+    kubernetes_control_plane_helm_chart: '{{ kubernetes_control_plane_csi_driver_nfs_chart }}'
+    kubernetes_control_plane_helm_chart_name: csi-driver-nfs
+    kubernetes_control_plane_helm_chart_repo: '{{ kubernetes_control_plane_csi_driver_nfs_chart_repo }}'
+    kubernetes_control_plane_helm_chart_version: '{{ kubernetes_control_plane_csi_driver_nfs_chart_version }}'
+    kubernetes_control_plane_helm_values: '{{ kubernetes_control_plane_csi_driver_nfs_values }}'
+
+- name: 'デフォルトのStorageClassを取得する'
+  become: true
+  become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
+  ansible.builtin.command:
+    argv:
+      - kubectl
+      - get
+      - storageclass
+      - --output
+      - 'jsonpath={range .items[?(@.metadata.annotations.storageclass\.kubernetes\.io/is-default-class=="true")]}{.metadata.name}{"\n"}{end}'
+  register: kubernetes_control_plane_default_storage_class
+  changed_when: false
+  check_mode: false
+
+- name: 'NFSのStorageClassだけがデフォルトになっていることを確認する'
+  ansible.builtin.assert:
+    that:
+      - kubernetes_control_plane_default_storage_class.stdout_lines == [kubernetes_control_plane_nfs_storage_class]
+    fail_msg: 'デフォルトのStorageClassが{{ kubernetes_control_plane_nfs_storage_class }}だけではなく{{ kubernetes_control_plane_default_storage_class.stdout_lines }}になっている'
+    quiet: true
+  when: not ansible_check_mode

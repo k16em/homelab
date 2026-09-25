@@ -87,11 +87,20 @@ resource "proxmox_cloud_init_disk" "ci" {
         }
       },
       {
-        for addr in compact([var.private_v4_addr]) : "private" => {
-          match     = { macaddress = local.private_mac }
-          dhcp4     = false
-          addresses = [addr]
-        }
+        for addr in compact([var.private_v4_addr]) : "private" => merge(
+          {
+            match     = { macaddress = local.private_mac }
+            dhcp4     = false
+            addresses = [addr]
+          },
+          [for _ in var.public_v4_addr == null ? [addr] : [] : {
+            routes = [for gw in compact([var.ipv4_gateway]) : { to = "default", via = gw }]
+            nameservers = {
+              addresses = compact([var.ipv4_dns])
+              search    = [var.search_domain]
+            }
+          }]...
+        )
       },
     )
   })

@@ -1,6 +1,6 @@
 ---
-- name: Arch Linuxホストを構成する
-  hosts: archlinux:!cache:!kubernetes:!kubernetes_nfs
+- name: データベースを構成する
+  hosts: database
   serial: 1
   roles:
     - role: pacman-mirror
@@ -9,3 +9,5 @@
       tags: initialize_node
     - role: upgrade-packages
       tags: upgrade_packages
+    - role: postgresql
+      tags: postgresql

@@ -1,5 +1,5 @@
 resource "proxmox_vm_qemu" "vm" {
-  name        = var.hostname
+  name        = coalesce(var.name, var.hostname)
   target_node = var.pve_node
   vmid        = var.vmid
   clone_id    = var.template_vmid
@@ -21,6 +21,12 @@ resource "proxmox_vm_qemu" "vm" {
     sockets = 1
   }
 
+  startup_shutdown {
+    order            = -1
+    shutdown_timeout = -1
+    startup_delay    = -1
+  }
+
   serial {
     id   = 0
     type = "socket"
@@ -30,18 +36,24 @@ resource "proxmox_vm_qemu" "vm" {
     type = "serial0"
   }
 
-  network {
-    id      = 0
-    model   = "virtio"
-    bridge  = "vmbr0"
-    macaddr = local.public_mac
+  dynamic "network" {
+    for_each = var.public_v4_addr != null ? [0] : []
+    content {
+      id      = 0
+      model   = "virtio"
+      bridge  = "vmbr0"
+      macaddr = local.public_mac
+    }
   }
 
-  network {
-    id      = 1
-    model   = "virtio"
-    bridge  = "vmbr1"
-    macaddr = local.private_mac
+  dynamic "network" {
+    for_each = var.private_v4_addr != null ? [var.public_v4_addr != null ? 1 : 0] : []
+    content {
+      id      = network.value
+      model   = "virtio"
+      bridge  = "vmbr1"
+      macaddr = local.private_mac
+    }
   }
 
   disks {

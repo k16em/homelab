@@ -17,6 +17,8 @@ database:
   existingSecretKey: password
   vectorDB: true
 
+offlineMode: true
+
 env: []
 
 envFrom: []

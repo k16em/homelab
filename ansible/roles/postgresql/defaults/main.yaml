@@ -1,0 +1,21 @@
+---
+postgresql_package_manifest:
+  repository:
+    - postgresql
+    - pgvector
+    - python-psycopg2
+
+postgresql_data_directory: /var/lib/postgres/data
+postgresql_port: 5432
+
+postgresql_settings:
+  listen_addresses: 'localhost,{{ ansible_host }}'
+
+postgresql_clients: "{{ groups['kubernetes'] | map('extract', hostvars, 'ansible_host') | list }}"
+
+postgresql_databases:
+  - name: open_webui
+    owner: open_webui
+    password: '{{ postgresql_open_webui_password }}'
+    extensions:
+      - vector

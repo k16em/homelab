@@ -25,6 +25,9 @@ hermes01p:
 memory01p:
 	ansible-playbook -i ./hosts/site01-private.yaml ./services/memory.yaml --vault-password-file ~/ansible/.vault_pass
 
+db01p:
+	ansible-playbook -i ./hosts/site01-private.yaml ./services/database.yaml --vault-password-file ~/ansible/.vault_pass
+
 kubernetes01p:
 	ansible-playbook -i ./hosts/site01-private.yaml ./services/kubernetes.yaml --vault-password-file ~/ansible/.vault_pass
 

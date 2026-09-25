@@ -1,0 +1,4 @@
+{% for key, value in postgresql_settings.items() %}
+{{ key }} = '{{ value }}'
+{% endfor %}
+port = {{ postgresql_port }}

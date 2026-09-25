@@ -2,6 +2,7 @@
 - import_playbook: services/cache.yaml
 - import_playbook: services/all.yaml
 - import_playbook: services/bastion.yaml
+- import_playbook: services/database.yaml
 - import_playbook: services/dns.yaml
 - import_playbook: services/hermes.yaml
 - import_playbook: services/llm.yaml

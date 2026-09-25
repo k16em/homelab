@@ -1,0 +1,12 @@
+---
+- name: 'postgresqlを再起動する'
+  become: true
+  ansible.builtin.systemd:
+    name: postgresql
+    state: restarted
+
+- name: 'postgresqlの設定を再読み込みする'
+  become: true
+  ansible.builtin.systemd:
+    name: postgresql
+    state: reloaded

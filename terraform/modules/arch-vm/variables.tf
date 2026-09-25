@@ -83,3 +83,8 @@ variable "pacman_mirror_port" {
   default  = 7878
   nullable = false
 }
+
+variable "tags" {
+  type    = string
+  default = null
+}

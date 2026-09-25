@@ -3,6 +3,7 @@ resource "proxmox_vm_qemu" "vm" {
   target_node = var.pve_node
   vmid        = var.vmid
   clone_id    = var.template_vmid
+  tags        = var.tags
   full_clone  = true
 
   agent              = 1

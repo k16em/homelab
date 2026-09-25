@@ -50,6 +50,16 @@
         - kubernetes_control_plane
         - kubernetes_worker
 
+    - name: 'NFSのCSIドライバーを構成する'
+      ansible.builtin.include_role:
+        name: kubernetes-control-plane
+        tasks_from: csi-driver-nfs
+        apply:
+          tags:
+            - csi_driver_nfs
+      tags:
+        - csi_driver_nfs
+
     - name: 'ExternalDNSを構成する'
       ansible.builtin.include_role:
         name: kubernetes-control-plane

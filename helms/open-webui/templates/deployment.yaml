@@ -16,6 +16,19 @@ spec:
       labels:
         {{- include "open-webui.selectorLabels" . | nindent 8 }}
     spec:
+      {{- if .Values.offlineMode }}
+      initContainers:
+        - name: seed-cache
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default (printf "v%s" .Chart.AppVersion) }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - sh
+            - -c
+            - tar -C /app/backend/data -cf - cache | tar -C /data -xf - --skip-old-files
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      {{- end }}
       containers:
         - name: open-webui
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default (printf "v%s" .Chart.AppVersion) }}"
@@ -26,6 +39,10 @@ spec:
                 secretKeyRef:
                   name: {{ include "open-webui.secretName" . }}
                   key: {{ .Values.secretKey.existingSecretKey }}
+            {{- if .Values.offlineMode }}
+            - name: OFFLINE_MODE
+              value: "true"
+            {{- end }}
             {{- with .Values.database }}
             {{- if .host }}
             {{- if not (and .name .user .existingSecret) }}

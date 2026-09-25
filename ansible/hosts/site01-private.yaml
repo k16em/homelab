@@ -18,8 +18,6 @@ all:
                       ansible_host: 192.168.20.17
                     tk_worker01:
                       ansible_host: 192.168.20.18
-                    tk_lxc01:
-                      ansible_host: 192.168.20.21
                     tk_bastion01:
                       ansible_host: 192.168.20.60
                     tk_hermes01:
@@ -43,7 +41,6 @@ all:
         lxc:
           hosts:
             tk_worker01:
-            tk_lxc01:
             tk_bastion01:
             tk_hermes01:
             tk_llm_proxy01:
@@ -71,10 +68,6 @@ all:
             llm_proxy:
               hosts:
                 tk_llm_proxy01:
-
-        agent:
-          hosts:
-            tk_llm01:
 
         memory:
           hosts:

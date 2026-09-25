@@ -17,9 +17,7 @@
   become: true
   ansible.builtin.reboot:
     msg: "Ansibleでパッケージ更新があったので、再起動します"
-  when:
-    - result.changed
-    - "not 'jenkins' in group_names"
+  when: result.changed
 
 - name: "pacman-contribを入れる"
   become: true

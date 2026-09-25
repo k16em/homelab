@@ -32,12 +32,6 @@ all:
         docker:
           hosts:
 
-        grafana:
-          hosts:
-
-        jenkins:
-          hosts:
-
         dns:
           hosts:
             tk_dns01:

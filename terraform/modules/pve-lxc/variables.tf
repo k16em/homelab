@@ -40,7 +40,8 @@ variable "ipv4_gateway" {
 }
 
 variable "hwaddr" {
-  type = string
+  type    = string
+  default = null
 }
 
 variable "nameserver" {

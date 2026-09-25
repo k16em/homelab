@@ -18,14 +18,6 @@
     - role: llm-backend
       tags: llm_backend
 
-- name: LLM Web UIを構成する
-  hosts: webui
-  roles:
-    - role: docker-host
-      tags: docker_host
-    - role: llm-webui
-      tags: llm_webui
-
 - name: LLMプロキシを構成する
   hosts: llm_proxy
   roles:

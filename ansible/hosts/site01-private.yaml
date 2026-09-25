@@ -72,10 +72,6 @@ all:
               hosts:
                 tk_llm_proxy01:
 
-        webui:
-          hosts:
-            tk_llm01:
-
         agent:
           hosts:
             tk_llm01:

@@ -1,6 +1,11 @@
 ## Response Rules
 - Always respond in Japanese unless the user explicitly specifies otherwise.
 
+## Terminology
+- Prefer original English IT terminology over unnatural Japanese translations.
+- Keep proper nouns in their original-language form.
+- Describe effects and outcomes concretely using wording equivalent to "applied", "reflected", or "affects", rather than vague phrasing.
+
 ## Tooling rules for OpenCode
 - Use OpenCode tools only: read, write, edit, list, glob, grep, webfetch, bash, task, todowrite, todoread.
 - Do NOT call non-existent tools like Repo_browser.* .

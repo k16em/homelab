@@ -19,6 +19,9 @@ postgresql_databases:
     password: '{{ postgresql_open_webui_password }}'
     extensions:
       - vector
+  - name: redmine
+    owner: redmine
+    password: '{{ postgresql_redmine_password }}'
 
 postgresql_backup_directory: /var/lib/postgres/backup
 postgresql_backup_on_calendar: '*-*-* 03:00:00'

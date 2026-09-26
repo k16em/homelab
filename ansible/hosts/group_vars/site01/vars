@@ -2,3 +2,4 @@
 facing_bastion: "{{ vault_facing_bastion }}"
 pihole_password: "{{ vault_pihole_password }}"
 postgresql_open_webui_password: "{{ vault_postgresql_open_webui_password }}"
+postgresql_redmine_password: "{{ vault_postgresql_redmine_password }}"

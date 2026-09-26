@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily PostgreSQL backup of %i
+
+[Timer]
+OnCalendar={{ postgresql_backup_on_calendar }}
+Persistent=true
+RandomizedDelaySec=10min
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+database="$1"
+directory='{{ postgresql_backup_directory }}'/"${database}"
+retention={{ postgresql_backup_retention }}
+file="${directory}/${database}-$(date +%Y%m%d-%H%M%S).dump"
+
+mkdir --parents --mode=0700 "${directory}"
+pg_dump --format=custom --file="${file}.tmp" "${database}"
+mv "${file}.tmp" "${file}"
+
+find "${directory}" -maxdepth 1 -name "${database}-*.dump" -printf '%f\n' \
+  | sort --reverse \
+  | tail --lines=+$((retention + 1)) \
+  | while read -r old; do rm -- "${directory}/${old}"; done

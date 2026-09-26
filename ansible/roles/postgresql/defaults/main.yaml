@@ -19,3 +19,7 @@ postgresql_databases:
     password: '{{ postgresql_open_webui_password }}'
     extensions:
       - vector
+
+postgresql_backup_directory: /var/lib/postgres/backup
+postgresql_backup_on_calendar: '*-*-* 03:00:00'
+postgresql_backup_retention: 7

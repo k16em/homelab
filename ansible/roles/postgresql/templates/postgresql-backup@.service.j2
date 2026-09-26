@@ -1,0 +1,10 @@
+[Unit]
+Description=PostgreSQL backup of %i
+Requires=postgresql.service
+After=postgresql.service
+
+[Service]
+Type=oneshot
+User=postgres
+Group=postgres
+ExecStart=/usr/local/bin/postgresql-backup %i

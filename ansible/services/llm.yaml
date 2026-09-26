@@ -17,9 +17,3 @@
       tags: add_worker
     - role: llm-backend
       tags: llm_backend
-
-- name: LLMプロキシを構成する
-  hosts: llm_proxy
-  roles:
-    - role: llm-proxy
-      tags: llm_proxy

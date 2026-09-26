@@ -7,27 +7,29 @@
 
 - name: 'config用ディレクトリを掘る'
   become: true
-  become_user: '{{ opencode_user }}'
   ansible.builtin.file:
-    path: ~/.config/opencode
+    path: '~{{ opencode_user }}/.config/opencode'
     state: "directory"
     owner: '{{ opencode_user }}'
+    group: '{{ opencode_user }}'
     mode: "0755"
 
 - name: 'AGENTS設定を置く'
   become: true
-  become_user: '{{ opencode_user }}'
   ansible.builtin.copy:
     src: AGENTS.md
-    dest: ~/.config/opencode/AGENTS.md
+    dest: '~{{ opencode_user }}/.config/opencode/AGENTS.md'
+    owner: '{{ opencode_user }}'
+    group: '{{ opencode_user }}'
     mode: "0644"
 
 - name: 'opencodeの設定ファイルを置く'
   become: true
-  become_user: '{{ opencode_user }}'
   ansible.builtin.template:
     src: config.json.j2
-    dest: ~/.config/opencode/config.json
+    dest: '~{{ opencode_user }}/.config/opencode/config.json'
+    owner: '{{ opencode_user }}'
+    group: '{{ opencode_user }}'
     mode: "0644"
     validate: '/usr/bin/python -c "import json, sys; json.load(open(sys.argv[1]))" %s'
   diff: false

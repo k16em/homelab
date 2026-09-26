@@ -1,0 +1,46 @@
+image:
+  repository: redmine
+  tag: ""
+  pullPolicy: IfNotPresent
+
+secretKeyBase:
+  existingSecret: ""
+  existingSecretKey: secret-key-base
+  value: ""
+
+database:
+  host: ""
+  port: 5432
+  name: ""
+  user: ""
+  existingSecret: ""
+  existingSecretKey: password
+
+env: []
+
+envFrom: []
+
+persistence:
+  existingClaim: ""
+  storageClassName: ""
+  accessModes:
+    - ReadWriteOnce
+  size: 10Gi
+
+service:
+  network: ""
+  loadBalancerIP: ""
+  hostname: ""
+  ports:
+    - name: http
+      port: 80
+  labels: {}
+  annotations: {}
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

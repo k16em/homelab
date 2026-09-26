@@ -1,0 +1,39 @@
+{{- $network := .Values.service.network -}}
+{{- if and (not $network) (or .Values.service.loadBalancerIP .Values.service.hostname) -}}
+{{- fail "service.loadBalancerIP と service.hostname を使うには service.network を指定する必要がある" -}}
+{{- end -}}
+{{- $labels := deepCopy (.Values.service.labels | default dict) -}}
+{{- $annotations := deepCopy (.Values.service.annotations | default dict) -}}
+{{- if $network -}}
+{{- $_ := set $labels "homelab/network" $network -}}
+{{- with .Values.service.loadBalancerIP -}}
+{{- $_ := set $annotations "lbipam.cilium.io/ips" . -}}
+{{- end -}}
+{{- with .Values.service.hostname -}}
+{{- $_ := set $annotations "external-dns.kubernetes.io/hostname" . -}}
+{{- end -}}
+{{- end -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "redmine.fullname" . }}
+  labels:
+    {{- include "redmine.labels" . | nindent 4 }}
+    {{- with $labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with $annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ ternary "LoadBalancer" "ClusterIP" (not (empty $network)) }}
+  selector:
+    {{- include "redmine.selectorLabels" . | nindent 4 }}
+  ports:
+    {{- range .Values.service.ports }}
+    - name: {{ .name }}
+      port: {{ .port }}
+      targetPort: http
+      protocol: TCP
+    {{- end }}

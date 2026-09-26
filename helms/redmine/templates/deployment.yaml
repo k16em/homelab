@@ -1,0 +1,95 @@
+{{- with .Values.database }}
+{{- if not (and .host .name .user .existingSecret) }}
+{{- fail "database.host、database.name、database.user、database.existingSecret を指定する必要がある" }}
+{{- end }}
+{{- end }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "redmine.fullname" . }}
+  labels:
+    {{- include "redmine.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "redmine.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "redmine.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: redmine
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: REDMINE_SECRET_KEY_BASE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "redmine.secretName" . }}
+                  key: {{ .Values.secretKeyBase.existingSecretKey }}
+            {{- with .Values.database }}
+            - name: REDMINE_DB_POSTGRES
+              value: {{ .host | quote }}
+            - name: REDMINE_DB_PORT
+              value: {{ .port | quote }}
+            - name: REDMINE_DB_DATABASE
+              value: {{ .name | quote }}
+            - name: REDMINE_DB_USERNAME
+              value: {{ .user | quote }}
+            - name: REDMINE_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .existingSecret }}
+                  key: {{ .existingSecretKey }}
+            {{- end }}
+            {{- with .Values.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with .Values.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          startupProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 10
+            failureThreshold: 60
+          readinessProbe:
+            httpGet:
+              path: /login
+              port: http
+          livenessProbe:
+            httpGet:
+              path: /login
+              port: http
+          volumeMounts:
+            - name: files
+              mountPath: /usr/src/redmine/files
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: files
+          persistentVolumeClaim:
+            claimName: {{ include "redmine.claimName" . }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

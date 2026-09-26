@@ -2,7 +2,6 @@
 alloy_homelab: "{{ vault_alloy_homelab }}"
 llama_swap_models: "{{ vault_llama_swap_models }}"
 local_llm_ip: "{{ vault_local_llm_ip }}"
-local_llm_proxy_ip: "{{ vault_local_llm_proxy_ip }}"
 maintainer_password_hash: "{{ vault_maintainer_password_hash }}"
 nginx_password: "{{ vault_nginx_password }}"
 opencode_default_model_name: "{{ vault_opencode_default_model }}"

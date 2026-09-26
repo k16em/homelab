@@ -9,6 +9,6 @@ opencode_user: opencode
 
 opencode_provider_id: llama.cpp
 opencode_provider_name: llama-swap(tk)
-opencode_base_url: 'http://{{ local_llm_proxy_ip }}:8081/v1'
+opencode_base_url: 'http://{{ local_llm_ip }}:12434/v1'
 opencode_default_model: '{{ opencode_provider_id }}/{{ opencode_default_model_name }}'
 opencode_small_model: '{{ opencode_provider_id }}/{{ opencode_small_model_name }}'

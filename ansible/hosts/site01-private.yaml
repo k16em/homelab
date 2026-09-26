@@ -22,8 +22,6 @@ all:
                       ansible_host: 192.168.20.60
                     tk_hermes01:
                       ansible_host: 192.168.20.36
-                    tk_llm_proxy01:
-                      ansible_host: 192.168.20.70
                     tk_memory01:
                       ansible_host: 192.168.20.71
                     tk_db01:
@@ -43,7 +41,6 @@ all:
             tk_worker01:
             tk_bastion01:
             tk_hermes01:
-            tk_llm_proxy01:
             tk_memory01:
             tk_db01:
 
@@ -65,9 +62,6 @@ all:
             llm_backend:
               hosts:
                 tk_llm01:
-            llm_proxy:
-              hosts:
-                tk_llm_proxy01:
 
         memory:
           hosts:

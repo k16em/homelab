@@ -25,6 +25,24 @@
     group: llm
     mode: '2750'
 
+- name: 'llama.cppのビルドに関わるROCmのバージョンを取得する'
+  ansible.builtin.command:
+    argv: '{{ ["pacman", "-Q"] + llm_backend_llama_cpp_rocm_packages }}'
+  register: llm_backend_llama_cpp_rocm_query
+  changed_when: false
+  check_mode: false
+
+- name: 'ROCmのバージョンを記録する'
+  ansible.builtin.set_fact:
+    llm_backend_llama_cpp_rocm_versions: '{{ llm_backend_llama_cpp_rocm_query.stdout_lines }}'
+
+- name: 'variantのllama.cppをビルドする'
+  ansible.builtin.include_tasks: llama-cpp-variant.yaml
+  loop: '{{ llama_cpp_variants }}'
+  loop_control:
+    loop_var: variant
+    label: '{{ variant.name }}'
+
 - name: 'llama-swapのサービスユニットファイルを上書きする用のディレクトリを作成する'
   become: true
   ansible.builtin.file:

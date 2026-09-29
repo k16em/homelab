@@ -1,5 +1,6 @@
 ---
 alloy_homelab: "{{ vault_alloy_homelab }}"
+llama_cpp_variants: "{{ vault_llama_cpp_variants }}"
 llama_swap_models: "{{ vault_llama_swap_models }}"
 local_llm_ip: "{{ vault_local_llm_ip }}"
 maintainer_password_hash: "{{ vault_maintainer_password_hash }}"

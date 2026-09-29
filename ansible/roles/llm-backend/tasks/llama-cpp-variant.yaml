@@ -1,0 +1,130 @@
+---
+- name: '{{ variant.name }}: llama.cppのvariant用パスを決める'
+  ansible.builtin.set_fact:
+    llama_cpp_variant_dir: '{{ llm_backend_llama_cpp_variants_dir }}/{{ variant.name }}'
+    llama_cpp_variant_bin: '{{ llm_backend_llama_cpp_variants_bin_dir }}/llama-server-{{ variant.name }}'
+    llama_cpp_variant_cmake_args: '{{ variant.cmake_args | default(llm_backend_llama_cpp_cmake_args) }}'
+
+- name: '{{ variant.name }}: variant用ディレクトリを掘る'
+  become: true
+  ansible.builtin.file:
+    path: '{{ item }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  loop:
+    - '{{ llama_cpp_variant_dir }}'
+    - '{{ llama_cpp_variant_dir }}/patches'
+
+- name: '{{ variant.name }}: llama.cppのソースを取得する'
+  become: true
+  ansible.builtin.git:
+    repo: '{{ variant.repo | default(llm_backend_llama_cpp_repo) }}'
+    dest: '{{ llama_cpp_variant_dir }}/src'
+    version: '{{ variant.version }}'
+    force: true
+
+- name: '{{ variant.name }}: patchをダウンロードする'
+  become: true
+  ansible.builtin.get_url:
+    url: '{{ item.url }}'
+    dest: '{{ llama_cpp_variant_dir }}/patches/{{ "%02d" | format(index) }}-{{ item.url | urlsplit("path") | basename }}'
+    checksum: '{{ item.checksum }}'
+    owner: root
+    group: root
+    mode: '0644'
+  loop: '{{ variant.patches | default([]) }}'
+  loop_control:
+    index_var: index
+    label: '{{ item.url | urlsplit("path") | basename }}'
+
+- name: '{{ variant.name }}: ビルド済みの構成を読む'
+  become: true
+  ansible.builtin.slurp:
+    src: '{{ llama_cpp_variant_dir }}/build.stamp'
+  register: llama_cpp_variant_stamp
+  failed_when: false
+
+- name: '{{ variant.name }}: 配置済みのllama-serverを確認する'
+  ansible.builtin.stat:
+    path: '{{ llama_cpp_variant_bin }}'
+  register: llama_cpp_variant_bin_stat
+
+- name: '{{ variant.name }}: 期待する構成を組み立てる'
+  ansible.builtin.set_fact:
+    llama_cpp_variant_expected_stamp: "{{ {
+      'version': variant.version,
+      'patches': variant.patches | default([]) | map(attribute='checksum') | list,
+      'cmake_args': llama_cpp_variant_cmake_args,
+      'rocm': llm_backend_llama_cpp_rocm_versions
+    } | to_nice_json }}"
+
+- name: '{{ variant.name }}: 構成が変わっていればビルドする'
+  when: >-
+    (llama_cpp_variant_stamp.content | default('') | b64decode) != llama_cpp_variant_expected_stamp
+    or not llama_cpp_variant_bin_stat.stat.exists
+  become: true
+  block:
+    - name: '{{ variant.name }}: 古い作業ツリーを消す'
+      ansible.builtin.file:
+        path: '{{ llama_cpp_variant_dir }}/work'
+        state: absent
+
+    - name: '{{ variant.name }}: 作業ツリーの登録を掃除する'
+      ansible.builtin.command:
+        cmd: git -C {{ llama_cpp_variant_dir }}/src worktree prune
+
+    - name: '{{ variant.name }}: 作業ツリーを作る'
+      ansible.builtin.command:
+        cmd: git -C {{ llama_cpp_variant_dir }}/src worktree add --detach {{ llama_cpp_variant_dir }}/work {{ variant.version }}
+
+    - name: '{{ variant.name }}: patchを当てられるか確認する'
+      ansible.builtin.command:
+        cmd: git apply --check {{ llama_cpp_variant_dir }}/patches/{{ "%02d" | format(index) }}-{{ item.url | urlsplit("path") | basename }}
+        chdir: '{{ llama_cpp_variant_dir }}/work'
+      loop: '{{ variant.patches | default([]) }}'
+      loop_control:
+        index_var: index
+        label: '{{ item.url | urlsplit("path") | basename }}'
+      changed_when: false
+
+    - name: '{{ variant.name }}: patchを当てる'
+      ansible.builtin.command:
+        cmd: git apply {{ llama_cpp_variant_dir }}/patches/{{ "%02d" | format(index) }}-{{ item.url | urlsplit("path") | basename }}
+        chdir: '{{ llama_cpp_variant_dir }}/work'
+      loop: '{{ variant.patches | default([]) }}'
+      loop_control:
+        index_var: index
+        label: '{{ item.url | urlsplit("path") | basename }}'
+
+    - name: '{{ variant.name }}: cmakeでconfigureする'
+      ansible.builtin.command:
+        argv: '{{ ["cmake", "-S", ".", "-B", "build"] + llama_cpp_variant_cmake_args }}'
+        chdir: '{{ llama_cpp_variant_dir }}/work'
+      environment: '{{ llm_backend_llama_cpp_build_env }}'
+
+    - name: '{{ variant.name }}: llama-serverをビルドする'
+      ansible.builtin.command:
+        cmd: cmake --build build --config Release --target llama-server -j {{ ansible_processor_nproc }}
+        chdir: '{{ llama_cpp_variant_dir }}/work'
+      environment: '{{ llm_backend_llama_cpp_build_env }}'
+      async: '{{ llm_backend_llama_cpp_build_timeout }}'
+      poll: 30
+
+    - name: '{{ variant.name }}: llama-serverを配置する'
+      ansible.builtin.copy:
+        src: '{{ llama_cpp_variant_dir }}/work/build/bin/llama-server'
+        dest: '{{ llama_cpp_variant_bin }}'
+        remote_src: true
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: '{{ variant.name }}: ビルドした構成を記録する'
+      ansible.builtin.copy:
+        content: '{{ llama_cpp_variant_expected_stamp }}'
+        dest: '{{ llama_cpp_variant_dir }}/build.stamp'
+        owner: root
+        group: root
+        mode: '0644'

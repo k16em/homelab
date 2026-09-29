@@ -22,6 +22,8 @@ llm_backend_package_manifest:
     - python-h2
     - cuda
     - python-yaml
+    - git
+    - cmake
   aur:
     - zluda
     - llama.cpp-hip
@@ -38,6 +40,23 @@ llm_backend_llama_swap_config_dir: /etc/llama-swap
 llm_backend_llama_swap_listen_port: 12434
 llm_backend_llama_swap_health_check_timeout: 300
 llm_backend_llama_swap_default_ttl: 600
+
+llm_backend_llama_cpp_variants_dir: /opt/llama.cpp-variants
+llm_backend_llama_cpp_variants_bin_dir: /usr/local/bin
+llm_backend_llama_cpp_repo: https://github.com/ggml-org/llama.cpp
+llm_backend_llama_cpp_build_timeout: 7200
+llm_backend_llama_cpp_rocm_packages:
+  - hip-runtime-amd
+  - rocblas
+  - hipblas
+llm_backend_llama_cpp_build_env:
+  HIP_PATH: /opt/rocm
+  HIPCXX: /opt/rocm/lib/llvm/bin/clang
+llm_backend_llama_cpp_cmake_args:
+  - -DGGML_HIP=ON
+  - -DAMDGPU_TARGETS=gfx1151
+  - -DBUILD_SHARED_LIBS=OFF
+  - -DCMAKE_BUILD_TYPE=Release
 
 llm_backend_llama_swap_default_env:
   - 'HSA_OVERRIDE_GFX_VERSION=11.5.1'

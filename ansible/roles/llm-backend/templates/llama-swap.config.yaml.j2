@@ -8,7 +8,7 @@ models:
       - "{{ env }}"
 {% endfor %}
     cmd: |
-      {{ llm_backend_llama_swap_bin }}
+      {{ (llm_backend_llama_cpp_variants_bin_dir ~ '/llama-server-' ~ model.variant) if model.variant is defined else llm_backend_llama_swap_bin }}
       -m {{ llm_backend_llama_swap_models_dir }}/{{ model.file }}
       --port ${PORT}
 {{ model.args | indent(6, first=True) }}

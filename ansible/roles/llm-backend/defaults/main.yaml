@@ -62,3 +62,4 @@ llm_backend_llama_swap_default_env:
   - 'HSA_OVERRIDE_GFX_VERSION=11.5.1'
   - 'HSA_ENABLE_SDMA=0'
   - 'ROCBLAS_USE_HIPBLASLT=1'
+  - 'HIP_LAUNCH_BLOCKING=1'

@@ -1,0 +1,81 @@
+---
+- name: 'Gufoの依存パッケージを導入する'
+  become: true
+  community.general.pacman:
+    name: '{{ llm_backend_gufo_packages }}'
+    state: installed
+
+- name: 'Gufoのソースを取得する'
+  become: true
+  ansible.builtin.git:
+    repo: '{{ llm_backend_gufo_repo }}'
+    dest: '{{ llm_backend_gufo_dir }}/src'
+    version: '{{ llm_backend_gufo_version }}'
+  register: gufo_source
+
+- name: 'Gufoのtoolchainバージョンを取得する'
+  ansible.builtin.command:
+    argv: '{{ ["pacman", "-Q"] + llm_backend_gufo_stamp_packages }}'
+  register: gufo_packages
+  changed_when: false
+  check_mode: false
+
+- name: 'Gufoの期待するbuild構成を組み立てる'
+  ansible.builtin.set_fact:
+    gufo_expected_stamp: "{{ {'revision': gufo_source.after, 'args': llm_backend_gufo_cmake_args, 'prefix': llm_backend_gufo_prefix, 'packages': gufo_packages.stdout_lines} | to_nice_json }}"
+
+- name: 'Gufoのbuild構成を読む'
+  become: true
+  ansible.builtin.slurp:
+    src: '{{ llm_backend_gufo_dir }}/build.stamp'
+  register: gufo_stamp
+  failed_when: false
+
+- name: 'Gufoの配置済みファイルを確認する'
+  ansible.builtin.stat:
+    path: '{{ llm_backend_gufo_prefix }}/{{ item }}'
+  loop:
+    - bin/gufo
+    - share/licenses/gufo/LICENSE
+    - share/gufo/eval/antirez-ds4.json
+    - share/gufo/models/minimax_h3/MINIMAX_H3_FL2VA_BF16.source-manifest.json
+  register: gufo_installed
+
+- name: '構成が変わっていればGufoをビルドする'
+  become: true
+  when: >-
+    (gufo_stamp.content | default('') | b64decode) != gufo_expected_stamp
+    or gufo_installed.results | selectattr('stat.exists', 'equalto', false) | list | length > 0
+  block:
+    - name: 'Gufoをconfigureする'
+      ansible.builtin.command:
+        argv: '{{ ["cmake", "--fresh", "--preset", "release", "-DCMAKE_INSTALL_PREFIX=" ~ llm_backend_gufo_prefix, "-DGUFO_REVISION=" ~ gufo_source.after] + llm_backend_gufo_cmake_args }}'
+        chdir: '{{ llm_backend_gufo_dir }}/src'
+
+    - name: 'Gufoをビルドする'
+      ansible.builtin.command:
+        argv:
+          - cmake
+          - --build
+          - --preset
+          - release
+          - --parallel
+          - '{{ llm_backend_gufo_build_jobs | string }}'
+        chdir: '{{ llm_backend_gufo_dir }}/src'
+      async: '{{ llm_backend_gufo_build_timeout }}'
+      poll: 30
+
+    - name: 'Gufoをインストールする'
+      ansible.builtin.command:
+        argv:
+          - cmake
+          - --install
+          - '{{ llm_backend_gufo_dir }}/src/build/release'
+
+    - name: 'Gufoのbuild構成を記録する'
+      ansible.builtin.copy:
+        content: '{{ gufo_expected_stamp }}'
+        dest: '{{ llm_backend_gufo_dir }}/build.stamp'
+        owner: root
+        group: root
+        mode: '0644'

@@ -17,6 +17,19 @@ models:
 
 {% endif %}
 {% endfor %}
+{% for model in gufo_models %}
+  "{{ model.name }}":
+    env: {{ model.env | default(llm_backend_gufo_env) | to_json }}
+    cmd: |
+      {{ llm_backend_gufo_prefix }}/bin/gufo serve
+      --host 127.0.0.1 --port ${PORT} --sessions 1
+      llm --model {{ llm_backend_llama_swap_models_dir }}/{{ model.file }}
+      --served-model-name {{ model.name }}
+{{ model.args | indent(6, first=True) }}
+    checkEndpoint: /ready
+    ttl: {{ model.ttl | default(llm_backend_llama_swap_default_ttl) }}
+
+{% endfor %}
 {% set persistent_models = llama_swap_models | selectattr('persistent', 'defined') | selectattr('persistent') | list %}
 {% if persistent_models %}
 

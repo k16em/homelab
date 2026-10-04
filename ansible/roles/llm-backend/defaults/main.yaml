@@ -63,3 +63,51 @@ llm_backend_llama_swap_default_env:
   - 'HSA_ENABLE_SDMA=0'
   - 'ROCBLAS_USE_HIPBLASLT=1'
   - 'HIP_LAUNCH_BLOCKING=1'
+
+gufo_models: []
+llm_backend_gufo_repo: https://github.com/gufo-org/gufo
+llm_backend_gufo_version: 8bdde807e57fadfe57f4a1005707559ae6afc82f
+llm_backend_gufo_dir: /opt/gufo
+llm_backend_gufo_prefix: /opt/gufo/install
+llm_backend_gufo_build_jobs: 4
+llm_backend_gufo_build_timeout: 7200
+llm_backend_gufo_packages:
+  - gcc15
+  - git
+  - cmake
+  - ninja
+  - pkgconf
+  - rocm-hip-sdk
+  - hipblaslt
+  - hipcub
+  - rocprim
+  - rocwmma
+  - icu
+  - curl
+  - openssl
+  - libpng
+  - libjpeg-turbo
+  - libwebp
+  - ffmpeg
+llm_backend_gufo_stamp_packages:
+  - gcc15
+  - rocm-llvm
+  - cmake
+  - hip-runtime-amd
+  - hipblas
+  - hipblaslt
+  - rocblas
+  - hipcub
+  - rocprim
+  - rocwmma
+llm_backend_gufo_cmake_args:
+  - -DCMAKE_C_COMPILER=/usr/bin/gcc-15
+  - -DCMAKE_CXX_COMPILER=/usr/bin/g++-15
+  - -DCMAKE_HIP_COMPILER=/opt/rocm/lib/llvm/bin/clang++
+  - -DCMAKE_HIP_COMPILER_ROCM_ROOT=/opt/rocm
+  - -DCMAKE_HIP_ARCHITECTURES=gfx1151
+  - -DCMAKE_HIP_STANDARD=20
+  - -DCMAKE_HIP_STANDARD_REQUIRED=ON
+  - '-DCMAKE_HIP_FLAGS=--hip-path=/opt/rocm -std=c++20 -O2'
+  - -DGUFO_BUILD_TOOLS=OFF
+llm_backend_gufo_env: []

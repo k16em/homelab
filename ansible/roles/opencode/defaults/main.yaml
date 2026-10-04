@@ -18,4 +18,3 @@ opencode_model_capabilities:
   output:
     - text
 opencode_default_model: '{{ opencode_provider_id }}/{{ opencode_default_model_name }}'
-opencode_small_model: '{{ opencode_provider_id }}/{{ opencode_small_model_name }}'

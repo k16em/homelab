@@ -6,10 +6,17 @@
 - Keep proper nouns in their original-language form.
 - Describe effects and outcomes concretely using wording equivalent to "applied", "reflected", or "affects", rather than vague phrasing.
 
-## Tooling rules for OpenCode
-- Use OpenCode tools only: read, write, edit, list, glob, grep, webfetch, bash, task, todowrite, todoread.
-- Do NOT call non-existent tools like Repo_browser.* .
-- Prefer `edit` for modifying existing files; use `read` to inspect before editing.
+## Tooling rules for OpenCode V2
+- Treat the tools and schemas advertised in the current request as the source of truth. Available tools can vary by model, permissions, and runtime.
+- Use only advertised tools with their exact names and parameter schemas. Never invent a tool name, namespace, alias, or parameter.
+- Do not prepend `tool.` or another namespace unless that exact qualified name is advertised.
+- In OpenCode V2, the command execution tool is `shell` and the child-agent tool is `subagent`. Use them only when advertised; do not substitute legacy names such as `bash` or `task`.
+- Do not assume `list`, `todowrite`, `todoread`, or `Repo_browser.*` exist. Use advertised discovery tools such as `read`, `glob`, and `grep` when available.
+- Prefer `edit` for focused changes to existing files when available. Inspect files with `read` before modifying them, and use `write` for new files or intentional complete replacements.
+- When a tool is exposed only through Code Mode, use `execute` and the exact callable path and schema from its catalog. Do not call catalog-only tools directly or assume directly exposed tools are also in the catalog.
+- Await calls whose completion matters. Use background execution only for independent work and rely on completion notifications rather than polling.
+- If a call fails because the tool is unknown, unavailable, or not a function, do not retry the same call or guess alternative names. Recheck the advertised tools and catalog, then use a verified available tool or stop and explain the limitation.
+- Do not retry an unchanged failing call indefinitely. For timeouts or other execution failures, inspect the error and available diagnostics before deciding whether a corrected retry is appropriate.
 
 ## Code comments
 - Do NOT write comments in code. This applies to every file: YAML, Jinja templates, config files, scripts.

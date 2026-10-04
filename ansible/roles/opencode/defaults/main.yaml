@@ -9,6 +9,13 @@ opencode_user: opencode
 
 opencode_provider_id: llama.cpp
 opencode_provider_name: llama-swap(tk)
+opencode_provider_package: "@opencode/ai/providers/openai-compatible"
 opencode_base_url: 'http://{{ local_llm_ip }}:12434/v1'
+opencode_model_capabilities:
+  tools: true
+  input:
+    - text
+  output:
+    - text
 opencode_default_model: '{{ opencode_provider_id }}/{{ opencode_default_model_name }}'
 opencode_small_model: '{{ opencode_provider_id }}/{{ opencode_small_model_name }}'

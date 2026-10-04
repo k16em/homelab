@@ -79,6 +79,7 @@
 
 - name: 'llama-swapの設定ファイルを置く'
   become: true
+  tags: llama_swap_config
   ansible.builtin.template:
     src: llama-swap.config.yaml.j2
     dest: '{{ llm_backend_llama_swap_config_dir }}/config.yaml'

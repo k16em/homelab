@@ -43,6 +43,10 @@
     loop_var: variant
     label: '{{ variant.name }}'
 
+- name: 'Gufoをビルドしてインストールする'
+  ansible.builtin.include_tasks: gufo.yaml
+  when: gufo_models | length > 0
+
 - name: 'llama-swapのサービスユニットファイルを上書きする用のディレクトリを作成する'
   become: true
   ansible.builtin.file:

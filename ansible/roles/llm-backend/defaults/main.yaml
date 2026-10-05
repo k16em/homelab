@@ -66,7 +66,7 @@ llm_backend_llama_swap_default_env:
 
 gufo_models: []
 llm_backend_gufo_repo: https://github.com/gufo-org/gufo
-llm_backend_gufo_version: 8bdde807e57fadfe57f4a1005707559ae6afc82f
+llm_backend_gufo_version: v0.8.0
 llm_backend_gufo_dir: /opt/gufo
 llm_backend_gufo_prefix: /opt/gufo/install
 llm_backend_gufo_build_jobs: 4
@@ -101,6 +101,7 @@ llm_backend_gufo_stamp_packages:
   - rocprim
   - rocwmma
 llm_backend_gufo_cmake_args:
+  - '-DGUFO_RELEASE_VERSION={{ llm_backend_gufo_version }}'
   - -DCMAKE_C_COMPILER=/usr/bin/gcc-15
   - -DCMAKE_CXX_COMPILER=/usr/bin/g++-15
   - -DCMAKE_HIP_COMPILER=/opt/rocm/lib/llvm/bin/clang++

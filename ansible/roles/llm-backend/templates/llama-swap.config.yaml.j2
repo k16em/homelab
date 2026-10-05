@@ -22,7 +22,7 @@ models:
     env: {{ model.env | default(llm_backend_gufo_env) | to_json }}
     cmd: |
       {{ llm_backend_gufo_prefix }}/bin/gufo serve
-      --host 127.0.0.1 --port ${PORT} --sessions 1
+      --host 127.0.0.1 --port ${PORT} --sessions {{ model.sessions | default(1) }}
       llm --model {{ llm_backend_llama_swap_models_dir }}/{{ model.file }}
       --served-model-name {{ model.name }}
 {{ model.args | indent(6, first=True) }}

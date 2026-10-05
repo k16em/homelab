@@ -33,3 +33,14 @@
     mode: "0644"
     validate: '/usr/bin/python -c "import json, sys; json.load(open(sys.argv[1]))" %s'
   diff: false
+
+- name: 'opencodeのCLI設定ファイルを置く'
+  become: true
+  ansible.builtin.copy:
+    src: cli.json
+    dest: '~{{ opencode_user }}/.config/opencode/cli.json'
+    owner: '{{ opencode_user }}'
+    group: '{{ opencode_user }}'
+    mode: '0644'
+    validate: '/usr/bin/python -c "import json, sys; json.load(open(sys.argv[1]))" %s'
+  diff: false

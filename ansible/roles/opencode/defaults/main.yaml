@@ -17,4 +17,9 @@ opencode_model_capabilities:
     - text
   output:
     - text
+opencode_models:
+  Qwen3.8-Flash-Next-Gufo-Q4-thinking:
+    name: Qwen3.8-Flash-Next-Q4
+    capabilities: '{{ opencode_model_capabilities }}'
+opencode_default_model_name: Qwen3.8-Flash-Next-Gufo-Q4-thinking
 opencode_default_model: '{{ opencode_provider_id }}/{{ opencode_default_model_name }}'

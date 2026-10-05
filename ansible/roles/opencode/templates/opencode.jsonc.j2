@@ -7,13 +7,7 @@
       "settings": {
         "baseURL": "{{ opencode_base_url }}"
       },
-      "models": {
-{% for model in (llama_swap_models + (gufo_models | default([]))) | selectattr('opencode', 'defined') %}
-{% set model_settings = model.opencode | dict2items | rejectattr('key', 'in', ['reasoning', 'tools']) | list | items2dict %}
-{% set model_capabilities = opencode_model_capabilities | combine({'tools': model.opencode.tools | default(opencode_model_capabilities.tools)}) | combine(model.opencode.capabilities | default({})) %}
-        "{{ model.name }}": {{ {'name': model.name} | combine(model_settings) | combine({'capabilities': model_capabilities}) | to_json }}{{ "," if not loop.last else "" }}
-{% endfor %}
-      }
+      "models": {{ opencode_models | to_json }}
     }
   },
 

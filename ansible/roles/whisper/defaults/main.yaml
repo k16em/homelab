@@ -1,0 +1,21 @@
+---
+whisper_packages:
+  - whisper-cpp
+  - ggml-hip
+  - ffmpeg
+whisper_user: whisper
+whisper_group: whisper
+whisper_models_group: llm
+whisper_gpu_groups:
+  - render
+  - video
+whisper_bin: /usr/bin/whisper-server
+whisper_models_dir: /var/lib/models
+whisper_model_file: ggml-large-v3-turbo.bin
+whisper_listen_address: '{{ ansible_default_ipv4.address }}'
+whisper_listen_port: 18080
+whisper_inference_path: /v1/audio/transcriptions
+whisper_language: ja
+whisper_threads: 4
+whisper_health_check_retries: 60
+whisper_health_check_delay: 5

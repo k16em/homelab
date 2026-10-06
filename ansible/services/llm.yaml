@@ -17,3 +17,5 @@
       tags: add_worker
     - role: llm-backend
       tags: llm_backend
+    - role: whisper
+      tags: whisper

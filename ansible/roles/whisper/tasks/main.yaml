@@ -1,0 +1,107 @@
+---
+- name: 'Whisperに必要なパッケージを追加する'
+  become: true
+  community.general.pacman:
+    name: '{{ whisper_packages }}'
+    state: installed
+  notify: 'whisperを再起動する'
+
+- name: 'モデル読み取り用グループを作成する'
+  become: true
+  ansible.builtin.group:
+    name: '{{ whisper_models_group }}'
+    state: present
+
+- name: 'Whisperの実行用グループを作成する'
+  become: true
+  ansible.builtin.group:
+    name: '{{ whisper_group }}'
+    system: true
+    state: present
+
+- name: 'Whisperの実行用ユーザーを作成する'
+  become: true
+  ansible.builtin.user:
+    name: '{{ whisper_user }}'
+    group: '{{ whisper_group }}'
+    groups: '{{ [whisper_models_group] + whisper_gpu_groups }}'
+    append: true
+    system: true
+    home: /var/lib/whisper
+    create_home: false
+    shell: /usr/bin/nologin
+    state: present
+  notify: 'whisperを再起動する'
+
+- name: '手動配置したWhisperモデルの状態を確認する'
+  become: true
+  ansible.builtin.stat:
+    path: '{{ whisper_models_dir }}/{{ whisper_model_file }}'
+    follow: true
+    get_checksum: false
+    get_mime: false
+    get_attributes: false
+  register: whisper_model_stat
+
+- name: 'Whisperモデルが配置済みであることを確認する'
+  ansible.builtin.assert:
+    that:
+      - whisper_model_stat.stat.exists
+      - whisper_model_stat.stat.isreg | default(false)
+      - whisper_model_stat.stat.size | default(0) | int > 0
+    fail_msg: 'Whisperモデルを手動で {{ whisper_models_dir }}/{{ whisper_model_file }} に配置してください。モデルのダウンロードはAnsibleでは行いません。'
+
+- name: 'Whisperの実行ユーザーでモデルを読み取れることを確認する'
+  become: true
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/runuser
+      - -u
+      - '{{ whisper_user }}'
+      - --
+      - /usr/bin/test
+      - -r
+      - '{{ whisper_models_dir }}/{{ whisper_model_file }}'
+  register: whisper_model_readable
+  changed_when: false
+  failed_when: false
+  when: not ansible_check_mode
+
+- name: 'Whisperモデルの読み取り権限を確認する'
+  ansible.builtin.assert:
+    that:
+      - whisper_model_readable.rc == 0
+    fail_msg: '{{ whisper_user }} が {{ whisper_models_dir }}/{{ whisper_model_file }} を読み取れません。親ディレクトリのアクセス権限と、モデルの {{ whisper_models_group }} グループ向け読み取り権限を確認してください。'
+  when: not ansible_check_mode
+
+- name: 'Whisperのサービスユニットを配置する'
+  become: true
+  ansible.builtin.template:
+    src: whisper.service.j2
+    dest: /etc/systemd/system/whisper.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: 'whisperを再起動する'
+
+- name: 'whisper.serviceを有効化して起動する'
+  become: true
+  ansible.builtin.systemd:
+    name: whisper
+    enabled: true
+    state: started
+    daemon_reload: true
+
+- name: '変更した設定をWhisperに反映する'
+  ansible.builtin.meta: flush_handlers
+
+- name: 'Whisperが応答することを確認する'
+  ansible.builtin.uri:
+    url: 'http://{{ whisper_listen_address }}:{{ whisper_listen_port }}/health'
+    use_proxy: false
+    status_code: 200
+  register: whisper_health
+  until: whisper_health.status | default(0) == 200
+  retries: '{{ whisper_health_check_retries }}'
+  delay: '{{ whisper_health_check_delay }}'
+  when: not ansible_check_mode

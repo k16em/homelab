@@ -1,0 +1,7 @@
+---
+- name: 'whisperを再起動する'
+  become: true
+  ansible.builtin.systemd:
+    name: whisper
+    state: restarted
+    daemon_reload: true

@@ -42,6 +42,25 @@ service:
 
 resources: {}
 
+gateway:
+  enabled: false
+  className: cilium
+  hostname: ""
+  network: private
+  loadBalancerIP: ""
+  servicePortName: http
+  annotations: {}
+  tls:
+    secretName: ""
+    certificate:
+      create: true
+      issuerRef:
+        name: homelab-ca
+        kind: ClusterIssuer
+        group: cert-manager.io
+      duration: 2160h
+      renewBefore: 720h
+
 nodeSelector: {}
 
 tolerations: []

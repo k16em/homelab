@@ -66,7 +66,7 @@
 - name: 'Grafana Alloyを追加する'
   kewlfft.aur.aur:
     name: '{{ initialize_node_package_manifest.aur }}'
-    state: present
+    state: latest
 
 - name: 'Alloyの設定を置く'
   become: true

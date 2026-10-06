@@ -1,0 +1,25 @@
+[Unit]
+Description=Whisper speech-to-text server
+After=network.target
+
+[Service]
+Type=simple
+User={{ whisper_user }}
+Group={{ whisper_group }}
+SupplementaryGroups={{ ([whisper_models_group] + whisper_gpu_groups) | join(' ') }}
+StateDirectory=whisper
+StateDirectoryMode=0750
+RuntimeDirectory=whisper
+RuntimeDirectoryMode=0700
+WorkingDirectory=/var/lib/whisper
+ExecStart={{ whisper_bin }} --host {{ whisper_listen_address }} --port {{ whisper_listen_port }} --inference-path {{ whisper_inference_path }} --convert --tmp-dir /run/whisper -m {{ (whisper_models_dir ~ '/' ~ whisper_model_file) | to_json }} -l {{ whisper_language }} -t {{ whisper_threads }}
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

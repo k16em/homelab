@@ -23,7 +23,20 @@ kubernetes_control_plane_dns_domain: tk.local.k16em.net
 kubernetes_control_plane_dns_zones: "{{ kubernetes_control_plane_lb_networks | map(attribute='dns') | map('regex_replace', '$', '.' ~ kubernetes_control_plane_dns_domain) | list }}"
 
 kubernetes_control_plane_cilium_version: 1.20.2
+kubernetes_control_plane_gateway_api_enabled: false
+kubernetes_control_plane_gateway_api_version: v1.6.1
+kubernetes_control_plane_gateway_api_crd_bundle: ''
+kubernetes_control_plane_gateway_api_crds:
+  - gatewayclasses.gateway.networking.k8s.io
+  - gateways.gateway.networking.k8s.io
+  - httproutes.gateway.networking.k8s.io
+  - referencegrants.gateway.networking.k8s.io
+  - grpcroutes.gateway.networking.k8s.io
+  - backendtlspolicies.gateway.networking.k8s.io
+  - tlsroutes.gateway.networking.k8s.io
 kubernetes_control_plane_cilium_values:
+  gatewayAPI:
+    enabled: '{{ kubernetes_control_plane_gateway_api_enabled }}'
   ipam:
     mode: kubernetes
   kubeProxyReplacement: true

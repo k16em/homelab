@@ -134,6 +134,10 @@
     group: '{{ kubernetes_control_plane_kubeconfig_user }}'
     mode: '0755'
 
+- name: 'Gateway APIのCRDを準備する'
+  ansible.builtin.include_tasks: gateway-api.yaml
+  when: kubernetes_control_plane_gateway_api_enabled | bool
+
 - name: 'CiliumのHelm valuesを置く'
   become: true
   ansible.builtin.template:

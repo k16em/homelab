@@ -1,0 +1,65 @@
+---
+- name: 'Gateway APIのCRD bundleを配置する'
+  become: true
+  ansible.builtin.copy:
+    src: '{{ kubernetes_control_plane_gateway_api_crd_bundle }}'
+    dest: '{{ kubernetes_control_plane_manifest_directory }}/gateway-api-crds.yaml'
+    owner: '{{ kubernetes_control_plane_kubeconfig_user }}'
+    group: '{{ kubernetes_control_plane_kubeconfig_user }}'
+    mode: '0644'
+  when: kubernetes_control_plane_gateway_api_crd_bundle | length > 0
+
+- name: 'Gateway APIのCRDを適用する'
+  become: true
+  become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
+  ansible.builtin.command:
+    argv:
+      - kubectl
+      - apply
+      - --server-side
+      - --filename
+      - '{{ kubernetes_control_plane_manifest_directory }}/gateway-api-crds.yaml'
+  register: kubernetes_control_plane_gateway_api_apply
+  changed_when: kubernetes_control_plane_gateway_api_apply.stdout_lines | reject('search', ' unchanged$') | list | length > 0
+  when: kubernetes_control_plane_gateway_api_crd_bundle | length > 0
+
+- name: 'Gateway APIに必要なCRDが登録済みであることを確認する'
+  become: true
+  become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
+  ansible.builtin.command:
+    argv: '{{ ["kubectl", "wait", "--for=condition=Established", "--timeout=120s", "crd"] + kubernetes_control_plane_gateway_api_crds }}'
+  changed_when: false
+  when: not ansible_check_mode
+
+- name: 'Gateway APIのCRD定義を取得する'
+  become: true
+  become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
+  ansible.builtin.command:
+    argv: '{{ ["kubectl", "get", "crd"] + kubernetes_control_plane_gateway_api_crds + ["--output", "json"] }}'
+  register: kubernetes_control_plane_gateway_api_definitions
+  changed_when: false
+  when: not ansible_check_mode
+
+- name: 'Gateway APIのbundle versionがCiliumの対応versionと一致することを確認する'
+  ansible.builtin.assert:
+    that:
+      - item.metadata.annotations['gateway.networking.k8s.io/bundle-version'] | default('') == kubernetes_control_plane_gateway_api_version
+      - item.metadata.annotations['gateway.networking.k8s.io/channel'] | default('') in ['standard', 'experimental']
+    fail_msg: 'Ciliumに対応するGateway API {{ kubernetes_control_plane_gateway_api_version }} のCRD bundleを用意してください。TLSRouteを含むstandard channelのbundleを使用できます。'
+    quiet: true
+  loop: '{{ (kubernetes_control_plane_gateway_api_definitions.stdout | from_json)["items"] }}'
+  loop_control:
+    label: '{{ item.metadata.name }}'
+  when: not ansible_check_mode
+
+- name: 'Gatewayのv1 APIとinfrastructure設定が利用可能であることを確認する'
+  ansible.builtin.assert:
+    that:
+      - gateway_version.served | default(false)
+      - gateway_version.schema.openAPIV3Schema.properties.spec.properties.infrastructure is defined
+    fail_msg: 'Gatewayのv1 APIとspec.infrastructureに対応したCRDを登録してください。'
+  vars:
+    definitions: '{{ kubernetes_control_plane_gateway_api_definitions.stdout | from_json }}'
+    gateway_definition: '{{ definitions["items"] | selectattr("metadata.name", "equalto", "gateways.gateway.networking.k8s.io") | first }}'
+    gateway_version: '{{ gateway_definition.spec.versions | selectattr("name", "equalto", "v1") | first | default({}) }}'
+  when: not ansible_check_mode

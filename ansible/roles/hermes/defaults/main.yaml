@@ -14,3 +14,5 @@ hermes_package_manifest:
     - alsa-lib
   aur:
     - python311
+
+hermes_ssh_hosts: '{{ groups["all"] | difference(groups.get("proxmox", [])) | difference([inventory_hostname]) | sort }}'

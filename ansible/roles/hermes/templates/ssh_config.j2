@@ -1,0 +1,7 @@
+{% for host in hermes_ssh_hosts %}
+Host {{ host }}
+    HostName {{ hostvars[host].ansible_host | default(host) }}
+    User {{ hostvars[host].ansible_user | default('maintainer') }}
+    IdentityFile {{ hermes_ssh_identity_file }}
+
+{% endfor %}

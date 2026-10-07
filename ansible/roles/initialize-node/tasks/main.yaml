@@ -42,12 +42,11 @@
     password: "{{ maintainer_password_hash }}"
 
 - name: 'メンテナンス用のユーザのauthorized_keysを設定する'
-  become: true
-  ansible.posix.authorized_key:
-    user: maintainer
-    state: present
-    key: '{{ item.key }}'
-  with_items: '{{ initialize_node_authorized_keys }}'
+  ansible.builtin.include_role:
+    name: authorized-keys
+    apply:
+      tags: authorized_keys
+  tags: authorized_keys
 
 - name: 'rootのパスワードを変更する'
   become: true

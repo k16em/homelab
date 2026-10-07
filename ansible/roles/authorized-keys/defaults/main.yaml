@@ -13,5 +13,3 @@ authorized_keys_keys:
   - key: sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIPI+wvT7hPz9q1+UqueKhlxv45aFaHCNJCFB3co0e3qhAAAABHNzaDo= yk5c01
   - key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILvAgOHU6Ct4QYDIXZgXJARFvqDCRROdnKAzdNE74jHY spacewar
   - key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC8ZLLbrQ1QqZFzyBmUv10fkFS8sZwqvCRa3QQH0mF7o hermes
-    exclude_hosts:
-      - tk_hermes01

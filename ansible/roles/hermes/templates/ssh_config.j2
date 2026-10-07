@@ -1,5 +1,5 @@
 {% for host in hermes_ssh_hosts %}
-Host {{ host }}
+Host {{ ([host, hostvars[host].ansible_host] if hostvars[host].ansible_host is defined and hostvars[host].ansible_host != host else [host]) | join(' ') }}
     HostName {{ hostvars[host].ansible_host | default(host) }}
     User {{ hostvars[host].ansible_user | default('maintainer') }}
     IdentityFile {{ hermes_ssh_identity_file }}

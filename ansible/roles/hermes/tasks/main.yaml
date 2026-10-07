@@ -17,6 +17,42 @@
     shell: /usr/bin/zsh
     password_lock: true
 
+- name: 'hermesユーザのSSH接続設定を配布する'
+  tags: hermes_ssh_config
+  block:
+    - name: 'hermes用の.sshディレクトリを作成する'
+      become: true
+      ansible.builtin.file:
+        path: '{{ item }}'
+        state: directory
+        owner: hermes
+        group: hermes
+        mode: '0700'
+      loop:
+        - '~hermes/.ssh'
+        - '~hermes/.ssh/conf.d'
+
+    - name: 'hermes用のhomelab接続設定を配置する'
+      become: true
+      ansible.builtin.template:
+        src: ssh_config.j2
+        dest: '~hermes/.ssh/conf.d/homelab'
+        owner: hermes
+        group: hermes
+        mode: '0600'
+        validate: '/usr/bin/ssh -G -F %s localhost'
+      diff: false
+
+    - name: 'hermes用のSSH configを配置する'
+      become: true
+      ansible.builtin.copy:
+        src: ssh_config
+        dest: '~hermes/.ssh/config'
+        owner: hermes
+        group: hermes
+        mode: '0600'
+        validate: '/usr/bin/ssh -G -F %s localhost'
+
 - name: 'hermesユーザにopencodeをセットアップする'
   ansible.builtin.include_role:
     name: opencode

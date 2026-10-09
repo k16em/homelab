@@ -20,10 +20,6 @@ all:
                       ansible_host: 192.168.20.18
                     tk_bastion01:
                       ansible_host: 192.168.20.60
-                    tk_hermes01:
-                      ansible_host: 192.168.20.36
-                    tk_memory01:
-                      ansible_host: 192.168.20.71
                     tk_db01:
                       ansible_host: 192.168.20.52
                     tk_k8s_cp01:
@@ -40,18 +36,11 @@ all:
           hosts:
             tk_worker01:
             tk_bastion01:
-            tk_hermes01:
-            tk_memory01:
             tk_db01:
 
         worker:
           hosts:
             tk_worker01:
-            tk_hermes01:
-
-        hermes:
-          hosts:
-            tk_hermes01:
 
         bastion:
           hosts:
@@ -62,10 +51,6 @@ all:
             llm_backend:
               hosts:
                 tk_llm01:
-
-        memory:
-          hosts:
-            tk_memory01:
 
         database:
           hosts:

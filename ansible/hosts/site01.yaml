@@ -24,6 +24,7 @@ all:
           hosts:
             tk_bastion01:
             tk_dns01:
+            tk_cache01:
 
         bastion:
           hosts:

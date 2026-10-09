@@ -9,9 +9,9 @@ locals {
 
   vms = {
     k8s-cp01  = { vmid = 301, tags = "k8s", cpu = 2, mem = 4096, public_v4_addr = "192.168.30.41/24", private_v4_addr = "192.168.20.41/24" }
-    k8s-wk01  = { vmid = 351, tags = "k8s", cpu = 2, mem = 4096, public_v4_addr = "192.168.30.81/24", private_v4_addr = "192.168.20.81/24" }
-    k8s-wk02  = { vmid = 352, tags = "k8s", cpu = 2, mem = 4096, public_v4_addr = "192.168.30.82/24", private_v4_addr = "192.168.20.82/24" }
-    k8s-wk03  = { vmid = 353, tags = "k8s", cpu = 2, mem = 4096, public_v4_addr = "192.168.30.83/24", private_v4_addr = "192.168.20.83/24" }
+    k8s-wk01  = { vmid = 351, tags = "k8s", cpu = 4, mem = 8192, public_v4_addr = "192.168.30.81/24", private_v4_addr = "192.168.20.81/24" }
+    k8s-wk02  = { vmid = 352, tags = "k8s", cpu = 4, mem = 8192, public_v4_addr = "192.168.30.82/24", private_v4_addr = "192.168.20.82/24" }
+    k8s-wk03  = { vmid = 353, tags = "k8s", cpu = 4, mem = 8192, public_v4_addr = "192.168.30.83/24", private_v4_addr = "192.168.20.83/24" }
     k8s-nfs01 = { vmid = 311, tags = "k8s", cpu = 2, mem = 2048, disk_size = "128G", private_v4_addr = "192.168.20.51/24", ipv4_gateway = "192.168.20.1", ipv4_dns = "192.168.20.1" }
   }
 }

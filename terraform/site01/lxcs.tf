@@ -11,9 +11,9 @@ locals {
   }
 
   lxcs = {
-    tkpve-bastion01  = { vmid = 100, cores = 2, memory = 1024, disk_size = "16G", network = "public", ipv4_address = "192.168.30.30/24", hwaddr = "BC:24:11:E4:8D:2F", tags = "tailscale;tk" }
-    tkpve-pihole01   = { vmid = 101, cores = 2, memory = 1024, disk_size = "16G", network = "public", ipv4_address = "192.168.30.3/24", hwaddr = "BC:24:11:38:DE:E9", tags = "k8s;tk" }
-    tkpve-bastion01p = { vmid = 102, cores = 1, memory = 2048, disk_size = "16G", network = "private", ipv4_address = "192.168.20.60/24", hwaddr = "BC:24:11:CE:A9:40", tags = "pv;tailscale;tk" }
+    tkpve-bastion01  = { vmid = 100, cores = 2, memory = 4096, disk_size = "16G", network = "public", ipv4_address = "192.168.30.30/24", hwaddr = "BC:24:11:E4:8D:2F", tags = "tailscale;tk" }
+    tkpve-pihole01   = { vmid = 101, cores = 2, memory = 4096, disk_size = "16G", network = "public", ipv4_address = "192.168.30.3/24", hwaddr = "BC:24:11:38:DE:E9", tags = "k8s;tk" }
+    tkpve-bastion01p = { vmid = 102, cores = 1, memory = 4096, disk_size = "16G", network = "private", ipv4_address = "192.168.20.60/24", hwaddr = "BC:24:11:CE:A9:40", tags = "pv;tailscale;tk" }
     tkpve-cache01    = { vmid = 200, cores = 2, memory = 4096, disk_size = "128G", network = "public", ipv4_address = "192.168.30.61/24", hwaddr = "BC:24:11:26:C8:09", tags = "k8s;tk" }
     tkpve-worker     = { vmid = 700, cores = 4, memory = 4096, disk_size = "32G", network = "private", ipv4_address = "192.168.20.18/24", hwaddr = "BC:24:11:AB:A1:5C", tags = "pv;tk" }
     tkpve-db01p      = { vmid = 312, cores = 2, memory = 2048, disk_size = "32G", network = "private", ipv4_address = "192.168.20.52/24", tags = "k8s;pv;tk" }

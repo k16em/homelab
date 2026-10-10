@@ -21,6 +21,7 @@
   notify: Flexoを再起動する
 
 - name: 'Pacman hookディレクトリを作成する'
+  tags: flexo_cache_config
   become: true
   ansible.builtin.file:
     path: /etc/pacman.d/hooks
@@ -30,6 +31,7 @@
     mode: '0755'
 
 - name: 'ローカルキャッシュ削除スクリプトを配置する'
+  tags: flexo_cache_config
   become: true
   ansible.builtin.template:
     src: flexo-paccache.j2
@@ -39,6 +41,7 @@
     mode: '0755'
 
 - name: 'ローカルキャッシュ削除hookを配置する'
+  tags: flexo_cache_config
   become: true
   ansible.builtin.copy:
     src: flexo-paccache.hook

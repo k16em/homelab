@@ -20,12 +20,14 @@
   when: result.changed
 
 - name: "pacman-contribを入れる"
+  tags: package_cache_cleanup
   become: true
   community.general.pacman:
     name: '{{ upgrade_packages_package_manifest.repository | select("equalto", "pacman-contrib") | first }}'
     state: latest
 
 - name: "pacmanのキャッシュを消す"
+  tags: package_cache_cleanup
   become: true
   ansible.builtin.command:
     cmd: paccache --remove --keep 3

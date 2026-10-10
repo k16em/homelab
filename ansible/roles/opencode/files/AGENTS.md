@@ -18,6 +18,19 @@
 - If a call fails because the tool is unknown, unavailable, or not a function, do not retry the same call or guess alternative names. Recheck the advertised tools and catalog, then use a verified available tool or stop and explain the limitation.
 - Do not retry an unchanged failing call indefinitely. For timeouts or other execution failures, inspect the error and available diagnostics before deciding whether a corrected retry is appropriate.
 
+## Tooling and GitHub Guidelines
+- Perform GitHub operations through the `gh` CLI.
+- Prefer installed efficient tools such as `ripgrep` (`rg`) and `fd` for searching file contents and locating files.
+- Before creating a GitHub Issue or Pull Request, check for applicable templates and follow them when present.
+
+## Coding and Commit Guidelines
+- Express **How** in implementation code: how the behavior is achieved.
+- Express **What** in test code: what behavior is expected.
+- Explain **Why** in commit messages: why the change is needed.
+- Explain **Why not** in commit messages and Pull Request descriptions: why a plausible alternative was not chosen.
+- Do NOT include validation activities or results, the current state of servers, or environment-specific configuration such as IP addresses and local domain names in Pull Request descriptions or commit messages.
+- Describe alternatives not chosen as code-design decisions and their reasons, not as actual application or deployment activities. Avoid wording that implies what was or was not applied to servers.
+
 ## Code comments
 - Do NOT write comments in code. This applies to every file: YAML, Jinja templates, config files, scripts.
 - Explain non-obvious decisions in the commit message and the pull request description instead.

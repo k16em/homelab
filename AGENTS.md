@@ -6,11 +6,12 @@
 - Do not leave temporary migration or cleanup tasks in permanent roles. Run them separately or temporarily, and remove them after completion.
 - Proxmox hosts are listed in the inventory for reference only. Do not consider them during design, implementation, or testing.
 - Use Vault for secrets. Do not encrypt non-secret configuration, such as connection destinations or private-key paths, without a specific reason.
-- Always apply Ansible changes using the actual code in the repository. When only part of the configuration needs to be applied, define tags and use them to select the relevant tasks.
+- Apply Ansible changes to Ansible-managed hosts using the actual code in the repository. When only part of the configuration needs to be applied, define tags and use them to select the relevant tasks.
+- Localhost is not an Ansible-managed host. To reflect shared OpenCode settings locally, update the role's source files first, then copy them to the local global configuration using `cp`. Do not run Ansible against localhost for this purpose.
 
 ## Coding and Commit Guidelines
 
 - Express **How** in implementation code: how the behavior is achieved.
 - Express **What** in test code: what behavior is expected.
 - Explain **Why** in commit messages: why the change is needed.
-- Explain **Why not** in code comments: why a plausible alternative was not chosen.
+- Explain **Why not** in commit messages and Pull Request descriptions: why a plausible alternative was not chosen.

@@ -13,8 +13,6 @@
 - name: LLMバックエンドを構成する
   hosts: llm_backend
   roles:
-    - role: add-worker
-      tags: add_worker
     - role: llm-backend
       tags: llm_backend
     - role: whisper

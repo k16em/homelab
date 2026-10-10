@@ -1,0 +1,40 @@
+{{- $addresses := required "backend.addresses に外部サービスのIPアドレスを指定してください" .Values.backend.addresses }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "external-http.fullname" . }}
+  labels:
+    {{- include "external-http.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ipFamilyPolicy: SingleStack
+  ipFamilies:
+    - {{ if eq .Values.backend.addressType "IPv6" }}IPv6{{ else }}IPv4{{ end }}
+  ports:
+    - name: http
+      port: {{ .Values.backend.port }}
+      targetPort: {{ .Values.backend.port }}
+      protocol: TCP
+      appProtocol: http
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: {{ include "external-http.fullname" . }}
+  labels:
+    {{- include "external-http.labels" . | nindent 4 }}
+    kubernetes.io/service-name: {{ include "external-http.fullname" . }}
+    endpointslice.kubernetes.io/managed-by: {{ printf "helm-%s" .Chart.Name | quote }}
+addressType: {{ .Values.backend.addressType }}
+ports:
+  - name: http
+    port: {{ .Values.backend.port }}
+    protocol: TCP
+    appProtocol: http
+endpoints:
+  {{- range $addresses }}
+  - addresses:
+      - {{ . | quote }}
+    conditions:
+      ready: true
+  {{- end }}

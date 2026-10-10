@@ -29,6 +29,7 @@
 - Explain **Why** in commit messages: why the change is needed.
 - Explain **Why not** in commit messages and Pull Request descriptions: why a plausible alternative was not chosen.
 - Do NOT include validation activities or results, the current state of servers, or environment-specific configuration such as IP addresses and local domain names in Pull Request descriptions or commit messages.
+- Describe alternatives not chosen as code-design decisions and their reasons, not as actual application or deployment activities. Avoid wording that implies what was or was not applied to servers.
 
 ## Code comments
 - Do NOT write comments in code. This applies to every file: YAML, Jinja templates, config files, scripts.

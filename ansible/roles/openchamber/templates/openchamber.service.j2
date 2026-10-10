@@ -1,0 +1,14 @@
+[Unit]
+Description=OpenChamber server
+
+[Service]
+Type=simple
+WorkingDirectory={{ ansible_facts["getent_passwd"][openchamber_user][4] }}
+Environment=PATH=/usr/local/bin:/usr/bin
+EnvironmentFile=%h/.config/systemd/user/openchamber.env
+ExecStart=/usr/bin/openchamber serve --foreground --host {{ openchamber_host }} --port {{ openchamber_port }}
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

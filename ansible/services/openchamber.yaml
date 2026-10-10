@@ -1,0 +1,19 @@
+---
+- name: OpenChamberホストを構成する
+  hosts: openchamber
+  serial: 1
+  vars:
+    opencode_user: '{{ openchamber_user }}'
+  roles:
+    - role: pacman-mirror
+      tags: pacman_mirror
+    - role: initialize-node
+      tags: initialize_node
+    - role: upgrade-packages
+      tags: upgrade_packages
+    - role: docker-host
+      tags: docker_host
+    - role: openchamber
+      tags: openchamber
+    - role: opencode
+      tags: opencode

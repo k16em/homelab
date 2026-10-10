@@ -6,3 +6,4 @@
 - import_playbook: services/dns.yaml
 - import_playbook: services/llm.yaml
 - import_playbook: services/memory.yaml
+- import_playbook: services/openchamber.yaml

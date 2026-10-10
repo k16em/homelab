@@ -1,0 +1,18 @@
+---
+openchamber_user: chamber
+openchamber_group: chamber
+openchamber_host: 127.0.0.1
+openchamber_port: 3000
+
+openchamber_package_manifest:
+  repository:
+    - base-devel
+    - git
+    - github-cli
+    - openai-codex
+    - mise
+    - zoxide
+    - direnv
+    - thefuck
+  aur:
+    - openchamber

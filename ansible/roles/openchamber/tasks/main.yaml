@@ -1,0 +1,65 @@
+---
+- name: 'OpenChamberの実行用グループを作成する'
+  tags: chamber_ssh
+  become: true
+  ansible.builtin.group:
+    name: '{{ openchamber_group }}'
+    state: present
+
+- name: 'OpenChamberの実行用ユーザーを作成する'
+  tags:
+    - chamber_ssh
+    - chamber_user
+  become: true
+  ansible.builtin.user:
+    name: '{{ openchamber_user }}'
+    group: '{{ openchamber_group }}'
+    groups: docker
+    append: true
+    shell: /usr/bin/zsh
+    create_home: true
+    password_lock: true
+    state: present
+  register: openchamber_account
+  notify: 'OpenChamberのuser managerを再起動する'
+
+- name: 'OpenChamberの実行用ユーザーのauthorized_keysを設定する'
+  ansible.builtin.include_role:
+    name: authorized-keys
+    apply:
+      tags:
+        - chamber_ssh
+        - authorized_keys
+  vars:
+    authorized_keys_user: '{{ openchamber_user }}'
+  tags:
+    - chamber_ssh
+    - authorized_keys
+
+- name: 'OpenChamberの依存パッケージを追加する'
+  tags: openchamber_packages
+  become: true
+  community.general.pacman:
+    name: '{{ openchamber_package_manifest.repository }}'
+    state: present
+
+- name: 'OpenChamberをAURからインストールする'
+  tags: openchamber_packages
+  kewlfft.aur.aur:
+    name: '{{ openchamber_package_manifest.aur }}'
+    state: present
+
+- name: 'OpenChamberのuser serviceを構成する'
+  ansible.builtin.import_tasks: service.yaml
+  tags: openchamber_service
+
+- name: 'OpenChamberの実行用ユーザーのzshenvを配置する'
+  tags: chamber_shell
+  become: true
+  ansible.builtin.copy:
+    src: zshenv
+    dest: '~{{ openchamber_user }}/.zshenv'
+    owner: '{{ openchamber_user }}'
+    group: '{{ openchamber_group }}'
+    mode: '0644'
+    validate: '/usr/bin/zsh -n %s'

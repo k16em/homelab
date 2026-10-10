@@ -1,0 +1,10 @@
+export PATH=$HOME/.local/bin:$PATH
+export PATH=$HOME/.cargo/bin:$PATH
+
+eval "$(zoxide init --cmd cd --hook prompt zsh)"
+
+eval "$(/usr/bin/mise activate zsh)"
+
+eval "$(direnv hook zsh)"
+
+eval "$(thefuck --alias)"

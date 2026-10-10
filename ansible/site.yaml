@@ -7,4 +7,3 @@
 - import_playbook: services/hermes.yaml
 - import_playbook: services/llm.yaml
 - import_playbook: services/memory.yaml
-- import_playbook: services/worker.yaml

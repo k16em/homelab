@@ -16,8 +16,6 @@ all:
                   hosts:
                     tk_llm01:
                       ansible_host: 192.168.20.17
-                    tk_worker01:
-                      ansible_host: 192.168.20.18
                     tk_bastion01:
                       ansible_host: 192.168.20.60
                     tk_db01:
@@ -34,13 +32,8 @@ all:
                       ansible_host: 192.168.20.51
         lxc:
           hosts:
-            tk_worker01:
             tk_bastion01:
             tk_db01:
-
-        worker:
-          hosts:
-            tk_worker01:
 
         bastion:
           hosts:

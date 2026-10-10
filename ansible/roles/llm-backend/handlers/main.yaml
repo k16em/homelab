@@ -1,0 +1,7 @@
+---
+- name: 'llama-swapを再起動する'
+  become: true
+  ansible.builtin.systemd:
+    name: llama-swap
+    state: restarted
+    daemon_reload: true

@@ -1,5 +1,6 @@
 apiVersion: v2
 name: external-http
-description: Publish an external HTTP service through a HTTPS Gateway
+description: Publish an external HTTP service through NGINX and an HTTPS Gateway
 type: application
-version: 0.1.0
+version: 0.2.0
+appVersion: "1.31.6"

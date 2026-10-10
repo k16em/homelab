@@ -1,0 +1,64 @@
+{{- $addresses := required "backend.addresses に外部サービスのIPアドレスを指定してください" .Values.backend.addresses }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "external-http.fullname" . }}
+  labels:
+    {{- include "external-http.labels" . | nindent 4 }}
+data:
+  nginx.conf: |
+    worker_processes auto;
+    pid /tmp/nginx.pid;
+    error_log /dev/stderr warn;
+
+    events {
+        worker_connections 1024;
+    }
+
+    http {
+        access_log /dev/stdout;
+        client_body_temp_path /tmp/client_temp;
+        proxy_temp_path /tmp/proxy_temp;
+        fastcgi_temp_path /tmp/fastcgi_temp;
+        uwsgi_temp_path /tmp/uwsgi_temp;
+        scgi_temp_path /tmp/scgi_temp;
+
+        map $http_upgrade $connection_upgrade {
+            default upgrade;
+            '' close;
+        }
+
+        upstream external_backend {
+            {{- range $addresses }}
+            server {{ if contains ":" . }}[{{ . }}]{{ else }}{{ . }}{{ end }}:{{ $.Values.backend.port }};
+            {{- end }}
+        }
+
+        server {
+            listen 8080;
+            client_max_body_size {{ .Values.proxy.clientMaxBodySize }};
+
+            location = /healthz {
+                access_log off;
+                return 200;
+            }
+
+            location / {
+                proxy_pass http://external_backend;
+                proxy_http_version 1.1;
+
+                proxy_set_header Host $http_host;
+                proxy_set_header X-Forwarded-Host $http_host;
+                proxy_set_header X-Forwarded-Proto https;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection $connection_upgrade;
+
+                proxy_buffering off;
+                proxy_cache off;
+                proxy_read_timeout {{ .Values.proxy.readTimeout }};
+                proxy_send_timeout {{ .Values.proxy.sendTimeout }};
+            }
+        }
+    }

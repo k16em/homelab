@@ -1,10 +1,29 @@
 nameOverride: ""
 fullnameOverride: ""
 
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: "1.31.6-alpine-slim"
+  pullPolicy: IfNotPresent
+
 backend:
-  addressType: IPv4
   addresses: []
   port: 3000
+
+proxy:
+  clientMaxBodySize: 100m
+  readTimeout: 3600s
+  sendTimeout: 3600s
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
 
 gateway:
   className: cilium

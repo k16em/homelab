@@ -17,9 +17,14 @@
 
 {{- define "external-http.labels" -}}
 helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version | quote }}
+{{ include "external-http.selectorLabels" . }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}
+
+{{- define "external-http.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "external-http.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
 
 {{- define "external-http.secretName" -}}

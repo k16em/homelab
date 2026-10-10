@@ -37,12 +37,14 @@
     mode: '0644'
 
 - name: 'sudoグループを作成する'
+  tags: node_credentials
   become: true
   ansible.builtin.group:
     name: sudo
     state: present
 
 - name: 'sudoグループに所属しているユーザがパスワードなしでsudoできるようにする'
+  tags: node_credentials
   become: true
   community.general.sudoers:
     name: sudo-maintainer
@@ -51,6 +53,7 @@
     commands: ALL
 
 - name: 'メンテナンス用のユーザを作成する'
+  tags: node_credentials
   become: true
   ansible.builtin.user:
     name: maintainer
@@ -63,10 +66,15 @@
   ansible.builtin.include_role:
     name: authorized-keys
     apply:
-      tags: authorized_keys
-  tags: authorized_keys
+      tags:
+        - authorized_keys
+        - node_credentials
+  tags:
+    - authorized_keys
+    - node_credentials
 
 - name: 'rootのパスワードを変更する'
+  tags: node_credentials
   become: true
   ansible.builtin.user:
     name: root
@@ -86,6 +94,7 @@
     state: latest
 
 - name: 'Alloyの設定を置く'
+  tags: alloy_config
   become: true
   ansible.builtin.template:
     src: config.alloy.j2
@@ -98,6 +107,7 @@
   notify: 'alloyを再起動する'
 
 - name: 'alloyの設定を上書きする用のディレクトリを作成する'
+  tags: alloy_config
   become: true
   ansible.builtin.file:
     path: /etc/systemd/system/alloy.service.d
@@ -105,6 +115,7 @@
     mode: '0755'
 
 - name: '上書き用ユニットファイルを置く'
+  tags: alloy_config
   become: true
   ansible.builtin.template:
     src: alloy-override.j2
@@ -116,6 +127,7 @@
   diff: false
 
 - name: 'alloy.serviceを有効化'
+  tags: alloy_config
   become: true
   ansible.builtin.systemd:
     state: started

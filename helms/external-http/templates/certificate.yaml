@@ -1,0 +1,22 @@
+{{- if .Values.gateway.tls.certificate.create }}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "external-http.fullname" . }}
+  labels:
+    {{- include "external-http.labels" . | nindent 4 }}
+spec:
+  secretName: {{ include "external-http.secretName" . }}
+  dnsNames:
+    - {{ required "gateway.hostname を指定してください" .Values.gateway.hostname | quote }}
+  duration: {{ .Values.gateway.tls.certificate.duration | quote }}
+  renewBefore: {{ .Values.gateway.tls.certificate.renewBefore | quote }}
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  issuerRef:
+    name: {{ required "gateway.tls.certificate.issuerRef.name を指定してください" .Values.gateway.tls.certificate.issuerRef.name | quote }}
+    kind: {{ .Values.gateway.tls.certificate.issuerRef.kind | quote }}
+    group: {{ .Values.gateway.tls.certificate.issuerRef.group | quote }}
+{{- end }}

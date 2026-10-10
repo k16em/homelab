@@ -1,0 +1,24 @@
+nameOverride: ""
+fullnameOverride: ""
+
+backend:
+  addressType: IPv4
+  addresses: []
+  port: 3000
+
+gateway:
+  className: cilium
+  hostname: ""
+  network: private
+  loadBalancerIP: ""
+  annotations: {}
+  tls:
+    secretName: ""
+    certificate:
+      create: true
+      issuerRef:
+        name: homelab-ca
+        kind: ClusterIssuer
+        group: cert-manager.io
+      duration: 2160h
+      renewBefore: 720h

@@ -1,0 +1,58 @@
+{{- $hostname := required "gateway.hostname を指定してください" .Values.gateway.hostname }}
+{{- $network := required "gateway.network を指定してください" .Values.gateway.network }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: {{ include "external-http.fullname" . }}
+  labels:
+    {{- include "external-http.labels" . | nindent 4 }}
+  {{- with .Values.gateway.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  gatewayClassName: {{ .Values.gateway.className | quote }}
+  infrastructure:
+    labels:
+      homelab/network: {{ $network | quote }}
+    annotations:
+      external-dns.kubernetes.io/hostname: {{ $hostname | quote }}
+  {{- with .Values.gateway.loadBalancerIP }}
+  addresses:
+    - type: IPAddress
+      value: {{ . | quote }}
+  {{- end }}
+  listeners:
+    - name: https
+      hostname: {{ $hostname | quote }}
+      port: 443
+      protocol: HTTPS
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: {{ include "external-http.secretName" . }}
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ include "external-http.fullname" . }}
+  labels:
+    {{- include "external-http.labels" . | nindent 4 }}
+spec:
+  parentRefs:
+    - name: {{ include "external-http.fullname" . }}
+      sectionName: https
+  hostnames:
+    - {{ $hostname | quote }}
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: {{ include "external-http.fullname" . }}
+          port: {{ .Values.backend.port }}

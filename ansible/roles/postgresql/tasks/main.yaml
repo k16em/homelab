@@ -5,6 +5,7 @@
       - postgresql_clients | length > 0
     fail_msg: 'postgresqlに接続するクライアントが定義されていない'
     quiet: true
+  tags: postgresql_config
 
 - name: 'postgresqlに必要なパッケージを追加する'
   become: true
@@ -37,6 +38,7 @@
     regexp: '^#?include_dir\s*='
     line: "include_dir = 'conf.d'"
   notify: 'postgresqlを再起動する'
+  tags: postgresql_config
 
 - name: 'conf.dを作成する'
   become: true
@@ -46,6 +48,7 @@
     owner: postgres
     group: postgres
     mode: '0700'
+  tags: postgresql_config
 
 - name: 'postgresqlの設定を置く'
   become: true
@@ -56,6 +59,7 @@
     group: postgres
     mode: '0600'
   notify: 'postgresqlを再起動する'
+  tags: postgresql_config
 
 - name: 'pg_hba.confを置く'
   become: true
@@ -66,6 +70,7 @@
     group: postgres
     mode: '0600'
   notify: 'postgresqlの設定を再読み込みする'
+  tags: postgresql_config
 
 - name: 'postgresql.serviceを有効化'
   become: true
@@ -74,9 +79,11 @@
     state: started
     enabled: true
     daemon_reload: true
+  tags: postgresql_config
 
 - name: '変更した設定をpostgresqlに反映する'
   ansible.builtin.meta: flush_handlers
+  tags: postgresql_config
 
 - name: 'ユーザを作成する'
   become: true
@@ -88,6 +95,7 @@
   loop_control:
     label: '{{ item.owner }}'
   no_log: true
+  tags: postgresql_databases
 
 - name: 'データベースを作成する'
   become: true
@@ -99,6 +107,7 @@
   loop: '{{ postgresql_databases }}'
   loop_control:
     label: '{{ item.name }}'
+  tags: postgresql_databases
 
 - name: '拡張を有効化する'
   become: true
@@ -109,6 +118,7 @@
   loop: "{{ postgresql_databases | subelements('extensions', skip_missing=true) }}"
   loop_control:
     label: '{{ item.0.name }}: {{ item.1 }}'
+  tags: postgresql_databases
 
 - name: 'postgresqlが待ち受けているアドレスを取得する'
   become: true
@@ -118,6 +128,7 @@
   changed_when: false
   check_mode: false
   when: not ansible_check_mode
+  tags: postgresql_config
 
 - name: 'postgresqlがクライアントから届くアドレスで待ち受けているか確認する'
   ansible.builtin.assert:
@@ -126,6 +137,7 @@
     fail_msg: '{{ ansible_host }}:{{ postgresql_port }}で待ち受けていない: {{ postgresql_listening_sockets.stdout_lines }}'
     quiet: true
   when: postgresql_listening_sockets is not skipped
+  tags: postgresql_config
 
 - name: 'バックアップ用のディレクトリを作成する'
   become: true
@@ -135,6 +147,7 @@
     owner: postgres
     group: postgres
     mode: '0700'
+  tags: postgresql_backup
 
 - name: 'バックアップ用のスクリプトを置く'
   become: true
@@ -142,6 +155,7 @@
     src: postgresql-backup.sh.j2
     dest: /usr/local/bin/postgresql-backup
     mode: '0755'
+  tags: postgresql_backup
 
 - name: 'バックアップ用のユニットファイルを置く'
   become: true
@@ -152,6 +166,8 @@
   loop:
     - postgresql-backup@.service
     - postgresql-backup@.timer
+  notify: 'postgresqlのバックアップ用タイマーを再起動する'
+  tags: postgresql_backup
 
 - name: 'DBごとのバックアップ用タイマーを有効化する'
   become: true
@@ -163,3 +179,4 @@
   loop: '{{ postgresql_databases }}'
   loop_control:
     label: '{{ item.name }}'
+  tags: postgresql_backup

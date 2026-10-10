@@ -10,3 +10,13 @@
   ansible.builtin.systemd:
     name: postgresql
     state: reloaded
+
+- name: 'postgresqlのバックアップ用タイマーを再起動する'
+  become: true
+  ansible.builtin.systemd:
+    name: 'postgresql-backup@{{ item.name }}.timer'
+    state: restarted
+    daemon_reload: true
+  loop: '{{ postgresql_databases }}'
+  loop_control:
+    label: '{{ item.name }}'

@@ -16,12 +16,6 @@ bastion01p:
 dns01:
 	ansible-playbook -i ./hosts/site01.yaml ./services/dns.yaml --vault-password-file ~/ansible/.vault_pass
 
-worker01p:
-	ansible-playbook -i ./hosts/site01-private.yaml ./services/worker.yaml --vault-password-file ~/ansible/.vault_pass
-
-hermes01p:
-	ansible-playbook -i ./hosts/site01-private.yaml ./services/hermes.yaml --vault-password-file ~/ansible/.vault_pass
-
 memory01p:
 	ansible-playbook -i ./hosts/site01-private.yaml ./services/memory.yaml --vault-password-file ~/ansible/.vault_pass
 

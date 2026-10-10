@@ -14,6 +14,7 @@
     group: root
     mode: '0755'
   loop:
+    - '{{ llm_backend_llama_cpp_variants_bin_dir }}'
     - '{{ llama_cpp_variant_dir }}'
     - '{{ llama_cpp_variant_dir }}/patches'
 

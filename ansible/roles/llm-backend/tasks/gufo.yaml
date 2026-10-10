@@ -5,6 +5,15 @@
     name: '{{ llm_backend_gufo_packages }}'
     state: installed
 
+- name: 'Gufo用ディレクトリを掘る'
+  become: true
+  ansible.builtin.file:
+    path: '{{ llm_backend_gufo_dir }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
 - name: 'Gufoのソースを取得する'
   become: true
   ansible.builtin.git:

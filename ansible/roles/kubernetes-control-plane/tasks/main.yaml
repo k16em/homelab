@@ -107,6 +107,7 @@
   when: kubernetes_control_plane_cluster_config is not skipped
 
 - name: 'kubeconfigを置くディレクトリを作成する'
+  tags: [kubernetes_kubeconfig]
   become: true
   ansible.builtin.file:
     path: '~{{ kubernetes_control_plane_kubeconfig_user }}/.kube'
@@ -116,6 +117,7 @@
     mode: '0700'
 
 - name: 'kubeconfigを置く'
+  tags: [kubernetes_kubeconfig]
   become: true
   ansible.builtin.copy:
     src: /etc/kubernetes/admin.conf
@@ -126,6 +128,7 @@
     mode: '0600'
 
 - name: 'Kubernetesに適用するファイルを置くディレクトリを作成する'
+  tags: [cilium, cilium_lb_config, gateway_api]
   become: true
   ansible.builtin.file:
     path: '{{ kubernetes_control_plane_manifest_directory }}'
@@ -135,10 +138,15 @@
     mode: '0755'
 
 - name: 'Gateway APIのCRDを準備する'
-  ansible.builtin.include_tasks: gateway-api.yaml
+  ansible.builtin.include_tasks:
+    file: gateway-api.yaml
+    apply:
+      tags: [cilium, gateway_api]
+  tags: [cilium, gateway_api]
   when: kubernetes_control_plane_gateway_api_enabled | bool
 
 - name: 'CiliumのHelm valuesを置く'
+  tags: [cilium]
   become: true
   ansible.builtin.template:
     src: helm-values.yaml.j2
@@ -150,6 +158,7 @@
     values: '{{ kubernetes_control_plane_cilium_values }}'
 
 - name: 'Ciliumのリリースを取得する'
+  tags: [cilium]
   become: true
   become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
   ansible.builtin.command:
@@ -159,6 +168,7 @@
   check_mode: false
 
 - name: 'Ciliumのリリースが正常か未インストールであることを確認する'
+  tags: [cilium]
   ansible.builtin.assert:
     that:
       - releases | length == 0 or releases[0].status == 'deployed'
@@ -170,6 +180,7 @@
     releases: '{{ kubernetes_control_plane_cilium_release.stdout | from_json }}'
 
 - name: 'Ciliumをインストールする'
+  tags: [cilium]
   become: true
   become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
   ansible.builtin.command:
@@ -183,6 +194,7 @@
   when: kubernetes_control_plane_cilium_release.stdout | from_json | length == 0
 
 - name: 'CiliumのHelm valuesを取得する'
+  tags: [cilium]
   become: true
   become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
   ansible.builtin.command:
@@ -193,6 +205,7 @@
   when: kubernetes_control_plane_cilium_release.stdout | from_json | length > 0
 
 - name: 'Ciliumを更新する'
+  tags: [cilium]
   become: true
   become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
   ansible.builtin.command:
@@ -214,6 +227,7 @@
     current: '{{ kubernetes_control_plane_cilium_current_values.stdout | from_json }}'
 
 - name: '更新した設定でCiliumを再起動する'
+  tags: [cilium]
   become: true
   become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
   ansible.builtin.command:
@@ -221,6 +235,7 @@
   when: kubernetes_control_plane_cilium_upgrade is changed
 
 - name: 'Ciliumが動くまで待つ'
+  tags: [cilium]
   become: true
   become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
   ansible.builtin.command:
@@ -229,6 +244,7 @@
   check_mode: false
 
 - name: 'kube-proxyが残っているか確認する'
+  tags: [cilium]
   become: true
   become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
   ansible.builtin.command:
@@ -238,6 +254,7 @@
   check_mode: false
 
 - name: 'kube-proxyを削除する'
+  tags: [cilium]
   become: true
   become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
   ansible.builtin.command:
@@ -245,6 +262,7 @@
   when: kubernetes_control_plane_kube_proxy.stdout | length > 0
 
 - name: 'kube-proxyが作ったiptablesのルールを消す'
+  tags: [cilium]
   become: true
   ansible.builtin.shell:
     cmd: |
@@ -257,6 +275,7 @@
   when: kubernetes_control_plane_kube_proxy.stdout | length > 0
 
 - name: 'Ciliumのkube-proxy置き換えの状態を取得する'
+  tags: [cilium]
   become: true
   become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
   ansible.builtin.command:
@@ -266,6 +285,7 @@
   check_mode: false
 
 - name: 'Ciliumがkube-proxyを置き換えていることを確認する'
+  tags: [cilium]
   ansible.builtin.assert:
     that:
       - kube_proxy_replacement is match('True')
@@ -275,6 +295,7 @@
     kube_proxy_replacement: "{{ kubernetes_control_plane_cilium_dbg_status.stdout_lines | select('match', '^KubeProxyReplacement:') | first | default('') | regex_replace('^KubeProxyReplacement:\\s*', '') }}"
 
 - name: 'LoadBalancerのIPプールとL2 announcementのマニフェストを置く'
+  tags: [cilium_lb_config]
   become: true
   ansible.builtin.template:
     src: lb-networks.yaml.j2
@@ -284,6 +305,7 @@
     mode: '0644'
 
 - name: 'LoadBalancerのIPプールとL2 announcementを適用する'
+  tags: [cilium_lb_config]
   become: true
   become_user: '{{ kubernetes_control_plane_kubeconfig_user }}'
   ansible.builtin.command:

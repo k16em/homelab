@@ -22,6 +22,7 @@
   tags:
     - opencode
     - opencode_config
+    - opencode_agents
   become: true
   ansible.builtin.copy:
     src: AGENTS.md

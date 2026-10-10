@@ -1,8 +1,8 @@
 ---
-- name: 'メンテナンス用のユーザのauthorized_keysを設定する'
+- name: '対象ユーザーのauthorized_keysを設定する'
   become: true
   ansible.posix.authorized_key:
-    user: maintainer
+    user: '{{ authorized_keys_user }}'
     state: present
     key: '{{ item.key }}'
   with_items: '{{ authorized_keys_keys }}'

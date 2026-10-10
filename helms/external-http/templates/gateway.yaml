@@ -55,4 +55,4 @@ spec:
             value: /
       backendRefs:
         - name: {{ include "external-http.fullname" . }}
-          port: {{ .Values.backend.port }}
+          port: 8080

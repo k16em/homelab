@@ -52,3 +52,14 @@
 - name: 'OpenChamberのuser serviceを構成する'
   ansible.builtin.import_tasks: service.yaml
   tags: openchamber_service
+
+- name: 'OpenChamberの実行用ユーザーのzshenvを配置する'
+  tags: chamber_shell
+  become: true
+  ansible.builtin.copy:
+    src: zshenv
+    dest: '~{{ openchamber_user }}/.zshenv'
+    owner: '{{ openchamber_user }}'
+    group: '{{ openchamber_group }}'
+    mode: '0644'
+    validate: '/usr/bin/zsh -n %s'

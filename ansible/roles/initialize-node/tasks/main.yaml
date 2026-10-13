@@ -134,3 +134,11 @@
     enabled: true
     name: alloy
     daemon_reload: true
+
+- name: 'systemd-timesyncd.serviceを有効化'
+  become: true
+  ansible.builtin.systemd:
+    name: systemd-timesyncd
+    state: started
+    enabled: true
+    daemon_reload: true

@@ -21,6 +21,7 @@
 ## Tooling and GitHub Guidelines
 - Perform GitHub operations through the `gh` CLI.
 - Prefer installed efficient tools such as `ripgrep` (`rg`) and `fd` for searching file contents and locating files.
+- Research tool usage only with the `man` command.
 - Before creating a GitHub Issue or Pull Request, check for applicable templates and follow them when present.
 
 ## Coding and Commit Guidelines

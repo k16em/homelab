@@ -3,6 +3,7 @@ opencode_package_manifest:
   repository:
     - opencode
     - python
+    - man-db
   aur: []
 
 opencode_user: opencode

@@ -11,3 +11,5 @@
       tags: upgrade_packages
     - role: pi-hole
       tags: pi_hole
+    - role: tailscale
+      tags: tailscale

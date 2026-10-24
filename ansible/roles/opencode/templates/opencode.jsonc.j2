@@ -14,6 +14,10 @@
   "model": "{{ opencode_default_model }}",
   "default_agent": "plan",
 
+  "policies": [
+    { "action": "tool.use", "resource": "webfetch:*", "effect": "deny" }
+  ],
+
   "agents": {
     "build": {
       "description": "Default coding mode with only OpenCode tools.",

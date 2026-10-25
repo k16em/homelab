@@ -12,19 +12,233 @@
   },
 
   "model": "{{ opencode_default_model }}",
-  "default_agent": "plan",
+  "default_agent": "dialogue",
 
+  "permissions": [
+    {
+      "action": "webfetch",
+      "resource": "*",
+      "effect": "deny"
+    },
+    {
+      "action": "websearch",
+      "resource": "*",
+      "effect": "deny"
+    },
+    {
+      "action": "skill",
+      "resource": "*",
+      "effect": "deny"
+    }
+  ],
   "policies": [
-    { "action": "tool.use", "resource": "webfetch:*", "effect": "deny" }
+    {
+      "action": "tool.use",
+      "resource": "question:*",
+      "effect": "deny"
+    }
   ],
 
   "agents": {
+    "dialogue": {
+      "mode": "primary",
+      "description": "Clarify user requirements and delegate specialist work.",
+      "system": "Clarify the user's goals, constraints, acceptance criteria, and open questions through conversation. Delegate research, design, and review to the matching subagent; never perform specialist work yourself. Delegate implementation within the user-approved scope to build. Relay findings concisely and ask clarifying questions in plain text.",
+      "permissions": [
+        {
+          "action": "*",
+          "resource": "*",
+          "effect": "deny"
+        },
+        {
+          "action": "subagent",
+          "resource": "local-research",
+          "effect": "allow"
+        },
+        {
+          "action": "subagent",
+          "resource": "build",
+          "effect": "allow"
+        },
+        {
+          "action": "subagent",
+          "resource": "web-research",
+          "effect": "allow"
+        },
+        {
+          "action": "subagent",
+          "resource": "design",
+          "effect": "allow"
+        },
+        {
+          "action": "subagent",
+          "resource": "review",
+          "effect": "allow"
+        }
+      ]
+    },
+    "plan": {
+      "disabled": true
+    },
     "build": {
-      "description": "Default coding mode with only OpenCode tools.",
-      "system": "{file:./AGENTS.md}"
+      "description": "Implement requested changes and run relevant checks.",
+      "mode": "subagent",
+      "model": "openai/gpt-6.1-sol",
+      "system": "Implement the assigned changes within the agreed scope. Inspect relevant files, make focused edits, and run appropriate checks. Return changed paths, outcomes, and remaining issues.\n\n{file:./AGENTS.md}",
+      "permissions": [
+        {
+          "action": "*",
+          "resource": "*",
+          "effect": "deny"
+        },
+        {
+          "action": "read",
+          "resource": "*",
+          "effect": "allow"
+        },
+        {
+          "action": "glob",
+          "resource": "*",
+          "effect": "allow"
+        },
+        {
+          "action": "grep",
+          "resource": "*",
+          "effect": "allow"
+        },
+        {
+          "action": "edit",
+          "resource": "*",
+          "effect": "allow"
+        },
+        {
+          "action": "shell",
+          "resource": "*",
+          "effect": "allow"
+        },
+        {
+          "action": "external_directory",
+          "resource": "*",
+          "effect": "ask"
+        }
+      ]
     },
     "title": {
       "disabled": true
+    },
+    "local-research": {
+      "description": "Investigate local files and code; report evidence without changes.",
+      "mode": "subagent",
+      "system": "Investigate the assigned local files and code without modifying them. Return concise findings with file paths and line references. Distinguish observed facts from assumptions and list unresolved questions.",
+      "permissions": [
+        {
+          "action": "*",
+          "resource": "*",
+          "effect": "deny"
+        },
+        {
+          "action": "read",
+          "resource": "*",
+          "effect": "allow"
+        },
+        {
+          "action": "glob",
+          "resource": "*",
+          "effect": "allow"
+        },
+        {
+          "action": "grep",
+          "resource": "*",
+          "effect": "allow"
+        },
+        {
+          "action": "external_directory",
+          "resource": "*",
+          "effect": "ask"
+        }
+      ]
+    },
+    "design": {
+      "description": "Design solutions and compare trade-offs from supplied requirements and evidence.",
+      "mode": "subagent",
+      "system": "Design a solution from the supplied requirements and evidence. Return the proposed approach, alternatives and reasons for rejecting them, risks, and acceptance criteria. Identify missing evidence rather than inventing facts. Do not implement changes.",
+      "permissions": [
+        {
+          "action": "*",
+          "resource": "*",
+          "effect": "deny"
+        }
+      ]
+    },
+    "review": {
+      "description": "Review code for correctness, regressions, and missing tests without changes.",
+      "mode": "subagent",
+      "system": "Review the supplied changes and relevant local files without modifying them. Prioritize actionable correctness, security, and regression findings. Return severity, file and line references, reasoning, and missing coverage; state explicitly when no issues are found. Do not claim checks were run unless evidenced.",
+      "permissions": [
+        {
+          "action": "*",
+          "resource": "*",
+          "effect": "deny"
+        },
+        {
+          "action": "read",
+          "resource": "*",
+          "effect": "allow"
+        },
+        {
+          "action": "glob",
+          "resource": "*",
+          "effect": "allow"
+        },
+        {
+          "action": "grep",
+          "resource": "*",
+          "effect": "allow"
+        },
+        {
+          "action": "external_directory",
+          "resource": "*",
+          "effect": "ask"
+        }
+      ]
+    },
+    "web-research": {
+      "description": "Research current external facts and documentation; return source URLs.",
+      "mode": "subagent",
+      "model": "openai/gpt-6.1-sol",
+      "system": "Research the assigned topic using available tools. Return concise findings with source URLs and distinguish verified facts from uncertainty.",
+      "permissions": [
+        {
+          "action": "*",
+          "resource": "*",
+          "effect": "deny"
+        },
+        {
+          "action": "webfetch",
+          "resource": "*",
+          "effect": "allow"
+        },
+        {
+          "action": "websearch",
+          "resource": "*",
+          "effect": "allow"
+        }
+      ]
+    }
+  },
+  "commands": {
+    "implement": {
+      "description": "Temporary implementation in the build subagent",
+      "agent": "build",
+      "model": "openai/gpt-6.1-sol",
+      "subagent": true,
+      "template": "Implement the agreed scope below. Report missing essential details rather than guessing.\n\n$ARGUMENTS"
+    },
+    "web-research": {
+      "description": "Temporary web research in a subagent",
+      "agent": "web-research",
+      "subagent": true,
+      "template": "Research the following topic:\n\n$ARGUMENTS"
     }
   }
 }
